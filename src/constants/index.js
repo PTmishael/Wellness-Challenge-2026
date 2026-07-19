@@ -33,31 +33,32 @@ export const PILLARS = [
     id: 'steps',
     icon: '🚶',
     name: 'الحركة',
-    tiers: { bronze: '٣٠٠٠ خطوة', silver: '٧٠٠٠ خطوة', gold: '١٠٠٠٠ خطوة' },
+    tiers: { bronze: '٣٠٠٠ خطوة أو مشي ١٥ دقيقة', silver: '٧٠٠٠ خطوة أو مشي ٣٥ دقيقة', gold: '١٠٠٠٠ خطوة أو مشي ٥٠ دقيقة' },
   },
   {
     id: 'water',
     icon: '💧',
-    name: 'الماء',
+    name: 'الماء (الكوب ٣٣٠ مل)',
     tiers: { bronze: '٣ أكواب', silver: '٥ أكواب', gold: '٨ أكواب' },
   },
   {
     id: 'fitness',
     icon: '🏋️',
     name: 'اللياقة',
-    tiers: { bronze: 'ما تمرنت', silver: 'سويت بلانك ١ دقيقة', gold: 'تمرنت مقاومة' },
+    tiers: { bronze: 'تحرّكت ١٠ دقائق (مشي أو تمدد)', silver: 'بلانك ١ دقيقة أو ١٥ دقيقة تمرين خفيف', gold: 'تمرين مقاومة ٢٠ دقيقة أو أكثر' },
   },
   {
     id: 'sleep',
     icon: '😴',
     name: 'النوم',
-    tiers: { bronze: '٣-٤ ساعات', silver: '٥-٦ ساعات', gold: '٧ ساعات وأكثر' },
+    tiers: { bronze: 'سكّرت الجوال قبل النوم بنص ساعة', silver: 'نمت قبل ١٢', gold: 'نمت ٧ ساعات أو أكثر' },
   },
   {
     id: 'nutrition',
     icon: '🌿',
     name: 'التغذية',
-    tiers: { bronze: 'ما أكلت مقلي ولا مشروب غازي', silver: 'وقفت الأكل بعد الساعة ٨', gold: 'أكلت خضرة مع بروتين' },
+    note: 'الأهداف: ١. لا مقلي ولا مشروب غازي · ٢. وقفت الأكل الساعة ٨ · ٣. أكلت خضرة مع بروتين',
+    tiers: { bronze: 'حققت هدف واحد', silver: 'حققت هدفين', gold: 'حققت الثلاثة كلها' },
   },
 ]
 
@@ -74,8 +75,9 @@ export const MEDALS = [
   { id: 'streak_3',      icon: '🔥', name: '٣ أيام',      desc: '٣ أيام ما وقفتِ',              requirement: '٣ أيام على التوالي' },
   { id: 'streak_7',      icon: '⚡', name: 'أسبوع كامل',  desc: 'أسبوع كامل، ما شاء الله',      requirement: '٧ أيام على التوالي' },
   { id: 'all_gold',      icon: '🥇', name: 'ذهب خالص',    desc: 'كل الأعمدة ذهب في يوم واحد',  requirement: 'كل الأعمدة ذهب في يوم' },
-  { id: 'points_25',     icon: '🏅', name: 'ملتزمة',      desc: 'وصلتِ لـ ٢٥ نقطة',             requirement: '٢٥ نقطة' },
-  { id: 'points_50',     icon: '🏆', name: 'بطلة',        desc: '٥٠ نقطة، أنتِ نجمة الجروب',  requirement: '٥٠ نقطة' },
+  { id: 'points_50',     icon: '🏅', name: 'ملتزمة',      desc: 'وصلتِ لـ ٥٠ نقطة',             requirement: '٥٠ نقطة' },
+  { id: 'points_100',    icon: '🏆', name: 'بطلة',        desc: '١٠٠ نقطة، أنتِ نجمة الجروب', requirement: '١٠٠ نقطة' },
+  { id: 'points_200',    icon: '👑', name: 'أسطورة',      desc: '٢٠٠ نقطة — مثابرة حقيقية',    requirement: '٢٠٠ نقطة' },
   { id: 'social_5',      icon: '💬', name: 'روح الجروب',  desc: 'شاركتِ ٥ مرات وشجّعتِ الكل',  requirement: '٥ رسائل في الشات' },
 ]
 

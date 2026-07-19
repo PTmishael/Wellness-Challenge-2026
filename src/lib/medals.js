@@ -21,8 +21,9 @@ export function evaluateMedals({ current = [], checkIns, streak, totalPoints, da
   if (streak >= 3) award('streak_3')
   if (streak >= 7) award('streak_7')
   if (dayPoints === 15) award('all_gold') // all 5 pillars at gold
-  if (totalPoints >= 25) award('points_25')
   if (totalPoints >= 50) award('points_50')
+  if (totalPoints >= 100) award('points_100')
+  if (totalPoints >= 200) award('points_200')
   if (messageCount >= 5) award('social_5')
 
   return { medals, newlyEarned }

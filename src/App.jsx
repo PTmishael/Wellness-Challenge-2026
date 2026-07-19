@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import BackgroundArt from './components/BackgroundArt'
 import WaterBackground from './components/WaterBackground'
 import Splash from './screens/Splash'
 import Welcome from './screens/Welcome'
@@ -62,7 +61,7 @@ export default function App() {
 
   return (
     <>
-      {watery ? <WaterBackground /> : <BackgroundArt />}
+      <WaterBackground animated={watery} />
 
       <div className="app-shell">
         {screen === 'splash' && <Splash />}

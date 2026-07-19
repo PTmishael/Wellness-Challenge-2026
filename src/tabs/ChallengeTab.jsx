@@ -103,6 +103,23 @@ export default function ChallengeTab({
               <span style={{ fontSize: 21 }}>{pillar.icon}</span>
               <span style={{ fontSize: 17, fontWeight: 900 }}>{pillar.name}</span>
             </div>
+            {pillar.note && (
+              <p
+                style={{
+                  color: 'var(--ink-sub)',
+                  fontSize: 13.5,
+                  fontWeight: 700,
+                  lineHeight: 1.8,
+                  background: 'var(--brand-tint)',
+                  border: '1.5px solid #BBCFBD',
+                  borderRadius: 12,
+                  padding: '8px 12px',
+                  marginBottom: 9,
+                }}
+              >
+                {pillar.note}
+              </p>
+            )}
 
             <div className="tier-row">
               {TIER_ORDER.map((tier) => {

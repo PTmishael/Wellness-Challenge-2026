@@ -623,14 +623,42 @@ textarea.input { resize: none; }
 .typing-dots i:nth-child(2) { animation-delay: 0.15s; }
 .typing-dots i:nth-child(3) { animation-delay: 0.3s; }
 
-/* ── Water background (splash & welcome) ───────────────── */
+/* ── Water background (photo-based) ────────────────────── */
 .water-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: linear-gradient(180deg, #FEFEFE 0%, #F6F9FA 40%, #EDF2F5 100%);
+  background: #F2F5F7;
+}
+.water-bg__photo {
+  position: absolute;
+  inset: -3%;
+  background-size: cover;
+  background-position: center;
+}
+@keyframes water-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.045); }
+}
+.water-bg__photo--breathe {
+  animation: water-breathe 18s ease-in-out infinite;
+}
+/* White veil keeps the photo subtle so content stays readable */
+.water-bg__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.45) 45%,
+    rgba(255, 255, 255, 0.6) 100%);
+}
+.water-bg__veil--strong {
+  background: linear-gradient(180deg,
+    rgba(252, 253, 253, 0.86) 0%,
+    rgba(250, 252, 252, 0.8) 45%,
+    rgba(252, 253, 253, 0.86) 100%);
 }
 .water-bg .wave {
   position: absolute;
