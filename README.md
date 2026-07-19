@@ -15,13 +15,12 @@ never shipped to the browser.
 
 | Area | What it does |
 |---|---|
-| **Authentication** | Register (2 steps: name + emoji), log back in by name, separate admin login |
+| **Authentication** | Register with name + password (avatar auto-assigned), log back in with name + password, separate admin login |
 | **5 Pillars** | الحركة · الماء · اللياقة · النوم · التغذية — each with Bronze / Silver / Gold tiers |
 | **Daily check-in** | One submission per day. Bronze = 1 pt, Silver = 2, Gold = 3 (max 15/day) |
 | **Streaks & history** | Consecutive-day streak plus a rolling log of your last 7 days |
 | **7 medals** | Auto-unlocked with a celebratory popup (first check-in, 3-day, 7-day, all-gold, 25 pts, 50 pts, 5 messages) |
-| **Community chat** | WhatsApp-style bubbles. Check-ins auto-post a summary |
-| **✨ AI coach** | Members ask nutrition/fitness/sleep questions and get instant Arabic answers from Claude, personalised with their name, points, streak, and today's check-in |
+| **Community chat** | WhatsApp-style bubbles with reply-to-message quoting, per-member notification bell (browser notifications, works across tabs of the same browser), pinned messages. Check-ins auto-post a multi-line summary |
 | **Admin panel** | Member roster with search, capacity meter, inactive-member flags, delete accounts, edit/pin/delete any chat message |
 | **Offline-first** | Works with no internet after first load. Installable to the home screen on iOS/Android |
 | **RTL + Arabic** | Full right-to-left layout, Tajawal typeface |
@@ -36,13 +35,7 @@ never shipped to the browser.
 # 1. Install dependencies
 npm install
 
-# 2. Configure the AI coach (one-time)
-cp .env.example .env
-#    …then open .env and paste your Anthropic API key:
-#    ANTHROPIC_API_KEY=sk-ant-xxxxx
-#    Get one at https://console.anthropic.com/settings/keys
-
-# 3. Start development (Vite on :5173 + API server on :3001, together)
+# 2. Start development (Vite on :5173 + API server on :3001, together)
 npm run dev
 
 # 4. Production build
@@ -52,8 +45,9 @@ npm run build
 npm start
 ```
 
-> The app works without a key — everything except the ✨ AI coach tab.
-> The coach shows a friendly "not configured" message until you add one.
+> ℹ️ **This version has no AI features** — no API key, no Anthropic credits, and no
+> per-message costs. The `.env` file and the `/api/coach` server endpoint remain in the
+> codebase but are dormant; re-adding an AI tab later only requires a frontend component.
 
 ### Environment variables
 

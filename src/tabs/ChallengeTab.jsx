@@ -77,7 +77,7 @@ export default function ChallengeTab({
             marginBottom: 7,
           }}
         >
-          <h3 style={{ fontSize: 17, fontWeight: 900 }}>متابعة اليومية</h3>
+          <h3 style={{ fontSize: 20, fontWeight: 900 }}>متابعة اليومية</h3>
           {checkedIn && !isAdmin && <span className="pill pill--green">✅ تمّ اليوم</span>}
           {isAdmin && <span className="pill pill--solid">👑 أدمن</span>}
         </div>
@@ -85,8 +85,8 @@ export default function ChallengeTab({
         <p
           style={{
             color: 'var(--ink-mute)',
-            fontSize: 12,
-            lineHeight: 1.75,
+            fontSize: 15,
+            lineHeight: 1.8,
             fontStyle: 'italic',
             borderRight: '3px solid var(--brand)',
             paddingRight: 10,
@@ -100,8 +100,8 @@ export default function ChallengeTab({
         {PILLARS.map((pillar) => (
           <div key={pillar.id} style={{ marginBottom: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
-              <span style={{ fontSize: 18 }}>{pillar.icon}</span>
-              <span style={{ fontSize: 14, fontWeight: 900 }}>{pillar.name}</span>
+              <span style={{ fontSize: 21 }}>{pillar.icon}</span>
+              <span style={{ fontSize: 17, fontWeight: 900 }}>{pillar.name}</span>
             </div>
 
             <div className="tier-row">

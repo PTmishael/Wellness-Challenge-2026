@@ -1,6 +1,5 @@
 const BASE_TABS = [
   { id: 'challenge', icon: '🏋️', label: 'التحدي' },
-  { id: 'coach',     icon: '✨', label: 'كوتشك' },
   { id: 'chat',      icon: '💬', label: 'الشات' },
   { id: 'medals',    icon: '🏅', label: 'ميداليات' },
 ]

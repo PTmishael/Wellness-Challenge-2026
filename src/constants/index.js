@@ -45,7 +45,7 @@ export const PILLARS = [
     id: 'fitness',
     icon: '🏋️',
     name: 'اللياقة',
-    tiers: { bronze: 'Dead Bug ٢٠ث', silver: 'Plank ٣٠ث', gold: 'خلصت تمريني' },
+    tiers: { bronze: 'ما تمرنت', silver: 'سويت بلانك ١ دقيقة', gold: 'تمرنت مقاومة' },
   },
   {
     id: 'sleep',
@@ -57,7 +57,7 @@ export const PILLARS = [
     id: 'nutrition',
     icon: '🌿',
     name: 'التغذية',
-    tiers: { bronze: 'أضيفي خضرة', silver: 'خضرة + بروتين', gold: 'وجبة صحية كاملة' },
+    tiers: { bronze: 'ما أكلت مقلي ولا مشروب غازي', silver: 'وقفت الأكل بعد الساعة ٨', gold: 'أكلت خضرة مع بروتين' },
   },
 ]
 
@@ -81,7 +81,7 @@ export const MEDALS = [
 
 /** Motivational line shown under the daily check-in header. */
 export const DAILY_QUOTE =
-  'الميدالية الحقيقية هي صحتك، والصدق مع النفس هو أول خطوة للتغيير'
+  'سجّلي بكل أمانة وش حققتي اليوم، وبالنهاية تجمعين ميداليات — الميدالية الحقيقية هي صحتك 💚'
 
 /** Max chat messages retained in storage. */
 export const MAX_CHAT_MESSAGES = 200

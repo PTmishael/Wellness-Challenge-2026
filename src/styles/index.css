@@ -372,10 +372,10 @@ textarea.input { resize: none; }
   flex: 1;
   border: 2.5px solid var(--border);
   border-radius: 14px;
-  padding: 10px 3px;
+  padding: 11px 4px;
   background: #FBFDFC;
   color: var(--ink-mute);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 800;
   cursor: pointer;
   text-align: center;
@@ -384,7 +384,7 @@ textarea.input { resize: none; }
 }
 .tier:active:not(:disabled) { transform: scale(0.96); }
 .tier:disabled { cursor: default; }
-.tier__hint { font-size: 9.5px; margin-top: 2px; opacity: 0.82; line-height: 1.3; }
+.tier__hint { font-size: 12.5px; margin-top: 3px; opacity: 0.85; line-height: 1.35; }
 
 .tier.is-bronze {
   background: var(--bronze-bg);
@@ -622,3 +622,77 @@ textarea.input { resize: none; }
 }
 .typing-dots i:nth-child(2) { animation-delay: 0.15s; }
 .typing-dots i:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── Water background (splash & welcome) ───────────────── */
+.water-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(180deg, #FEFEFE 0%, #F6F9FA 40%, #EDF2F5 100%);
+}
+.water-bg .wave {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 46%;
+  bottom: 0;
+}
+@keyframes wave-sway-a {
+  0%, 100% { transform: translateX(0)     translateY(0); }
+  50%      { transform: translateX(-3.5%) translateY(-8px); }
+}
+@keyframes wave-sway-b {
+  0%, 100% { transform: translateX(0)    translateY(0); }
+  50%      { transform: translateX(3%)   translateY(-12px); }
+}
+.wave--slow { animation: wave-sway-a 14s ease-in-out infinite; bottom: 6%; }
+.wave--mid  { animation: wave-sway-b 10s ease-in-out infinite; bottom: 2%; }
+.wave--fast { animation: wave-sway-a  7s ease-in-out infinite; animation-delay: -3s; }
+
+@keyframes shimmer-float {
+  0%, 100% { opacity: 0.8; transform: translateY(0); }
+  50%      { opacity: 0.4; transform: translateY(-9px); }
+}
+.water-bg .shimmer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: shimmer-float 6s ease-in-out infinite;
+}
+
+/* ── WhatsApp-style reply quote ────────────────────────── */
+.bubble__quote {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(55, 105, 61, 0.08);
+  border-right: 3px solid var(--brand);
+  border-radius: 8px;
+  padding: 6px 9px;
+  margin-bottom: 6px;
+}
+.bubble__quote-name {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--brand-dark);
+}
+.bubble__quote-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.reply-bar {
+  background: #fff;
+  border-top: 1.5px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

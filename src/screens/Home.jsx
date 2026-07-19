@@ -4,7 +4,6 @@ import BottomNav from '../components/BottomNav'
 import MedalPopup from '../components/MedalPopup'
 import ChallengeTab from '../tabs/ChallengeTab'
 import ChatTab from '../tabs/ChatTab'
-import CoachTab from '../tabs/CoachTab'
 import MedalsTab from '../tabs/MedalsTab'
 import MembersTab from '../tabs/MembersTab'
 import {
@@ -14,6 +13,8 @@ import {
   MAX_CHAT_MESSAGES,
 } from '../constants'
 import {
+  KEYS,
+  read,
   getMembers,
   upsertMember,
   deleteMember as removeMember,
@@ -48,6 +49,36 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
     saveChat(trimmed)
     setChat(trimmed)
   }, [])
+
+  // Live-sync chat across open tabs + notify on new messages.
+  useEffect(() => {
+    function onStorageChange(event) {
+      if (event.key !== KEYS.CHAT || !event.newValue) return
+      try {
+        const nextChat = JSON.parse(event.newValue)
+        setChat(nextChat)
+
+        const latest = nextChat[0]
+        const enabled = read(`wellness_challenge:notify:${member.id}`, 'off') === 'on'
+        if (
+          latest &&
+          latest.authorId !== member.id &&
+          enabled &&
+          typeof Notification !== 'undefined' &&
+          Notification.permission === 'granted'
+        ) {
+          new Notification(latest.authorName ?? 'رسالة جديدة', {
+            body: String(latest.text ?? '').slice(0, 90),
+          })
+        }
+      } catch {
+        /* ignore malformed storage payloads */
+      }
+    }
+
+    window.addEventListener('storage', onStorageChange)
+    return () => window.removeEventListener('storage', onStorageChange)
+  }, [member.id])
 
   // Keep the day's in-progress selections in the session.
   useEffect(() => {
@@ -108,14 +139,13 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       history,
     })
 
-    // Auto-post the check-in summary to the chat.
-    const summary = Object.entries(todayLog)
+    // Auto-post the check-in summary to the chat — one line per pillar.
+    const summaryLines = Object.entries(todayLog)
       .map(([pillarId, tier]) => {
         const pillar = PILLARS.find((p) => p.id === pillarId)
-        return pillar ? `${pillar.icon}${TIER_EMOJI[tier]}` : ''
+        return pillar ? `${pillar.icon} ${pillar.name} ${TIER_EMOJI[tier]}` : ''
       })
       .filter(Boolean)
-      .join(' ')
 
     persistChat([
       {
@@ -126,7 +156,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
         skinIndex: updated.skinIndex,
         colorIndex: updated.colorIndex,
         isAdmin,
-        text: `متابعة اليوم! ${summary} — ${dayPoints} نقاط 🌟`,
+        text: `متابعة اليوم 🌟\n${summaryLines.join('\n')}\nالمجموع: ${dayPoints} نقاط`,
         pinned: false,
         createdAt: Date.now(),
       },
@@ -138,7 +168,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
   }
 
   // ── Chat actions ────────────────────────────────────
-  function handleSendMessage(text) {
+  function handleSendMessage(text, replyTo = null) {
     const messageCount = (member.messageCount ?? 0) + 1
 
     const { medals, newlyEarned } = evaluateMedals({
@@ -162,6 +192,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
         colorIndex: updated.colorIndex,
         isAdmin,
         text,
+        replyTo: replyTo ? { name: replyTo.name, snippet: replyTo.snippet } : null,
         pinned: false,
         createdAt: Date.now(),
       },
@@ -215,10 +246,6 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
           onTogglePin={handleTogglePin}
           onDelete={handleDeleteMessage}
         />
-      )}
-
-      {tab === 'coach' && (
-        <CoachTab member={member} todayLog={todayLog} checkedIn={checkedIn} />
       )}
 
       {tab === 'medals' && <MedalsTab member={member} />}

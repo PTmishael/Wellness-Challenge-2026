@@ -8,50 +8,58 @@ export default function Welcome({ onNavigate }) {
     <div className="screen-center">
       <Logo size={112} style={{ marginBottom: 24 }} />
 
-      <h1 style={{ fontSize: 28, fontWeight: 900, marginBottom: 5 }}>Wellness Challenge</h1>
-      <p style={{ color: 'var(--brand)', fontSize: 15, fontWeight: 800, marginBottom: 16 }}>
-        برنامج التحدي الصحي مع كوتش مشاعل 🌿
+      <h1 style={{ fontSize: 31, fontWeight: 900, marginBottom: 8 }}>Wellness Challenge</h1>
+      <p style={{ color: 'var(--brand)', fontSize: 18, fontWeight: 800, marginBottom: 18 }}>
+        مجتمع نسائي، نشجّع بعض 🌿
       </p>
+
       <p
         style={{
           color: 'var(--ink-sub)',
-          fontSize: 14,
-          lineHeight: 1.95,
-          maxWidth: 315,
-          margin: '0 auto 14px',
+          fontSize: 17,
+          lineHeight: 2,
+          maxWidth: 340,
+          margin: '0 auto 18px',
           fontWeight: 600,
         }}
       >
-        ٥ عادات يومية · ٣ مستويات لكل عادة · مجتمع نسائي يشجّعك خطوة بخطوة
+        سجّلي إنجازك اليومي بكل صدق واجمعي الميداليات…
+        <br />
+        <span style={{ color: 'var(--brand-dark)', fontWeight: 800 }}>
+          والميدالية الحقيقية هي صحتك 💚
+        </span>
       </p>
 
       <div
         style={{
           display: 'flex',
-          gap: 6,
+          gap: 7,
           justifyContent: 'center',
           flexWrap: 'wrap',
-          marginBottom: 28,
+          marginBottom: 30,
         }}
       >
         {PILLARS.map((pillar, i) => (
-          <span key={pillar.id} className={`pill ${PILL_CLASSES[i]}`}>
+          <span
+            key={pillar.id}
+            className={`pill ${PILL_CLASSES[i]}`}
+            style={{ fontSize: 14, padding: '5px 13px' }}
+          >
             {pillar.icon} {pillar.name}
           </span>
         ))}
       </div>
 
-      <div style={{ width: '100%', maxWidth: 312 }}>
-        <button className="btn btn--brand" onClick={() => onNavigate('register')}>
+      <div style={{ width: '100%', maxWidth: 320 }}>
+        <button className="btn btn--brand" style={{ fontSize: 18 }} onClick={() => onNavigate('register')}>
           🌱 انضمّي للتحدي
         </button>
-        <button className="btn btn--ghost" onClick={() => onNavigate('login')}>
+        <button className="btn btn--ghost" style={{ fontSize: 17 }} onClick={() => onNavigate('login')}>
           لديّ حساب
         </button>
-        <button className="btn--link" onClick={() => onNavigate('admin')}>
+        <button className="btn--link" style={{ fontSize: 14 }} onClick={() => onNavigate('admin')}>
           دخول الإدارة
         </button>
-        <p className="offline-note">📴 يعمل بدون إنترنت · بياناتك محفوظة على جهازك</p>
       </div>
     </div>
   )

@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import Logo from '../components/Logo'
 import Avatar from '../components/Avatar'
 import { timeAgo } from '../lib/utils'
+import { read, write } from '../lib/storage'
+
+const notifyKey = (memberId) => `wellness_challenge:notify:${memberId}`
 
 export default function ChatTab({
   member,
@@ -15,19 +18,61 @@ export default function ChatTab({
   const [draft, setDraft] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [editDraft, setEditDraft] = useState('')
+  const [replyTarget, setReplyTarget] = useState(null) // { id, name, snippet }
+  const [notifyOn, setNotifyOn] = useState(() => read(notifyKey(member.id), 'off') === 'on')
+  const [notifyHint, setNotifyHint] = useState('')
   const listRef = useRef(null)
+  const inputRef = useRef(null)
 
-  // Keep the view pinned to the newest message.
   useEffect(() => {
     const el = listRef.current
     if (el) el.scrollTop = el.scrollHeight
   }, [messages.length])
 
+  // ── Notifications toggle 🔔 ─────────────────────────────
+  async function toggleNotifications() {
+    setNotifyHint('')
+
+    if (notifyOn) {
+      write(notifyKey(member.id), 'off')
+      setNotifyOn(false)
+      return
+    }
+
+    if (typeof Notification === 'undefined') {
+      setNotifyHint('التنبيهات غير مدعومة في هذا المتصفح')
+      return
+    }
+
+    let permission = Notification.permission
+    if (permission === 'default') {
+      permission = await Notification.requestPermission()
+    }
+
+    if (permission === 'granted') {
+      write(notifyKey(member.id), 'on')
+      setNotifyOn(true)
+    } else {
+      setNotifyHint('اسمحي بالتنبيهات من إعدادات المتصفح أولاً')
+    }
+  }
+
+  // ── Reply helpers ───────────────────────────────────────
+  function startReply(message) {
+    setReplyTarget({
+      id: message.id,
+      name: message.authorName,
+      snippet: String(message.text ?? '').split('\n')[0].slice(0, 60),
+    })
+    inputRef.current?.focus()
+  }
+
   function handleSend() {
     const text = draft.trim()
     if (!text) return
-    onSend(text)
+    onSend(text, replyTarget)
     setDraft('')
+    setReplyTarget(null)
   }
 
   function startEdit(message) {
@@ -40,7 +85,6 @@ export default function ChatTab({
     setEditingId(null)
   }
 
-  // Newest-last, like a real chat.
   const ordered = [...messages].reverse()
 
   return (
@@ -53,12 +97,45 @@ export default function ChatTab({
             {messages.length} رسالة
           </div>
         </div>
-        {isAdmin && (
-          <span style={{ marginInlineStart: 'auto' }}>
-            <span className="pill pill--solid">👑 أدمن</span>
-          </span>
-        )}
+
+        <div style={{ marginInlineStart: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {isAdmin && <span className="pill pill--solid">👑 أدمن</span>}
+          <button
+            onClick={toggleNotifications}
+            title={notifyOn ? 'إيقاف التنبيهات' : 'تفعيل التنبيهات'}
+            style={{
+              background: notifyOn ? 'var(--brand-tint)' : '#F1F5F2',
+              border: `1.5px solid ${notifyOn ? 'var(--brand)' : 'var(--border)'}`,
+              borderRadius: 12,
+              width: 38,
+              height: 38,
+              fontSize: 17,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {notifyOn ? '🔔' : '🔕'}
+          </button>
+        </div>
       </div>
+
+      {notifyHint && (
+        <div
+          style={{
+            background: 'var(--amber-tint)',
+            borderBottom: '1.5px solid #FBD9A5',
+            color: '#B45309',
+            fontSize: 12,
+            fontWeight: 700,
+            padding: '7px 15px',
+            textAlign: 'center',
+          }}
+        >
+          {notifyHint}
+        </div>
+      )}
 
       <div className="chat__messages" ref={listRef}>
         {ordered.length === 0 && (
@@ -81,7 +158,6 @@ export default function ChatTab({
                 alignItems: mine ? 'flex-end' : 'flex-start',
               }}
             >
-              {/* Sender line — only for other people's messages */}
               {!mine && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                   <Avatar skinIndex={msg.skinIndex} colorIndex={msg.colorIndex} size={26} />
@@ -159,9 +235,24 @@ export default function ChatTab({
                       📌 مثبّت
                     </div>
                   )}
-                  <div className="bubble__text">{msg.text}</div>
+
+                  {/* WhatsApp-style quoted reply */}
+                  {msg.replyTo && (
+                    <div className="bubble__quote">
+                      <span className="bubble__quote-name">{msg.replyTo.name}</span>
+                      <span className="bubble__quote-text">{msg.replyTo.snippet}</span>
+                    </div>
+                  )}
+
+                  <div className="bubble__text" style={{ whiteSpace: 'pre-wrap' }}>
+                    {msg.text}
+                  </div>
+
                   <div className="bubble__meta">
                     <span>{timeAgo(msg.createdAt)}</span>
+                    <button className="icon-btn" onClick={() => startReply(msg)} title="رد">
+                      ↩️
+                    </button>
                     {isAdmin && (
                       <span style={{ display: 'flex', gap: 4 }}>
                         <button className="icon-btn" onClick={() => startEdit(msg)} title="تعديل">
@@ -191,9 +282,47 @@ export default function ChatTab({
         })}
       </div>
 
+      {/* Reply preview bar above the composer */}
+      {replyTarget && (
+        <div className="reply-bar">
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--brand-dark)' }}>
+              ردّ على {replyTarget.name}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: 'var(--ink-mute)',
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {replyTarget.snippet}
+            </div>
+          </div>
+          <button
+            onClick={() => setReplyTarget(null)}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: 16,
+              cursor: 'pointer',
+              color: 'var(--ink-mute)',
+              padding: '0 4px',
+            }}
+            aria-label="إلغاء الرد"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="chat__composer">
         <Avatar skinIndex={member.skinIndex} colorIndex={member.colorIndex} size={34} />
         <textarea
+          ref={inputRef}
           rows={1}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

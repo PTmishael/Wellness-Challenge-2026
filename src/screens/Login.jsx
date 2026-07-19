@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import Logo from '../components/Logo'
-import { getMembers, getSession, saveSession } from '../lib/storage'
+import { getMembers, getSession, saveSession, upsertMember } from '../lib/storage'
 import { today } from '../lib/utils'
 
 export default function Login({ onSignedIn, onBack }) {
   const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
   function handleSubmit() {
@@ -24,7 +25,22 @@ export default function Login({ onSignedIn, onBack }) {
       return
     }
 
-    // Restore today's in-progress check-in if it belongs to this member.
+    // Older accounts (created before passwords existed) adopt the first
+    // password they log in with.
+    if (found.password) {
+      if (found.password !== password) {
+        setError('كلمة السر غلط، جربي مرة ثانية')
+        return
+      }
+    } else {
+      if (password.length < 4) {
+        setError('كلمة السر لازم تكون ٤ أحرف أو أكثر')
+        return
+      }
+      found.password = password
+      upsertMember(found)
+    }
+
     const session = getSession() ?? {}
     const sameDay = session.userId === found.id && session.date === today()
     const todayLog = sameDay ? session.todayLog ?? {} : {}
@@ -41,19 +57,30 @@ export default function Login({ onSignedIn, onBack }) {
 
         <div className="card fade-up">
           <p className="section-label">دخول الحساب</p>
-          <h3 style={{ fontSize: 19, fontWeight: 900, marginBottom: 16 }}>أهلاً بعودتك 👋</h3>
+          <h3 style={{ fontSize: 21, fontWeight: 900, marginBottom: 16 }}>أهلاً بعودتك 👋</h3>
 
           <input
             className="input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
             placeholder="اسمك في التطبيق…"
+            style={{ marginBottom: 10, fontSize: 16 }}
             autoFocus
+          />
+          <input
+            className="input"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+            placeholder="كلمة السر"
+            style={{ fontSize: 16 }}
           />
           {error && <p className="error-text">{error}</p>}
 
-          <button className="btn btn--brand" onClick={handleSubmit}>دخول ←</button>
+          <button className="btn btn--brand" style={{ fontSize: 17 }} onClick={handleSubmit}>
+            دخول ←
+          </button>
           <button className="btn btn--ghost" onClick={onBack}>رجوع</button>
         </div>
       </div>
