@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Logo from '../components/Logo'
+import { Hero, Sheet } from '../components/Hero'
 import { getMembers, getSession, saveSession, upsertMember } from '../lib/storage'
 import { today } from '../lib/utils'
 
@@ -25,8 +26,7 @@ export default function Login({ onSignedIn, onBack }) {
       return
     }
 
-    // Older accounts (created before passwords existed) adopt the first
-    // password they log in with.
+    // Accounts created before passwords existed adopt the first one used.
     if (found.password) {
       if (found.password !== password) {
         setError('كلمة السر غلط، جربي مرة ثانية')
@@ -51,39 +51,42 @@ export default function Login({ onSignedIn, onBack }) {
   }
 
   return (
-    <div className="screen-center">
-      <div style={{ width: '100%', maxWidth: 372 }}>
-        <Logo size={58} style={{ marginBottom: 18 }} />
-
-        <div className="card fade-up">
-          <p className="section-label">دخول الحساب</p>
-          <h3 style={{ fontSize: 21, fontWeight: 900, marginBottom: 16 }}>أهلاً بعودتك 👋</h3>
-
-          <input
-            className="input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="اسمك في التطبيق…"
-            style={{ marginBottom: 10, fontSize: 16 }}
-            autoFocus
-          />
-          <input
-            className="input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-            placeholder="كلمة السر"
-            style={{ fontSize: 16 }}
-          />
-          {error && <p className="error-text">{error}</p>}
-
-          <button className="btn btn--brand" style={{ fontSize: 17 }} onClick={handleSubmit}>
-            دخول ←
-          </button>
-          <button className="btn btn--ghost" onClick={onBack}>رجوع</button>
+    <div style={{ minHeight: '100dvh', background: 'var(--sheet)' }}>
+      <Hero>
+        <div style={{ paddingBottom: 62 }}>
+          <Logo size={54} variant="white" style={{ margin: '0 auto 16px' }} />
+          <p className="hero__eyebrow" style={{ textAlign: 'center' }}>دخول الحساب</p>
+          <h1 className="hero__title" style={{ fontSize: 22, textAlign: 'center', marginTop: 5 }}>
+            أهلاً بعودتك 👋
+          </h1>
         </div>
-      </div>
+      </Hero>
+
+      <Sheet>
+        <input
+          className="input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="اسمك في التطبيق…"
+          style={{ marginBottom: 10, fontSize: 16 }}
+          autoFocus
+        />
+        <input
+          className="input"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          placeholder="كلمة السر"
+          style={{ fontSize: 16 }}
+        />
+        {error && <p className="error-text">{error}</p>}
+
+        <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={handleSubmit}>
+          دخول
+        </button>
+        <button className="btn btn--soft" onClick={onBack}>رجوع</button>
+      </Sheet>
     </div>
   )
 }

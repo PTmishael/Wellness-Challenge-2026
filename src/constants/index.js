@@ -10,6 +10,14 @@ export const ADMIN_PASSWORD = 'wellness2025'
 /** Maximum number of non-admin members allowed to register. */
 export const MAX_MEMBERS = 50
 
+/**
+ * The 28-day challenge window.
+ * Set CHALLENGE_START to the Saturday your round begins (YYYY-MM-DD).
+ * The app shows "اليوم X من ٢٨" based on this date.
+ */
+export const CHALLENGE_START = '2026-08-01'
+export const CHALLENGE_DAYS = 28
+
 /** Emoji symbols members can pick as their avatar. */
 export const SKINS = ['🌸', '🌿', '🍋', '🌊', '🔥', '⭐', '🌙', '🦋', '🌺', '🍀']
 

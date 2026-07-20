@@ -1,4 +1,4 @@
-import Avatar from '../components/Avatar'
+import { Hero, Sheet } from '../components/Hero'
 import {
   PILLARS,
   TIER_POINTS,
@@ -7,7 +7,11 @@ import {
   TIER_EMOJI,
   MEDALS,
   DAILY_QUOTE,
+  CHALLENGE_DAYS,
 } from '../constants'
+import { arabicDigits, challengeDay } from '../lib/utils'
+
+const RING_CIRCUMFERENCE = 2 * Math.PI * 48 // r = 48
 
 export default function ChallengeTab({
   member,
@@ -17,63 +21,77 @@ export default function ChallengeTab({
   onToggleTier,
   onSubmit,
 }) {
-  const pendingPoints = Object.values(todayLog).reduce(
+  const dayPoints = Object.values(todayLog).reduce(
     (sum, tier) => sum + (TIER_POINTS[tier] ?? 0),
     0
   )
   const hasSelection = Object.keys(todayLog).length > 0
   const locked = checkedIn && !isAdmin
   const history = member.history ?? []
+  const day = challengeDay()
+  const perfect = dayPoints === 15
 
   return (
-    <div className="tab-body">
-      {/* ── Profile card ─────────────────────────────── */}
-      <div className="card card--brand" style={{ padding: 18 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Avatar
-            skinIndex={member.skinIndex}
-            colorIndex={member.colorIndex}
-            size={58}
-            style={{ border: '3px solid rgba(255,255,255,.45)' }}
-          />
-          <div>
-            <div style={{ fontSize: 19, fontWeight: 900, color: '#fff' }}>{member.name}</div>
-            <div style={{ display: 'flex', gap: 6, marginTop: 7, flexWrap: 'wrap' }}>
-              <span className="pill pill--ghost">⚡ {member.points} نقطة</span>
-              <span className="pill pill--sun">🔥 {member.streak} يوم</span>
-            </div>
-          </div>
+    <div style={{ minHeight: '100dvh', background: 'var(--sheet)', paddingBottom: 84 }}>
+      <Hero>
+        {/* Day counter + streak */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 18,
+          }}
+        >
+          <span className="day-chip">
+            <span className="day-chip__dot" />
+            اليوم {arabicDigits(day)} من {arabicDigits(CHALLENGE_DAYS)}
+          </span>
+          <span className="day-chip">🔥 {arabicDigits(member.streak)} أيام</span>
         </div>
 
-        {member.medals.length > 0 && (
-          <div style={{ display: 'flex', gap: 7, marginTop: 15, flexWrap: 'wrap' }}>
-            {MEDALS.map((medal) => {
-              const earned = member.medals.includes(medal.id)
-              return (
-                <span
-                  key={medal.id}
-                  title={medal.name}
-                  style={{
-                    fontSize: 20,
-                    opacity: earned ? 1 : 0.2,
-                    filter: earned ? 'none' : 'grayscale(1)',
-                  }}
-                >
-                  {medal.icon}
-                </span>
-              )
-            })}
+        {/* Progress ring */}
+        <div style={{ textAlign: 'center', paddingBottom: 66 }}>
+          <div className="ring-wrap">
+            <svg width="116" height="116" viewBox="0 0 116 116">
+              <circle className="ring-track" cx="58" cy="58" r="48" fill="none" strokeWidth="9" />
+              <circle
+                className={`ring-fill${perfect ? ' ring-fill--full' : ''}`}
+                cx="58"
+                cy="58"
+                r="48"
+                fill="none"
+                strokeWidth="9"
+                strokeLinecap="round"
+                strokeDasharray={RING_CIRCUMFERENCE}
+                strokeDashoffset={RING_CIRCUMFERENCE - (RING_CIRCUMFERENCE * dayPoints) / 15}
+              />
+            </svg>
+            <div className="ring-center">
+              <div style={{ color: 'var(--deep-text)', fontSize: 32, fontWeight: 800, lineHeight: 1 }}>
+                {arabicDigits(dayPoints)}
+              </div>
+              <div style={{ color: 'var(--deep-sub)', fontSize: 11.5, fontWeight: 700, marginTop: 3 }}>
+                من ١٥ نقطة
+              </div>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* ── Daily check-in ───────────────────────────── */}
-      <div className="card">
+          <div style={{ color: 'var(--deep-text)', fontSize: 17, fontWeight: 800, marginTop: 14 }}>
+            {member.name}
+          </div>
+          <div style={{ color: 'var(--deep-sub)', fontSize: 12.5, fontWeight: 700, marginTop: 3 }}>
+            ⚡ {arabicDigits(member.points)} نقطة · 🏅 {arabicDigits(member.medals.length)} ميدالية
+          </div>
+        </div>
+      </Hero>
+
+      <Sheet>
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             marginBottom: 7,
           }}
         >
@@ -90,7 +108,7 @@ export default function ChallengeTab({
             fontStyle: 'italic',
             borderRight: '3px solid var(--brand)',
             paddingRight: 10,
-            marginBottom: 17,
+            marginBottom: 20,
             fontWeight: 600,
           }}
         >
@@ -103,6 +121,7 @@ export default function ChallengeTab({
               <span style={{ fontSize: 21 }}>{pillar.icon}</span>
               <span style={{ fontSize: 17, fontWeight: 900 }}>{pillar.name}</span>
             </div>
+
             {pillar.note && (
               <p
                 style={{
@@ -162,55 +181,83 @@ export default function ChallengeTab({
             </div>
           </div>
         ) : (
-          <button className="btn btn--brand" onClick={onSubmit} disabled={!hasSelection}>
-            ✅ سجّلي متابعتك اليومية
-            {pendingPoints > 0 && ` · +${pendingPoints} نقاط`}
+          <button className="btn btn--deep" style={{ fontSize: 16 }} onClick={onSubmit} disabled={!hasSelection}>
+            سجّلي متابعتك اليومية
+            {dayPoints > 0 && ` · +${arabicDigits(dayPoints)} نقاط`}
           </button>
         )}
-      </div>
 
-      {/* ── History ──────────────────────────────────── */}
-      {history.length > 0 && (
-        <div className="card">
-          <p className="section-label">سجل أيامك</p>
-          {[...history]
-            .reverse()
-            .slice(0, 7)
-            .map((entry, i, arr) => {
-              const tone =
-                entry.points >= 12 ? 'pill--green' : entry.points >= 8 ? 'pill--amber' : 'pill--gray'
+        {history.length > 0 && (
+          <div style={{ marginTop: 22 }}>
+            <p className="section-label">سجل أيامك</p>
+            {[...history]
+              .reverse()
+              .slice(0, 7)
+              .map((entry, i, arr) => {
+                const tone =
+                  entry.points >= 12 ? 'pill--green' : entry.points >= 8 ? 'pill--amber' : 'pill--gray'
+                return (
+                  <div
+                    key={`${entry.date}-${i}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '11px 0',
+                      borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                      <span style={{ color: 'var(--ink-mute)', fontSize: 12, fontWeight: 700 }}>
+                        {entry.date}
+                      </span>
+                      <div style={{ display: 'flex', gap: 3 }}>
+                        {Object.keys(entry.log ?? {}).map((pillarId) => {
+                          const pillar = PILLARS.find((p) => p.id === pillarId)
+                          return pillar ? (
+                            <span key={pillarId} style={{ fontSize: 14 }}>
+                              {pillar.icon}
+                            </span>
+                          ) : null
+                        })}
+                      </div>
+                    </div>
+                    <span className={`pill ${tone}`}>+{arabicDigits(entry.points)} نقاط</span>
+                  </div>
+                )
+              })}
+          </div>
+        )}
+
+        {member.medals.length > 0 && (
+          <div
+            style={{
+              display: 'flex',
+              gap: 7,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              marginTop: 20,
+            }}
+          >
+            {MEDALS.map((medal) => {
+              const earned = member.medals.includes(medal.id)
               return (
-                <div
-                  key={`${entry.date}-${i}`}
+                <span
+                  key={medal.id}
+                  title={medal.name}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '11px 0',
-                    borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none',
+                    fontSize: 21,
+                    opacity: earned ? 1 : 0.18,
+                    filter: earned ? 'none' : 'grayscale(1)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <span style={{ color: 'var(--ink-mute)', fontSize: 12, fontWeight: 700 }}>
-                      {entry.date}
-                    </span>
-                    <div style={{ display: 'flex', gap: 3 }}>
-                      {Object.keys(entry.log ?? {}).map((pillarId) => {
-                        const pillar = PILLARS.find((p) => p.id === pillarId)
-                        return pillar ? (
-                          <span key={pillarId} style={{ fontSize: 14 }}>
-                            {pillar.icon}
-                          </span>
-                        ) : null
-                      })}
-                    </div>
-                  </div>
-                  <span className={`pill ${tone}`}>+{entry.points} نقاط</span>
-                </div>
+                  {medal.icon}
+                </span>
               )
             })}
-        </div>
-      )}
+          </div>
+        )}
+      </Sheet>
     </div>
   )
 }

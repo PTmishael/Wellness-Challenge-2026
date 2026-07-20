@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Logo from '../components/Logo'
+import { Hero, Sheet } from '../components/Hero'
 import { SKINS, MAX_MEMBERS } from '../constants'
 import { getMembers, upsertMember, saveSession } from '../lib/storage'
 import { createMember } from '../lib/utils'
@@ -7,6 +8,7 @@ import { createMember } from '../lib/utils'
 export default function Register({ onSignedIn, onBack }) {
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
+  const [bio, setBio] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -32,16 +34,14 @@ export default function Register({ onSignedIn, onBack }) {
       setBusy(false)
       return
     }
-
     if (Object.values(members).some((m) => m.name === trimmed)) {
       setError('هذا الاسم موجود، جربي اسماً آخر')
       setBusy(false)
       return
     }
 
-    // Avatar is assigned automatically — no picking step.
     const skinIndex = Math.floor(Math.random() * SKINS.length)
-    const member = createMember({ name: trimmed, skinIndex })
+    const member = createMember({ name: trimmed, skinIndex, bio: bio.trim() })
     member.password = password
     upsertMember(member)
     saveSession({ userId: member.id, date: '', todayLog: {}, checkedIn: false })
@@ -49,39 +49,67 @@ export default function Register({ onSignedIn, onBack }) {
   }
 
   return (
-    <div className="screen-center">
-      <div style={{ width: '100%', maxWidth: 372 }}>
-        <Logo size={58} style={{ marginBottom: 18 }} />
-
-        <div className="card fade-up">
-          <p className="section-label">عضوة جديدة</p>
-          <h3 style={{ fontSize: 21, fontWeight: 900, marginBottom: 16 }}>أهلاً فيك 🌸</h3>
-
-          <input
-            className="input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="اسمك أو لقبك…"
-            style={{ marginBottom: 10, fontSize: 16 }}
-            autoFocus
-          />
-          <input
-            className="input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-            placeholder="كلمة السر"
-            style={{ fontSize: 16 }}
-          />
-          {error && <p className="error-text">{error}</p>}
-
-          <button className="btn btn--brand" style={{ fontSize: 17 }} onClick={handleSubmit} disabled={busy}>
-            {busy ? 'جاري التسجيل…' : '🌱 انضمّي للتحدي!'}
-          </button>
-          <button className="btn btn--ghost" onClick={onBack}>رجوع</button>
+    <div style={{ minHeight: '100dvh', background: 'var(--sheet)' }}>
+      <Hero>
+        <div style={{ paddingBottom: 62 }}>
+          <Logo size={54} variant="white" style={{ margin: '0 auto 16px' }} />
+          <p className="hero__eyebrow" style={{ textAlign: 'center' }}>عضوة جديدة</p>
+          <h1 className="hero__title" style={{ fontSize: 22, textAlign: 'center', marginTop: 5 }}>
+            أهلاً فيك 🌸
+          </h1>
         </div>
-      </div>
+      </Hero>
+
+      <Sheet>
+        <input
+          className="input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="اسمك أو لقبك…"
+          style={{ marginBottom: 10, fontSize: 16 }}
+          autoFocus
+        />
+        <input
+          className="input"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="كلمة السر"
+          style={{ marginBottom: 10, fontSize: 16 }}
+        />
+        <textarea
+          className="input"
+          rows={3}
+          value={bio}
+          onChange={(e) => setBio(e.target.value.slice(0, 160))}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              handleSubmit()
+            }
+          }}
+          placeholder="قوليلي شي مميز عنك…"
+          style={{ fontSize: 15, lineHeight: 1.7 }}
+        />
+        <p
+          style={{
+            color: 'var(--ink-mute)',
+            fontSize: 11.5,
+            fontWeight: 600,
+            marginTop: 6,
+            textAlign: 'left',
+          }}
+        >
+          {bio.length}/160 · اختياري
+        </p>
+
+        {error && <p className="error-text">{error}</p>}
+
+        <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={handleSubmit} disabled={busy}>
+          {busy ? 'جاري التسجيل…' : 'انضمّي للتحدي'}
+        </button>
+        <button className="btn btn--soft" onClick={onBack}>رجوع</button>
+      </Sheet>
     </div>
   )
 }

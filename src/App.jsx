@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import WaterBackground from './components/WaterBackground'
 import Splash from './screens/Splash'
 import Welcome from './screens/Welcome'
 import Register from './screens/Register'
@@ -57,11 +56,8 @@ export default function App() {
     setScreen('welcome')
   }
 
-  const watery = screen === 'splash' || screen === 'welcome'
-
   return (
     <>
-      <WaterBackground animated={watery} />
 
       <div className="app-shell">
         {screen === 'splash' && <Splash />}

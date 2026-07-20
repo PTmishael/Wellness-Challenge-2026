@@ -169,6 +169,19 @@ export default function MembersTab({ members, onDeleteMember }) {
                   {m.isAdmin && <span className="pill pill--solid">أدمن</span>}
                   {isInactive && <span className="pill pill--amber">😴 غير نشطة</span>}
                 </div>
+                {m.bio && (
+                  <p
+                    style={{
+                      color: 'var(--ink-mute)',
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      marginTop: 4,
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {m.bio}
+                  </p>
+                )}
                 <div style={{ display: 'flex', gap: 5, marginTop: 6, flexWrap: 'wrap' }}>
                   <span className="pill pill--gray">⚡ {m.points}</span>
                   <span className="pill pill--gray">🔥 {m.streak}</span>
