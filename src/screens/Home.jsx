@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import TopBar from '../components/TopBar'
 import BottomNav from '../components/BottomNav'
 import MedalPopup from '../components/MedalPopup'
@@ -6,94 +6,96 @@ import ChallengeTab from '../tabs/ChallengeTab'
 import ChatTab from '../tabs/ChatTab'
 import MedalsTab from '../tabs/MedalsTab'
 import MembersTab from '../tabs/MembersTab'
+import { PILLARS, TIER_POINTS, TIER_EMOJI } from '../constants'
 import {
-  PILLARS,
-  TIER_POINTS,
-  TIER_EMOJI,
-  MAX_CHAT_MESSAGES,
-} from '../constants'
-import {
-  KEYS,
-  read,
-  getMembers,
-  upsertMember,
-  deleteMember as removeMember,
-  getChat,
-  saveChat,
+  fetchMembers,
+  saveMember,
+  deleteMember,
+  fetchMessages,
+  addMessage,
+  patchMessage,
+  deleteMessage,
   saveSession,
+  read,
 } from '../lib/storage'
 import { evaluateMedals } from '../lib/medals'
 import { today } from '../lib/utils'
 
+/** How often to pull new chat messages from the database. */
+const CHAT_POLL_MS = 8000
+
 export default function Home({ member: initialMember, isAdmin, initialSession, onSignOut }) {
   const [member, setMember] = useState(initialMember)
-  const [members, setMembers] = useState(() => getMembers())
-  const [chat, setChat] = useState(() => getChat())
+  const [members, setMembers] = useState({})
+  const [chat, setChat] = useState([])
   const [tab, setTab] = useState('challenge')
 
   const [todayLog, setTodayLog] = useState(initialSession?.todayLog ?? {})
   const [checkedIn, setCheckedIn] = useState(initialSession?.checkedIn ?? false)
   const [newMedal, setNewMedal] = useState(null)
 
-  // Persist any member change to storage + refresh the members map.
-  const persistMember = useCallback((next) => {
+  // Remember the newest message we've seen, so polling can spot arrivals.
+  const lastSeenId = useRef(null)
+
+  const persistMember = useCallback(async (next) => {
     const stamped = { ...next, lastActive: today() }
-    upsertMember(stamped)
-    setMember(stamped)
-    setMembers(getMembers())
-    return stamped
+    setMember(stamped) // optimistic — the UI shouldn't wait on the network
+    const saved = await saveMember(stamped)
+    if (saved) setMember(saved)
+    return saved ?? stamped
   }, [])
 
-  const persistChat = useCallback((next) => {
-    const trimmed = next.slice(0, MAX_CHAT_MESSAGES)
-    saveChat(trimmed)
-    setChat(trimmed)
-  }, [])
+  /* ── Load chat, and keep it fresh ─────────────────────── */
+  const refreshChat = useCallback(
+    async ({ notify = false } = {}) => {
+      const messages = await fetchMessages()
+      setChat(messages)
 
-  // Live-sync chat across open tabs + notify on new messages.
-  useEffect(() => {
-    function onStorageChange(event) {
-      if (event.key !== KEYS.CHAT || !event.newValue) return
-      try {
-        const nextChat = JSON.parse(event.newValue)
-        setChat(nextChat)
+      const newest = messages[0]
+      if (!newest) return
 
-        const latest = nextChat[0]
+      if (notify && lastSeenId.current && newest.id !== lastSeenId.current) {
+        const mine = newest.authorId === member.id
         const enabled = read(`wellness_challenge:notify:${member.id}`, 'off') === 'on'
         if (
-          latest &&
-          latest.authorId !== member.id &&
+          !mine &&
           enabled &&
           typeof Notification !== 'undefined' &&
           Notification.permission === 'granted'
         ) {
-          new Notification(latest.authorName ?? 'رسالة جديدة', {
-            body: String(latest.text ?? '').slice(0, 90),
+          new Notification(newest.authorName ?? 'رسالة جديدة', {
+            body: String(newest.text ?? '').slice(0, 90),
           })
         }
-      } catch {
-        /* ignore malformed storage payloads */
       }
-    }
+      lastSeenId.current = newest.id
+    },
+    [member.id]
+  )
 
-    window.addEventListener('storage', onStorageChange)
-    return () => window.removeEventListener('storage', onStorageChange)
-  }, [member.id])
-
-  // Keep the day's in-progress selections in the session.
   useEffect(() => {
-    saveSession({
-      userId: member.id,
-      date: today(),
-      todayLog,
-      checkedIn,
-    })
+    refreshChat()
+    const timer = setInterval(() => refreshChat({ notify: true }), CHAT_POLL_MS)
+    return () => clearInterval(timer)
+  }, [refreshChat])
+
+  /* ── Admin: load the roster when that tab opens ───────── */
+  const refreshMembers = useCallback(async () => {
+    setMembers(await fetchMembers())
+  }, [])
+
+  useEffect(() => {
+    if (isAdmin && tab === 'members') refreshMembers()
+  }, [isAdmin, tab, refreshMembers])
+
+  /* ── Keep today's selections on this device ───────────── */
+  useEffect(() => {
+    saveSession({ userId: member.id, date: today(), todayLog, checkedIn })
   }, [member.id, todayLog, checkedIn])
 
-  // ── Challenge actions ───────────────────────────────
+  /* ── Challenge ────────────────────────────────────────── */
   function handleToggleTier(pillarId, tier) {
     if (checkedIn && !isAdmin) return
-
     setTodayLog((prev) => {
       const next = { ...prev }
       if (next[pillarId] === tier) delete next[pillarId]
@@ -102,16 +104,15 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
     })
   }
 
-  function handleSubmitCheckIn() {
-    const selected = Object.keys(todayLog)
-    if (selected.length === 0) return
+  async function handleSubmitCheckIn() {
+    if (Object.keys(todayLog).length === 0) return
 
     const dayPoints = Object.values(todayLog).reduce(
       (sum, tier) => sum + (TIER_POINTS[tier] ?? 0),
       0
     )
 
-    // Admin can re-submit without inflating their own stats.
+    // An admin re-submitting shouldn't inflate her own stats.
     const streak = checkedIn ? member.streak : member.streak + 1
     const totalPoints = checkedIn ? member.points : member.points + dayPoints
     const checkIns = checkedIn ? member.checkIns : (member.checkIns ?? 0) + 1
@@ -130,7 +131,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       { date: today(), points: dayPoints, log: { ...todayLog } },
     ]
 
-    const updated = persistMember({
+    const updated = await persistMember({
       ...member,
       points: totalPoints,
       streak,
@@ -139,36 +140,34 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       history,
     })
 
-    // Auto-post the check-in summary to the chat — one line per pillar.
+    // Post the summary to the chat — one line per pillar.
     const summaryLines = Object.entries(todayLog)
       .map(([pillarId, tier]) => {
         const pillar = PILLARS.find((p) => p.id === pillarId)
-        return pillar ? `${pillar.icon} ${pillar.name} ${TIER_EMOJI[tier]}` : ''
+        return pillar ? `${pillar.name} ${TIER_EMOJI[tier]}` : ''
       })
       .filter(Boolean)
 
-    persistChat([
-      {
-        id: `checkin_${Date.now()}`,
-        authorId: updated.id,
-        authorName: updated.name,
-        authorPoints: updated.points,
-        skinIndex: updated.skinIndex,
-        colorIndex: updated.colorIndex,
-        isAdmin,
-        text: `متابعة اليوم 🌟\n${summaryLines.join('\n')}\nالمجموع: ${dayPoints} نقاط`,
-        pinned: false,
-        createdAt: Date.now(),
-      },
-      ...chat,
-    ])
+    await addMessage({
+      id: `checkin_${Date.now()}`,
+      authorId: updated.id,
+      authorName: updated.name,
+      authorPoints: updated.points,
+      skinIndex: updated.skinIndex,
+      colorIndex: updated.colorIndex,
+      isAdmin,
+      text: `متابعة اليوم\n${summaryLines.join('\n')}\nالمجموع: ${dayPoints} نقاط`,
+      replyTo: null,
+      pinned: false,
+    })
+    await refreshChat()
 
     setCheckedIn(true)
     if (newlyEarned.length > 0) setNewMedal(newlyEarned[0])
   }
 
-  // ── Chat actions ────────────────────────────────────
-  function handleSendMessage(text, replyTo = null) {
+  /* ── Chat ─────────────────────────────────────────────── */
+  async function handleSendMessage(text, replyTo = null) {
     const messageCount = (member.messageCount ?? 0) + 1
 
     const { medals, newlyEarned } = evaluateMedals({
@@ -180,50 +179,58 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       messageCount,
     })
 
-    const updated = persistMember({ ...member, messageCount, medals })
+    const updated = await persistMember({ ...member, messageCount, medals })
 
-    persistChat([
-      {
-        id: `msg_${Date.now()}`,
-        authorId: updated.id,
-        authorName: updated.name,
-        authorPoints: updated.points,
-        skinIndex: updated.skinIndex,
-        colorIndex: updated.colorIndex,
-        isAdmin,
-        text,
-        replyTo: replyTo ? { name: replyTo.name, snippet: replyTo.snippet } : null,
-        pinned: false,
-        createdAt: Date.now(),
-      },
-      ...chat,
-    ])
+    await addMessage({
+      id: `msg_${Date.now()}`,
+      authorId: updated.id,
+      authorName: updated.name,
+      authorPoints: updated.points,
+      skinIndex: updated.skinIndex,
+      colorIndex: updated.colorIndex,
+      isAdmin,
+      text,
+      replyTo: replyTo ? { name: replyTo.name, snippet: replyTo.snippet } : null,
+      pinned: false,
+    })
+    await refreshChat()
 
     if (newlyEarned.length > 0) setNewMedal(newlyEarned[0])
   }
 
-  function handleEditMessage(id, text) {
-    persistChat(chat.map((m) => (m.id === id ? { ...m, text } : m)))
+  async function handleEditMessage(id, text) {
+    setChat((prev) => prev.map((m) => (m.id === id ? { ...m, text } : m)))
+    await patchMessage(id, { text })
+    await refreshChat()
   }
 
-  function handleTogglePin(id) {
-    const toggled = chat.map((m) => (m.id === id ? { ...m, pinned: !m.pinned } : m))
-    // Pinned messages float to the top of the stored array (= bottom of the rendered list).
-    persistChat([...toggled.filter((m) => m.pinned), ...toggled.filter((m) => !m.pinned)])
+  async function handleTogglePin(id) {
+    const target = chat.find((m) => m.id === id)
+    if (!target) return
+    await patchMessage(id, { pinned: !target.pinned })
+    await refreshChat()
   }
 
-  function handleDeleteMessage(id) {
-    persistChat(chat.filter((m) => m.id !== id))
+  async function handleDeleteMessage(id) {
+    setChat((prev) => prev.filter((m) => m.id !== id))
+    await deleteMessage(id)
+    await refreshChat()
   }
 
-  // ── Admin actions ───────────────────────────────────
-  function handleDeleteMember(id) {
-    setMembers(removeMember(id))
+  /* ── Admin ────────────────────────────────────────────── */
+  async function handleDeleteMember(id) {
+    setMembers((prev) => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+    await deleteMember(id)
+    await refreshMembers()
   }
 
   return (
     <>
-      <TopBar member={member} isAdmin={isAdmin} onSignOut={onSignOut} />
+      {tab !== 'challenge' && <TopBar member={member} isAdmin={isAdmin} onSignOut={onSignOut} />}
 
       {tab === 'challenge' && (
         <ChallengeTab
@@ -233,6 +240,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
           checkedIn={checkedIn}
           onToggleTier={handleToggleTier}
           onSubmit={handleSubmitCheckIn}
+          onSignOut={onSignOut}
         />
       )}
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Logo from '../components/Logo'
 import { Hero, Sheet } from '../components/Hero'
 import { SKINS, MAX_MEMBERS } from '../constants'
-import { getMembers, upsertMember, saveSession } from '../lib/storage'
+import { fetchMembers, saveMember, saveSession } from '../lib/storage'
 import { createMember } from '../lib/utils'
 
 export default function Register({ onSignedIn, onBack }) {
@@ -12,7 +12,7 @@ export default function Register({ onSignedIn, onBack }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const trimmed = name.trim()
     setError('')
 
@@ -26,26 +26,34 @@ export default function Register({ onSignedIn, onBack }) {
     }
 
     setBusy(true)
-    const members = getMembers()
-    const nonAdmins = Object.values(members).filter((m) => !m.isAdmin)
+    try {
+      const members = await fetchMembers()
+      const nonAdmins = Object.values(members).filter((m) => !m.isAdmin)
 
-    if (nonAdmins.length >= MAX_MEMBERS) {
-      setError(`وصلنا للحد الأقصى (${MAX_MEMBERS} عضوة) — تواصلي مع كوتش مشاعل`)
-      setBusy(false)
-      return
-    }
-    if (Object.values(members).some((m) => m.name === trimmed)) {
-      setError('هذا الاسم موجود، جربي اسماً آخر')
-      setBusy(false)
-      return
-    }
+      if (nonAdmins.length >= MAX_MEMBERS) {
+        setError(`وصلنا للحد الأقصى (${MAX_MEMBERS} عضوة) — تواصلي مع كوتش مشاعل`)
+        return
+      }
+      if (Object.values(members).some((m) => m.name === trimmed)) {
+        setError('هذا الاسم موجود، جربي اسماً آخر')
+        return
+      }
 
-    const skinIndex = Math.floor(Math.random() * SKINS.length)
-    const member = createMember({ name: trimmed, skinIndex, bio: bio.trim() })
-    member.password = password
-    upsertMember(member)
-    saveSession({ userId: member.id, date: '', todayLog: {}, checkedIn: false })
-    onSignedIn(member, false)
+      const skinIndex = Math.floor(Math.random() * SKINS.length)
+      const draft = createMember({ name: trimmed, skinIndex, bio: bio.trim() })
+      draft.password = password
+
+      const saved = await saveMember(draft)
+      if (!saved) {
+        setError('تعذّر الحفظ، تأكدي من الاتصال وحاولي مرة ثانية')
+        return
+      }
+
+      saveSession({ userId: saved.id, date: '', todayLog: {}, checkedIn: false })
+      onSignedIn(saved, false)
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -55,7 +63,7 @@ export default function Register({ onSignedIn, onBack }) {
           <Logo size={54} variant="white" style={{ margin: '0 auto 16px' }} />
           <p className="hero__eyebrow" style={{ textAlign: 'center' }}>عضوة جديدة</p>
           <h1 className="hero__title" style={{ fontSize: 22, textAlign: 'center', marginTop: 5 }}>
-            أهلاً فيك 🌸
+            أهلاً فيك
           </h1>
         </div>
       </Hero>
@@ -106,7 +114,7 @@ export default function Register({ onSignedIn, onBack }) {
         {error && <p className="error-text">{error}</p>}
 
         <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={handleSubmit} disabled={busy}>
-          {busy ? 'جاري التسجيل…' : 'انضمّي للتحدي'}
+          {busy ? 'جاري التسجيل…' : 'ابدئي رحلتك'}
         </button>
         <button className="btn btn--soft" onClick={onBack}>رجوع</button>
       </Sheet>

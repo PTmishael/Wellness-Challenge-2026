@@ -5,10 +5,10 @@ import Register from './screens/Register'
 import Login from './screens/Login'
 import AdminLogin from './screens/AdminLogin'
 import Home from './screens/Home'
-import { getMembers, getSession, clearSession } from './lib/storage'
+import { fetchMemberById, getSession, clearSession, isConfigured } from './lib/storage'
 import { today } from './lib/utils'
 
-const SPLASH_MS = 900
+const MIN_SPLASH_MS = 800
 
 export default function App() {
   const [screen, setScreen] = useState('splash')
@@ -16,29 +16,40 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [session, setSession] = useState(null)
 
-  // Restore a previous session on first load.
+  // Restore the session saved on this device.
   useEffect(() => {
-    const saved = getSession()
+    let cancelled = false
+    const startedAt = Date.now()
 
-    if (saved?.userId) {
-      const members = getMembers()
-      const found = members[saved.userId]
+    async function boot() {
+      const saved = getSession()
 
-      if (found) {
-        const sameDay = saved.date === today()
-        setMember(found)
-        setIsAdmin(Boolean(found.isAdmin))
-        setSession({
-          todayLog: sameDay ? saved.todayLog ?? {} : {},
-          checkedIn: sameDay ? Boolean(saved.checkedIn) : false,
-        })
-        setScreen('home')
-        return
+      if (saved?.userId && isConfigured) {
+        const found = await fetchMemberById(saved.userId)
+        if (!cancelled && found) {
+          const sameDay = saved.date === today()
+          setMember(found)
+          setIsAdmin(Boolean(found.isAdmin))
+          setSession({
+            todayLog: sameDay ? saved.todayLog ?? {} : {},
+            checkedIn: sameDay ? Boolean(saved.checkedIn) : false,
+          })
+          setScreen('home')
+          return
+        }
       }
+
+      // Let the splash breathe for a moment even on a fast connection.
+      const wait = Math.max(0, MIN_SPLASH_MS - (Date.now() - startedAt))
+      setTimeout(() => {
+        if (!cancelled) setScreen('welcome')
+      }, wait)
     }
 
-    const timer = setTimeout(() => setScreen('welcome'), SPLASH_MS)
-    return () => clearTimeout(timer)
+    boot()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   function handleSignedIn(nextMember, adminFlag, restored = null) {
@@ -56,36 +67,44 @@ export default function App() {
     setScreen('welcome')
   }
 
-  return (
-    <>
-
+  // Missing database config — tell the truth instead of failing silently.
+  if (!isConfigured) {
+    return (
       <div className="app-shell">
-        {screen === 'splash' && <Splash />}
-
-        {screen === 'welcome' && <Welcome onNavigate={setScreen} />}
-
-        {screen === 'register' && (
-          <Register onSignedIn={handleSignedIn} onBack={() => setScreen('welcome')} />
-        )}
-
-        {screen === 'login' && (
-          <Login onSignedIn={handleSignedIn} onBack={() => setScreen('welcome')} />
-        )}
-
-        {screen === 'admin' && (
-          <AdminLogin onSignedIn={handleSignedIn} onBack={() => setScreen('welcome')} />
-        )}
-
-        {screen === 'home' && member && (
-          <Home
-            key={member.id}
-            member={member}
-            isAdmin={isAdmin}
-            initialSession={session}
-            onSignOut={handleSignOut}
-          />
-        )}
+        <div className="screen-center">
+          <div style={{ fontSize: 40, marginBottom: 14 }}>🔌</div>
+          <h1 style={{ fontSize: 19, fontWeight: 900, marginBottom: 10 }}>
+            التطبيق غير متصل بقاعدة البيانات
+          </h1>
+          <p style={{ color: 'var(--ink-sub)', fontSize: 14, lineHeight: 1.9, maxWidth: 320 }}>
+            تأكدي من إضافة <code>VITE_SUPABASE_URL</code> و
+            <code> VITE_SUPABASE_ANON_KEY</code> في إعدادات الاستضافة، ثم أعيدي النشر.
+          </p>
+        </div>
       </div>
-    </>
+    )
+  }
+
+  return (
+    <div className="app-shell">
+      {screen === 'splash' && <Splash />}
+      {screen === 'welcome' && <Welcome onNavigate={setScreen} />}
+      {screen === 'register' && (
+        <Register onSignedIn={handleSignedIn} onBack={() => setScreen('welcome')} />
+      )}
+      {screen === 'login' && <Login onSignedIn={handleSignedIn} onBack={() => setScreen('welcome')} />}
+      {screen === 'admin' && (
+        <AdminLogin onSignedIn={handleSignedIn} onBack={() => setScreen('welcome')} />
+      )}
+      {screen === 'home' && member && (
+        <Home
+          key={member.id}
+          member={member}
+          isAdmin={isAdmin}
+          initialSession={session}
+          onSignOut={handleSignOut}
+        />
+      )}
+    </div>
   )
 }

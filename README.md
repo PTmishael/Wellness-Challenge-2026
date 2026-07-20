@@ -4,10 +4,9 @@ A standalone Arabic-first habit-challenge web app built for **Coach Mishael**'s 
 Members register, pick a daily tier for each of five health pillars, earn medals, and cheer
 each other on in a WhatsApp-style chat.
 
-Built with **React 18 + Vite** on the frontend and a small **Express** server on the back.
-Member data lives in the browser's `localStorage`; the server exists for one job only —
-proxying the **AI coach** to the Anthropic API so the API key stays server-side and is
-never shipped to the browser.
+Built with **React 18 + Vite**, backed by a **Supabase** (Postgres) database so members
+share one set of data across every device. A small **Express** server serves the built
+site in production.
 
 ---
 
@@ -22,7 +21,7 @@ never shipped to the browser.
 | **7 medals** | Auto-unlocked with a celebratory popup (first check-in, 3-day, 7-day, all-gold, 25 pts, 50 pts, 5 messages) |
 | **Community chat** | WhatsApp-style bubbles with reply-to-message quoting, per-member notification bell (browser notifications, works across tabs of the same browser), pinned messages. Check-ins auto-post a multi-line summary |
 | **Admin panel** | Member roster with search, capacity meter, inactive-member flags, delete accounts, edit/pin/delete any chat message |
-| **Offline-first** | Works with no internet after first load. Installable to the home screen on iOS/Android |
+| **Shared database** | Members and chat live in Supabase — sign in from any phone and your data follows you |
 | **RTL + Arabic** | Full right-to-left layout, Tajawal typeface |
 
 ---
@@ -219,27 +218,76 @@ npm run build
 
 ## 💾 How data is stored
 
-Everything is in `localStorage` under three keys:
+Two Postgres tables in Supabase:
 
-| Key | Contents |
+| Table | Contents |
 |---|---|
-| `wellness_challenge:members` | `{ [memberId]: Member }` — all registered members |
-| `wellness_challenge:chat` | `ChatMessage[]` — newest first, capped at 200 |
-| `wellness_challenge:session` | Who's logged in on *this device* + today's in-progress check-in |
-| `wellness_challenge:coach:{id}` | Each member's private AI-coach conversation (last 40 turns) |
+| `members` | Every registered member: name, password, points, streak, medals, history, bio |
+| `messages` | The community chat, newest first |
 
-**What this means in practice:** data is per-device. A member who registers on her phone
-won't see her account on a laptop, and members can't see each other's real-time check-ins.
-Each person gets a fully working private tracker; the chat is shared only among people using
-the same browser.
+The only thing kept on the device is `wellness_challenge:session` in `localStorage` —
+who is signed in on *this* phone, plus today's in-progress check-in before it's submitted.
 
-### Making it a truly shared, multi-device app
-You only need to replace **`src/lib/storage.js`** — nothing else in the app touches storage
-directly. Swap the `read`/`write`/`remove` functions for calls to Firebase, Supabase, or
-your own API, make them `async`, and `await` them in `Home.jsx`. The four domain helpers
-(`getMembers`, `saveMembers`, `getChat`, `saveChat`) are the entire surface area.
+The chat refreshes every 8 seconds, so members see each other's messages and check-ins
+without reloading.
 
----
+### Required environment variables
+
+| Variable | Purpose |
+|---|---|
+| `VITE_SUPABASE_URL` | Your Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | The anon/publishable key |
+
+Set both in your host's dashboard (Render → Environment). Vite bakes `VITE_*` values in at
+**build time**, so you must redeploy after changing them. If they're missing, the app shows
+a clear setup notice instead of failing silently.
+
+### Database schema
+
+Run this once in Supabase → SQL Editor:
+
+```sql
+create table members (
+  id text primary key,
+  name text unique not null,
+  password text,
+  bio text default '',
+  skin_index int default 0,
+  color_index int default 0,
+  points int default 0,
+  streak int default 0,
+  medals jsonb default '[]',
+  check_ins int default 0,
+  message_count int default 0,
+  is_admin boolean default false,
+  join_date text,
+  last_active text,
+  history jsonb default '[]'
+);
+
+create table messages (
+  id text primary key,
+  author_id text,
+  author_name text,
+  author_points int default 0,
+  skin_index int default 0,
+  color_index int default 0,
+  is_admin boolean default false,
+  text text,
+  reply_to jsonb,
+  pinned boolean default false,
+  created_at timestamptz default now()
+);
+
+alter table members enable row level security;
+alter table messages enable row level security;
+create policy "open" on members for all using (true) with check (true);
+create policy "open" on messages for all using (true) with check (true);
+```
+
+⚠️ Those policies leave the tables open to anyone who has the app URL and key. That's an
+accepted trade-off for a small private community with no sensitive data. For anything
+stricter you'd move to Supabase Auth with per-user policies.
 
 ## 📱 Installing on a phone
 

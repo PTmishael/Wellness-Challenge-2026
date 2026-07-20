@@ -1,24 +1,18 @@
 import Logo from '../components/Logo'
 import { Hero, Sheet } from '../components/Hero'
-import { PILLARS, CHALLENGE_DAYS } from '../constants'
-import { arabicDigits } from '../lib/utils'
 
 export default function Welcome({ onNavigate }) {
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--sheet)' }}>
       <Hero>
-        <div style={{ textAlign: 'center', paddingBottom: 74 }}>
-          <Logo size={78} variant="white" style={{ margin: '0 auto 20px' }} />
+        <div style={{ textAlign: 'center', paddingBottom: 78 }}>
+          <Logo size={80} variant="white" style={{ margin: '0 auto 20px' }} />
 
-          <h1 className="hero__title">
-            مجتمع نسائي
-            <br />
-            نشجّع بعض
+          <h1 style={{ color: 'var(--deep-text)', fontSize: 28, fontWeight: 900, letterSpacing: '-0.01em' }}>
+            تحدي العافية
           </h1>
-          <p className="hero__sub">
-            سجّلي إنجازك اليومي بكل صدق
-            <br />
-            واجمعي الميداليات
+          <p style={{ color: 'var(--deep-sub)', fontSize: 15, fontWeight: 700, marginTop: 8 }}>
+            ٢٨ يوم نبني فيها عادات تدوم
           </p>
         </div>
       </Hero>
@@ -26,56 +20,31 @@ export default function Welcome({ onNavigate }) {
       <Sheet>
         <p
           style={{
+            color: 'var(--ink-sub)',
+            fontSize: 15,
+            lineHeight: 2,
+            fontWeight: 600,
+            textAlign: 'center',
+            marginBottom: 12,
+          }}
+        >
+          سجّلي عاداتك اليومية، تابعي تقدمك، وشجّعي البنات معك.
+        </p>
+        <p
+          style={{
             color: 'var(--brand-dark)',
             fontSize: 15,
             fontWeight: 800,
             textAlign: 'center',
-            marginBottom: 18,
+            lineHeight: 1.9,
+            marginBottom: 24,
           }}
         >
-          الميدالية الحقيقية هي صحتك 💚
-        </p>
-
-        <div
-          style={{
-            display: 'flex',
-            gap: 7,
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            marginBottom: 22,
-          }}
-        >
-          {PILLARS.map((pillar) => (
-            <span
-              key={pillar.id}
-              style={{
-                background: '#EDF3EF',
-                color: '#3D5147',
-                fontSize: 13,
-                fontWeight: 700,
-                padding: '6px 13px',
-                borderRadius: 20,
-              }}
-            >
-              {pillar.icon} {pillar.name.split(' ')[0]}
-            </span>
-          ))}
-        </div>
-
-        <p
-          style={{
-            textAlign: 'center',
-            color: 'var(--ink-mute)',
-            fontSize: 12.5,
-            fontWeight: 700,
-            marginBottom: 18,
-          }}
-        >
-          ٥ عادات · ٣ مستويات · {arabicDigits(CHALLENGE_DAYS)} يوم
+          كل ميدالية تمثّل وعدًا قطعتيه لنفسك
         </p>
 
         <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={() => onNavigate('register')}>
-          انضمّي للتحدي
+          ابدئي رحلتك
         </button>
         <button className="btn btn--soft" style={{ fontSize: 16 }} onClick={() => onNavigate('login')}>
           لديّ حساب

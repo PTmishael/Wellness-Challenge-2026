@@ -20,6 +20,7 @@ export default function ChallengeTab({
   checkedIn,
   onToggleTier,
   onSubmit,
+  onSignOut,
 }) {
   const dayPoints = Object.values(todayLog).reduce(
     (sum, tier) => sum + (TIER_POINTS[tier] ?? 0),
@@ -47,7 +48,10 @@ export default function ChallengeTab({
             <span className="day-chip__dot" />
             اليوم {arabicDigits(day)} من {arabicDigits(CHALLENGE_DAYS)}
           </span>
-          <span className="day-chip">🔥 {arabicDigits(member.streak)} أيام</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span className="day-chip">{arabicDigits(member.streak)} أيام متتالية</span>
+            <button className="topbar__signout" onClick={onSignOut}>خروج</button>
+          </div>
         </div>
 
         {/* Progress ring */}
@@ -81,7 +85,7 @@ export default function ChallengeTab({
             {member.name}
           </div>
           <div style={{ color: 'var(--deep-sub)', fontSize: 12.5, fontWeight: 700, marginTop: 3 }}>
-            ⚡ {arabicDigits(member.points)} نقطة · 🏅 {arabicDigits(member.medals.length)} ميدالية
+            {arabicDigits(member.points)} نقطة · {arabicDigits(member.medals.length)} ميدالية
           </div>
         </div>
       </Hero>
@@ -117,8 +121,7 @@ export default function ChallengeTab({
 
         {PILLARS.map((pillar) => (
           <div key={pillar.id} style={{ marginBottom: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
-              <span style={{ fontSize: 21 }}>{pillar.icon}</span>
+            <div style={{ marginBottom: 9 }}>
               <span style={{ fontSize: 17, fontWeight: 900 }}>{pillar.name}</span>
             </div>
 
@@ -182,7 +185,7 @@ export default function ChallengeTab({
           </div>
         ) : (
           <button className="btn btn--deep" style={{ fontSize: 16 }} onClick={onSubmit} disabled={!hasSelection}>
-            سجّلي متابعتك اليومية
+            احفظ إنجازات اليوم ✅
             {dayPoints > 0 && ` · +${arabicDigits(dayPoints)} نقاط`}
           </button>
         )}
@@ -211,16 +214,9 @@ export default function ChallengeTab({
                       <span style={{ color: 'var(--ink-mute)', fontSize: 12, fontWeight: 700 }}>
                         {entry.date}
                       </span>
-                      <div style={{ display: 'flex', gap: 3 }}>
-                        {Object.keys(entry.log ?? {}).map((pillarId) => {
-                          const pillar = PILLARS.find((p) => p.id === pillarId)
-                          return pillar ? (
-                            <span key={pillarId} style={{ fontSize: 14 }}>
-                              {pillar.icon}
-                            </span>
-                          ) : null
-                        })}
-                      </div>
+                      <span style={{ color: 'var(--ink-sub)', fontSize: 12, fontWeight: 700 }}>
+                        {arabicDigits(Object.keys(entry.log ?? {}).length)}/٥ أعمدة
+                      </span>
                     </div>
                     <span className={`pill ${tone}`}>+{arabicDigits(entry.points)} نقاط</span>
                   </div>

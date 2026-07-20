@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import Logo from '../components/Logo'
 import { Hero, Sheet } from '../components/Hero'
-import { getMembers, getSession, saveSession, upsertMember } from '../lib/storage'
+import { fetchMemberByName, saveMember, getSession, saveSession } from '../lib/storage'
 import { today } from '../lib/utils'
 
 export default function Login({ onSignedIn, onBack }) {
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const trimmed = name.trim()
     setError('')
 
@@ -18,36 +19,40 @@ export default function Login({ onSignedIn, onBack }) {
       return
     }
 
-    const members = getMembers()
-    const found = Object.values(members).find((m) => m.name === trimmed && !m.isAdmin)
+    setBusy(true)
+    try {
+      const found = await fetchMemberByName(trimmed)
 
-    if (!found) {
-      setError('الاسم غير موجود — سجّلي أولاً كعضوة جديدة')
-      return
-    }
-
-    // Accounts created before passwords existed adopt the first one used.
-    if (found.password) {
-      if (found.password !== password) {
-        setError('كلمة السر غلط، جربي مرة ثانية')
+      if (!found || found.isAdmin) {
+        setError('الاسم غير موجود — سجّلي أولاً كعضوة جديدة')
         return
       }
-    } else {
-      if (password.length < 4) {
-        setError('كلمة السر لازم تكون ٤ أحرف أو أكثر')
-        return
+
+      // Accounts created before passwords existed adopt the first one used.
+      if (found.password) {
+        if (found.password !== password) {
+          setError('كلمة السر غلط، جربي مرة ثانية')
+          return
+        }
+      } else {
+        if (password.length < 4) {
+          setError('كلمة السر لازم تكون ٤ أحرف أو أكثر')
+          return
+        }
+        found.password = password
+        await saveMember(found)
       }
-      found.password = password
-      upsertMember(found)
+
+      const session = getSession() ?? {}
+      const sameDay = session.userId === found.id && session.date === today()
+      const todayLog = sameDay ? session.todayLog ?? {} : {}
+      const checkedIn = sameDay ? Boolean(session.checkedIn) : false
+
+      saveSession({ userId: found.id, date: today(), todayLog, checkedIn })
+      onSignedIn(found, false, { todayLog, checkedIn })
+    } finally {
+      setBusy(false)
     }
-
-    const session = getSession() ?? {}
-    const sameDay = session.userId === found.id && session.date === today()
-    const todayLog = sameDay ? session.todayLog ?? {} : {}
-    const checkedIn = sameDay ? Boolean(session.checkedIn) : false
-
-    saveSession({ userId: found.id, date: today(), todayLog, checkedIn })
-    onSignedIn(found, false, { todayLog, checkedIn })
   }
 
   return (
@@ -57,7 +62,7 @@ export default function Login({ onSignedIn, onBack }) {
           <Logo size={54} variant="white" style={{ margin: '0 auto 16px' }} />
           <p className="hero__eyebrow" style={{ textAlign: 'center' }}>دخول الحساب</p>
           <h1 className="hero__title" style={{ fontSize: 22, textAlign: 'center', marginTop: 5 }}>
-            أهلاً بعودتك 👋
+            أهلاً بعودتك
           </h1>
         </div>
       </Hero>
@@ -82,8 +87,8 @@ export default function Login({ onSignedIn, onBack }) {
         />
         {error && <p className="error-text">{error}</p>}
 
-        <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={handleSubmit}>
-          دخول
+        <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={handleSubmit} disabled={busy}>
+          {busy ? 'لحظة…' : 'دخول'}
         </button>
         <button className="btn btn--soft" onClick={onBack}>رجوع</button>
       </Sheet>

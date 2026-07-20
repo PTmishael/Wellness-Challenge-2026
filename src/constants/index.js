@@ -39,31 +39,26 @@ export const AVATAR_COLORS = [
 export const PILLARS = [
   {
     id: 'steps',
-    icon: '🚶',
     name: 'الحركة',
     tiers: { bronze: '٣٠٠٠ خطوة أو مشي ١٥ دقيقة', silver: '٧٠٠٠ خطوة أو مشي ٣٥ دقيقة', gold: '١٠٠٠٠ خطوة أو مشي ٥٠ دقيقة' },
   },
   {
     id: 'water',
-    icon: '💧',
     name: 'الماء (الكوب ٣٣٠ مل)',
     tiers: { bronze: '٣ أكواب', silver: '٥ أكواب', gold: '٨ أكواب' },
   },
   {
     id: 'fitness',
-    icon: '🏋️',
     name: 'اللياقة',
     tiers: { bronze: 'تحرّكت ١٠ دقائق (مشي أو تمدد)', silver: 'بلانك ١ دقيقة أو ١٥ دقيقة تمرين خفيف', gold: 'تمرين مقاومة ٢٠ دقيقة أو أكثر' },
   },
   {
     id: 'sleep',
-    icon: '😴',
     name: 'النوم',
     tiers: { bronze: 'سكّرت الجوال قبل النوم بنص ساعة', silver: 'نمت قبل ١٢', gold: 'نمت ٧ ساعات أو أكثر' },
   },
   {
     id: 'nutrition',
-    icon: '🌿',
     name: 'التغذية',
     note: 'الأهداف: ١. لا مقلي ولا مشروب غازي · ٢. وقفت الأكل الساعة ٨ · ٣. أكلت خضرة مع بروتين',
     tiers: { bronze: 'حققت هدف واحد', silver: 'حققت هدفين', gold: 'حققت الثلاثة كلها' },
@@ -91,7 +86,7 @@ export const MEDALS = [
 
 /** Motivational line shown under the daily check-in header. */
 export const DAILY_QUOTE =
-  'سجّلي بكل أمانة وش حققتي اليوم، وبالنهاية تجمعين ميداليات — الميدالية الحقيقية هي صحتك 💚'
+  'سجّلي إنجازاتك بكل صدق. حنا مو هنا لندّعي المثالية، حنا هنا نشجّع بعض إننا نستمر'
 
 /** Max chat messages retained in storage. */
 export const MAX_CHAT_MESSAGES = 200
