@@ -14,6 +14,7 @@ export default function ChatTab({
   onEdit,
   onTogglePin,
   onDelete,
+  onSignOut,
 }) {
   const [draft, setDraft] = useState('')
   const [editingId, setEditingId] = useState(null)
@@ -100,6 +101,7 @@ export default function ChatTab({
 
         <div style={{ marginInlineStart: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           {isAdmin && <span className="pill pill--solid">👑 أدمن</span>}
+          <button className="topbar__signout" onClick={onSignOut}>خروج</button>
           <button
             onClick={toggleNotifications}
             title={notifyOn ? 'إيقاف التنبيهات' : 'تفعيل التنبيهات'}

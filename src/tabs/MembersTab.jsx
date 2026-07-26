@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import Avatar from '../components/Avatar'
 import ConfirmDialog from '../components/ConfirmDialog'
 import { MAX_MEMBERS } from '../constants'
+import { unlockedIds } from '../lib/utils'
 
 const STAT_STYLES = [
   { bg: '#E8F0E9', border: '#BBCFBD', text: '#1E3D21' },
@@ -186,7 +187,7 @@ export default function MembersTab({ members, onDeleteMember }) {
                   <span className="pill pill--gray">⚡ {m.points}</span>
                   <span className="pill pill--gray">🔥 {m.streak}</span>
                   <span className="pill pill--gray">📅 {m.checkIns ?? 0}</span>
-                  <span className="pill pill--gray">🏅 {(m.medals ?? []).length}</span>
+                  <span className="pill pill--gray">🔓 {unlockedIds(m.points ?? 0).length}</span>
                 </div>
               </div>
 

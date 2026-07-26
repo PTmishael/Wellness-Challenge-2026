@@ -688,3 +688,96 @@ textarea.input { resize: none; }
   align-items: center;
   justify-content: center;
 }
+
+/* ── Dark bottom nav (cinematic) ───────────────────────── */
+.bottomnav--dark {
+  background: rgba(22, 36, 31, 0.96);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -6px 22px rgba(0, 0, 0, 0.28);
+}
+.bottomnav--dark button {
+  color: var(--deep-sub);
+}
+.bottomnav--dark .bottomnav__icon {
+  opacity: 0.6;
+  filter: grayscale(0.4);
+}
+.bottomnav--dark button.is-active {
+  color: var(--deep-text);
+}
+.bottomnav--dark button.is-active .bottomnav__icon {
+  opacity: 1;
+  filter: none;
+}
+.bottomnav--dark button.is-center .bottomnav__icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #F2F7F4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  opacity: 1;
+  filter: none;
+}
+.bottomnav--dark button.is-center.is-active::before { display: none; }
+
+/* ── Full-screen cinematic pages (home / check-in / achievements) ── */
+.fullscreen {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+.fullscreen__ripple {
+  position: absolute;
+  inset-inline: -10%;
+  top: 30%;
+  width: 120%;
+  height: 220px;
+  pointer-events: none;
+}
+.fullscreen__inner {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 22px calc(96px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Toast + admin shortcut ────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: calc(90px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2D4B41;
+  color: #F2F7F4;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 300;
+  animation: fade-up 0.3s ease;
+  max-width: 320px;
+  text-align: center;
+}
+.admin-fab {
+  position: fixed;
+  top: 14px;
+  inset-inline-start: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(22, 36, 31, 0.9);
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 150;
+}
