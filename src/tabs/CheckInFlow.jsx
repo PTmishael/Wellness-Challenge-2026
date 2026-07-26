@@ -5,6 +5,13 @@ import { arabicDigits, challengeDay, funFactFor } from '../lib/utils'
 export default function CheckInFlow({ onComplete, onCancel }) {
   const [index, setIndex] = useState(0)
   const [picks, setPicks] = useState({}) // { pillarId: 'one' | 'two' }
+  const [dir, setDir] = useState('next') // wipe direction: 'next' | 'prev'
+  const [done, setDone] = useState(false) // celebration screen after submit
+
+  function goTo(target) {
+    setDir(target > index ? 'next' : 'prev')
+    setIndex(Math.max(0, Math.min(target, PILLARS.length - 1)))
+  }
 
   const pillar = PILLARS[index]
   const isLast = index === PILLARS.length - 1
@@ -20,18 +27,43 @@ export default function CheckInFlow({ onComplete, onCancel }) {
       return next
     })
     // gentle auto-advance after picking
-    if (!isLast) setTimeout(() => setIndex((i) => Math.min(i + 1, PILLARS.length - 1)), 380)
+    if (!isLast) setTimeout(() => goTo(index + 1), 380)
   }
 
   function submit() {
-    // Build the log { pillarId: points }
+    setDone(true)
     const log = Object.fromEntries(
       Object.entries(picks).map(([id, opt]) => [id, OPTION_POINTS[opt]])
     )
-    onComplete(log, totalPoints)
+    // Let the celebration show for a moment before returning home.
+    setTimeout(() => onComplete(log, totalPoints), 2400)
   }
 
   const selected = picks[pillar.id]
+
+  // ── Celebration after submitting ──
+  if (done) {
+    return (
+      <div
+        className="fullscreen checkin-celebrate"
+        style={{ background: 'linear-gradient(172deg,#B3B992 0%,#849072 45%,#505E44 100%)' }}
+      >
+        <div className="fullscreen__inner" style={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+          <div className="celebrate-ring">
+            <div style={{ color: '#FCF8F0', fontSize: 40, fontWeight: 800 }}>
+              +{arabicDigits(totalPoints)}
+            </div>
+          </div>
+          <h2 style={{ color: '#FCF8F0', fontSize: 23, fontWeight: 800, marginTop: 22 }}>
+            أحسنتِ يا بطلة 🌿
+          </h2>
+          <p style={{ color: '#F3ECE0', fontSize: 15, lineHeight: 1.9, marginTop: 10, maxWidth: 260 }}>
+            سجّلتِ إنجازات اليوم! روحي لصفحة <b>سواليف</b> وشوفي كيف سوّوا باقي البنات وشجّعوا بعض 💬
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="fullscreen" style={{ background: `linear-gradient(172deg, ${pillar.grad[0]} 0%, ${pillar.grad[1]} 45%, ${pillar.grad[2]} 100%)` }}>
@@ -39,7 +71,11 @@ export default function CheckInFlow({ onComplete, onCancel }) {
         <path d="M-20 150 q90 -28 180 -6 q100 24 200 -14" stroke="#F3ECE0" strokeWidth="1.6" fill="none" opacity="0.45" strokeLinecap="round" />
       </svg>
 
-      <div className="fullscreen__inner" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div
+        key={pillar.id}
+        className={`fullscreen__inner checkin-page checkin-page--${dir}`}
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         {/* top row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <button
@@ -106,7 +142,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 'auto' }}>
           {index > 0 && (
             <button
-              onClick={() => setIndex((i) => i - 1)}
+              onClick={() => goTo(index - 1)}
               style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'var(--deep-text)', borderRadius: 14, padding: '12px 18px', fontSize: 14, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}
             >
               السابق
@@ -133,7 +169,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
             </button>
           ) : (
             <button
-              onClick={() => setIndex((i) => i + 1)}
+              onClick={() => goTo(index + 1)}
               style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'var(--deep-text)', borderRadius: 14, padding: 14, fontSize: 14, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}
             >
               التالي ←
@@ -146,7 +182,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
           {PILLARS.map((p, i) => (
             <button
               key={p.id}
-              onClick={() => setIndex(i)}
+              onClick={() => goTo(i)}
               aria-label={p.name}
               style={{
                 width: i === index ? 22 : 8,
