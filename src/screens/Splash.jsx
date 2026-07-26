@@ -5,7 +5,7 @@ export default function Splash() {
     <div
       style={{
         minHeight: '100dvh',
-        background: 'linear-gradient(168deg,#2C4640 0%,#1B2E2A 48%,#12201D 100%)',
+        background: 'linear-gradient(172deg,#B9A88C 0%,#7C8A7E 44%,#465862 100%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -15,10 +15,10 @@ export default function Splash() {
       }}
     >
       <Logo size={104} variant="white" style={{ marginBottom: 22 }} />
-      <h1 style={{ color: 'var(--deep-text)', fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
+      <h1 style={{ color: '#FCF8F0', fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
         Wellness Challenge
       </h1>
-      <p style={{ color: 'var(--deep-sub)', fontSize: 14, fontWeight: 700 }}>
+      <p style={{ color: '#EDE6D8', fontSize: 14, fontWeight: 700 }}>
         كوتش مشاعل · Coach Mishael
       </p>
     </div>

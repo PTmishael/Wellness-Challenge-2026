@@ -8,7 +8,7 @@ export const ADMIN_PASSWORD = 'wellness2025'
 export const MAX_MEMBERS = 50
 
 /** The 28-day window. Set CHALLENGE_START to the Saturday you begin. */
-export const CHALLENGE_START = '2026-08-01'
+export const CHALLENGE_START = '2026-08-09'
 export const CHALLENGE_DAYS = 28
 
 export const SKINS = ['🌸', '🌿', '🍋', '🌊', '🔥', '⭐', '🌙', '🦋', '🌺', '🍀']
@@ -34,7 +34,7 @@ export const PILLARS = [
   {
     id: 'steps',
     name: 'الحركة',
-    grad: ['#2C4640', '#16241F'],
+    grad: ['#AEB79A', '#7E9478', '#4C6350'],
     options: {
       one: '٣٠٠٠ خطوة أو ١٥ دقيقة مشي',
       two: '٨٠٠٠ خطوة أو أكثر · مشي ٣٥ دقيقة أو أكثر',
@@ -44,7 +44,7 @@ export const PILLARS = [
     id: 'water',
     name: 'الماء',
     note: 'الكوب ٣٣٠ مل',
-    grad: ['#1F3B47', '#122029'],
+    grad: ['#9FB0B8', '#6E8794', '#3E5763'],
     options: {
       one: '٤-٥ أكواب',
       two: '٧ أكواب أو أكثر',
@@ -53,7 +53,7 @@ export const PILLARS = [
   {
     id: 'fitness',
     name: 'اللياقة',
-    grad: ['#3A2E44', '#1E1826'],
+    grad: ['#B3B992', '#849072', '#505E44'],
     options: {
       one: 'تحرّكت ١٠ دقايق (مشي أو تمدد)',
       two: 'تمرين مقاومة ٢٠ دقيقة أو أكثر',
@@ -62,7 +62,7 @@ export const PILLARS = [
   {
     id: 'sleep',
     name: 'النوم',
-    grad: ['#26324A', '#141C2B'],
+    grad: ['#A9A2B4', '#7C7A90', '#4A4A5E'],
     options: {
       one: 'نمت ٧ ساعات',
       two: 'نمت قبل الساعة ١٢',
@@ -72,7 +72,7 @@ export const PILLARS = [
     id: 'nutrition',
     name: 'التغذية',
     note: 'الأهداف: ١. لا مقلي ولا غازي · ٢. وقفت الأكل الساعة ٨ · ٣. خضرة مع بروتين',
-    grad: ['#2C4033', '#16241A'],
+    grad: ['#B9A88C', '#7C8A7E', '#465862'],
     options: {
       one: 'حققت هدفين',
       two: 'حققت الثلاثة كلها',

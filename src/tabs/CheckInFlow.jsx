@@ -34,9 +34,9 @@ export default function CheckInFlow({ onComplete, onCancel }) {
   const selected = picks[pillar.id]
 
   return (
-    <div className="fullscreen" style={{ background: `linear-gradient(168deg, ${pillar.grad[0]}, ${pillar.grad[1]})` }}>
+    <div className="fullscreen" style={{ background: `linear-gradient(172deg, ${pillar.grad[0]} 0%, ${pillar.grad[1]} 45%, ${pillar.grad[2]} 100%)` }}>
       <svg className="fullscreen__ripple" viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M-20 150 q90 -28 180 -6 q100 24 200 -14" stroke="var(--deep-line)" strokeWidth="1.4" fill="none" opacity="0.26" strokeLinecap="round" />
+        <path d="M-20 150 q90 -28 180 -6 q100 24 200 -14" stroke="#F3ECE0" strokeWidth="1.6" fill="none" opacity="0.45" strokeLinecap="round" />
       </svg>
 
       <div className="fullscreen__inner" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -44,15 +44,15 @@ export default function CheckInFlow({ onComplete, onCancel }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <button
             onClick={onCancel}
-            style={{ background: 'none', border: 'none', color: 'var(--deep-sub)', fontSize: 20, cursor: 'pointer', padding: 4 }}
+            style={{ background: 'none', border: 'none', color: '#F3ECE0', fontSize: 20, cursor: 'pointer', padding: 4 }}
             aria-label="رجوع"
           >
             ✕
           </button>
-          <span style={{ color: 'var(--deep-sub)', fontSize: 12 }}>
+          <span style={{ color: '#EDE6D8', fontSize: 12 }}>
             اليوم {arabicDigits(day)} من {arabicDigits(CHALLENGE_DAYS)}
           </span>
-          <span style={{ color: 'var(--deep-sub)', fontSize: 11.5 }}>
+          <span style={{ color: '#EDE6D8', fontSize: 11.5 }}>
             {arabicDigits(doneCount)}/{arabicDigits(PILLARS.length)}
           </span>
         </div>
@@ -65,8 +65,8 @@ export default function CheckInFlow({ onComplete, onCancel }) {
               height: 138,
               margin: '0 auto',
               borderRadius: '50%',
-              background: selected ? 'rgba(155,211,172,0.16)' : 'rgba(255,255,255,0.07)',
-              border: `2px solid ${selected ? '#9BD3AC' : 'rgba(255,255,255,0.18)'}`,
+              background: selected ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.16)',
+              border: `2px solid ${selected ? '#FFFFFF' : 'rgba(255,255,255,0.5)'}`,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -74,36 +74,36 @@ export default function CheckInFlow({ onComplete, onCancel }) {
               transition: 'all 0.3s ease',
             }}
           >
-            <div style={{ color: 'var(--deep-text)', fontSize: 27, fontWeight: 800 }}>{pillar.name}</div>
+            <div style={{ color: '#FFFFFF', fontSize: 27, fontWeight: 800 }}>{pillar.name}</div>
             {selected ? (
-              <div style={{ color: '#9BD3AC', fontSize: 13, marginTop: 4, fontWeight: 700 }}>
+              <div style={{ color: '#FBF6EC', fontSize: 13, marginTop: 4, fontWeight: 700 }}>
                 +{arabicDigits(OPTION_POINTS[selected])} {OPTION_POINTS[selected] === 1 ? 'نقطة' : 'نقاط'} ✓
               </div>
             ) : (
-              <div style={{ color: 'var(--deep-sub)', fontSize: 12, marginTop: 4 }}>اختاري مستواك</div>
+              <div style={{ color: '#F3ECE0', fontSize: 12, marginTop: 4 }}>اختاري مستواك</div>
             )}
           </div>
           {pillar.note && (
-            <div style={{ color: 'var(--deep-sub)', fontSize: 11.5, marginTop: 12, lineHeight: 1.75, padding: '0 6px' }}>
+            <div style={{ color: '#EDE6D8', fontSize: 11.5, marginTop: 12, lineHeight: 1.75, padding: '0 6px' }}>
               {pillar.note}
             </div>
           )}
         </div>
 
+        {/* fun fact — right under the pillar */}
+        <div style={{ marginTop: 16, background: 'rgba(255,255,255,0.16)', borderRadius: 16, padding: '13px 16px' }}>
+          <div style={{ color: '#FBF6EC', fontSize: 10.5, fontWeight: 800, marginBottom: 5 }}>💡 معلومة اليوم</div>
+          <div style={{ color: '#FCF8F0', fontSize: 12.5, lineHeight: 1.8 }}>{funFactFor(pillar.id)}</div>
+        </div>
+
         {/* two options */}
-        <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 11 }}>
+        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 11 }}>
           <OptionButton label={pillar.options.one} points={1} active={selected === 'one'} onClick={() => choose('one')} />
           <OptionButton label={pillar.options.two} points={2} active={selected === 'two'} onClick={() => choose('two')} gold />
         </div>
 
-        {/* fun fact */}
-        <div style={{ marginTop: 'auto', background: 'rgba(255,255,255,0.07)', borderRadius: 16, padding: '13px 16px' }}>
-          <div style={{ color: '#9BD3AC', fontSize: 10.5, fontWeight: 800, marginBottom: 5 }}>💡 معلومة اليوم</div>
-          <div style={{ color: 'var(--deep-text)', fontSize: 12.5, lineHeight: 1.8 }}>{funFactFor(pillar.id)}</div>
-        </div>
-
         {/* nav */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 'auto' }}>
           {index > 0 && (
             <button
               onClick={() => setIndex((i) => i - 1)}

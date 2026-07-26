@@ -15,10 +15,10 @@ export function Hero({ children, height }) {
       >
         <path
           d="M-20 26 q70 -20 150 -4 q80 16 150 -10 q60 -18 140 -2"
-          stroke="var(--deep-line)"
+          stroke="#F3ECE0"
           strokeWidth="1.4"
           fill="none"
-          opacity="0.28"
+          opacity="0.4"
           strokeLinecap="round"
         />
       </svg>
