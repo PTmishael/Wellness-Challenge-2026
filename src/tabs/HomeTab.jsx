@@ -1,7 +1,7 @@
 import { CHALLENGE_DAYS, DAILY_QUOTE, PILLARS } from '../constants'
 import { arabicDigits, challengeDay } from '../lib/utils'
 
-export default function HomeTab({ member, checkedIn, onStartCheckIn }) {
+export default function HomeTab({ member, checkedIn, onStartCheckIn, onSignOut }) {
   const day = challengeDay()
   const doneCount = checkedIn ? PILLARS.length : 0
 
@@ -20,19 +20,37 @@ export default function HomeTab({ member, checkedIn, onStartCheckIn }) {
               {member.name}
             </div>
           </div>
-          <div
-            style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.16)',
-              borderRadius: 16,
-              padding: '8px 14px',
-              textAlign: 'center',
-            }}
-          >
-            <div style={{ color: '#F5D76E', fontSize: 18, fontWeight: 800 }}>
-              {arabicDigits(member.points)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.16)',
+                borderRadius: 16,
+                padding: '8px 14px',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ color: '#F5D76E', fontSize: 18, fontWeight: 800 }}>
+                {arabicDigits(member.points)}
+              </div>
+              <div style={{ color: '#EDE6D8', fontSize: 9.5 }}>نقطة</div>
             </div>
-            <div style={{ color: '#EDE6D8', fontSize: 9.5 }}>نقطة</div>
+            <button
+              onClick={onSignOut}
+              style={{
+                background: 'rgba(255,255,255,0.13)',
+                border: '1px solid rgba(255,255,255,0.22)',
+                borderRadius: 13,
+                padding: '9px 12px',
+                color: '#FCF8F0',
+                fontSize: 12,
+                fontWeight: 800,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              خروج
+            </button>
           </div>
         </div>
 

@@ -174,7 +174,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
   return (
     <>
       {tab === 'home' && (
-        <HomeTab member={member} checkedIn={checkedIn} onStartCheckIn={() => setCheckingIn(true)} />
+        <HomeTab member={member} checkedIn={checkedIn} onStartCheckIn={() => setCheckingIn(true)} onSignOut={onSignOut} />
       )}
 
       {tab === 'chat' && (
@@ -190,7 +190,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
         />
       )}
 
-      {tab === 'achievements' && <AchievementsTab member={member} />}
+      {tab === 'achievements' && <AchievementsTab member={member} isAdmin={isAdmin} />}
 
       {tab === 'members' && isAdmin && (
         <MembersTab members={members} onDeleteMember={handleDeleteMember} />
