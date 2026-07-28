@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Logo from '../components/Logo'
-import { Hero, Sheet } from '../components/Hero'
-import { SKINS, MAX_MEMBERS } from '../constants'
+import OmbrePage from '../components/OmbrePage'
+import { SKINS, MAX_MEMBERS, APP_OMBRE, APP_WAVE } from '../constants'
 import { fetchMembers, saveMember, saveSession } from '../lib/storage'
 import { createMember } from '../lib/utils'
 
@@ -57,24 +57,33 @@ export default function Register({ onSignedIn, onBack }) {
   }
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--sheet)' }}>
-      <Hero>
-        <div style={{ paddingBottom: 62 }}>
-          <Logo size={54} variant="white" style={{ margin: '0 auto 16px' }} />
-          <p className="hero__eyebrow" style={{ textAlign: 'center' }}>عضوة جديدة</p>
-          <h1 className="hero__title" style={{ fontSize: 22, textAlign: 'center', marginTop: 5 }}>
-            أهلاً فيك
-          </h1>
+    <OmbrePage ombre={APP_OMBRE} wave={APP_WAVE}>
+      <div style={{ textAlign: 'center' }}>
+        <div
+          style={{
+            width: 52,
+            height: 52,
+            margin: '0 auto 14px',
+            borderRadius: 17,
+            background: 'rgba(255,255,255,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Logo size={30} />
         </div>
-      </Hero>
+        <p className="ombre-sub" style={{ fontSize: 11, letterSpacing: '0.06em' }}>عضوة جديدة</p>
+        <h1 className="ombre-title" style={{ fontSize: 21, marginTop: 4 }}>أهلاً فيك</h1>
+      </div>
 
-      <Sheet>
+      <div style={{ marginTop: 22 }}>
         <input
           className="input"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="اسمك أو لقبك…"
-          style={{ marginBottom: 10, fontSize: 16 }}
+          style={{ marginBottom: 10, fontSize: 16, background: 'rgba(255,255,255,0.9)' }}
           autoFocus
         />
         <input
@@ -83,7 +92,7 @@ export default function Register({ onSignedIn, onBack }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="كلمة السر"
-          style={{ marginBottom: 10, fontSize: 16 }}
+          style={{ marginBottom: 10, fontSize: 16, background: 'rgba(255,255,255,0.9)' }}
         />
         <textarea
           className="input"
@@ -96,28 +105,20 @@ export default function Register({ onSignedIn, onBack }) {
               handleSubmit()
             }
           }}
-          placeholder="قوليلي شي مميز عنك…"
-          style={{ fontSize: 15, lineHeight: 1.7 }}
+          placeholder="قوليلي شئ مميز عنك…"
+          style={{ fontSize: 15, lineHeight: 1.7, background: 'rgba(255,255,255,0.9)' }}
         />
-        <p
-          style={{
-            color: 'var(--ink-mute)',
-            fontSize: 11.5,
-            fontWeight: 600,
-            marginTop: 6,
-            textAlign: 'left',
-          }}
-        >
+        <p style={{ color: 'var(--ink-on-ombre-sub)', fontSize: 11.5, fontWeight: 600, marginTop: 6, textAlign: 'left' }}>
           {bio.length}/160 · اختياري
         </p>
 
         {error && <p className="error-text">{error}</p>}
 
-        <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={handleSubmit} disabled={busy}>
+        <button className="btn btn--ombre-solid" style={{ fontSize: 16 }} onClick={handleSubmit} disabled={busy}>
           {busy ? 'جاري التسجيل…' : 'ابدئي رحلتك'}
         </button>
-        <button className="btn btn--soft" onClick={onBack}>رجوع</button>
-      </Sheet>
-    </div>
+        <button className="btn btn--ombre-ghost" onClick={onBack}>رجوع</button>
+      </div>
+    </OmbrePage>
   )
 }

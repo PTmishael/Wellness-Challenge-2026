@@ -1,58 +1,52 @@
 import Logo from '../components/Logo'
-import { Hero, Sheet } from '../components/Hero'
+import OmbrePage from '../components/OmbrePage'
+import { APP_OMBRE, APP_WAVE } from '../constants'
 
 export default function Welcome({ onNavigate }) {
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--sheet)' }}>
-      <Hero>
-        <div style={{ textAlign: 'center', paddingBottom: 78 }}>
-          <Logo size={80} variant="white" style={{ margin: '0 auto 20px' }} />
-
-          <h1 style={{ color: 'var(--deep-text)', fontSize: 28, fontWeight: 900, letterSpacing: '-0.01em' }}>
-            تحدي العافية
-          </h1>
-          <p style={{ color: 'var(--deep-sub)', fontSize: 15, fontWeight: 700, marginTop: 8 }}>
-            ٢٨ يوم نبني فيها عادات تدوم
-          </p>
+    <OmbrePage ombre={APP_OMBRE} wave={APP_WAVE}>
+      <div style={{ paddingTop: 14, textAlign: 'center' }}>
+        <div
+          style={{
+            width: 64,
+            height: 64,
+            margin: '0 auto 16px',
+            borderRadius: 20,
+            background: 'rgba(255,255,255,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Logo size={38} />
         </div>
-      </Hero>
 
-      <Sheet>
-        <p
-          style={{
-            color: 'var(--ink-sub)',
-            fontSize: 15,
-            lineHeight: 2,
-            fontWeight: 600,
-            textAlign: 'center',
-            marginBottom: 12,
-          }}
-        >
-          سجّلي عاداتك اليومية، تابعي تقدمك، وشجّعي البنات معك.
+        <h1 className="ombre-title" style={{ fontSize: 26 }}>تحدي العافية</h1>
+        <p className="ombre-sub" style={{ fontSize: 12.5, marginTop: 7 }}>
+          ٢٨ يوم نبني فيها عادات تدوم
         </p>
-        <p
-          style={{
-            color: 'var(--brand-dark)',
-            fontSize: 15,
-            fontWeight: 800,
-            textAlign: 'center',
-            lineHeight: 1.9,
-            marginBottom: 24,
-          }}
-        >
-          كل ميدالية تمثّل وعدًا قطعتيه لنفسك
+        <p className="ombre-sub" style={{ fontSize: 12.5, lineHeight: 2.1, marginTop: 12 }}>
+          سجّلي عاداتك اليومية
+          <br />
+          تابعي تقدمك، وشجّعي البنات معك
         </p>
+      </div>
 
-        <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={() => onNavigate('register')}>
+      <div style={{ marginTop: 'auto', paddingTop: 40 }}>
+        <button className="btn btn--ombre-solid" style={{ fontSize: 16 }} onClick={() => onNavigate('register')}>
           ابدئي رحلتك
         </button>
-        <button className="btn btn--soft" style={{ fontSize: 16 }} onClick={() => onNavigate('login')}>
+        <button className="btn btn--ombre-ghost" style={{ fontSize: 15 }} onClick={() => onNavigate('login')}>
           لديّ حساب
         </button>
-        <button className="btn--link" style={{ fontSize: 13 }} onClick={() => onNavigate('admin')}>
+        <button
+          className="btn--link"
+          style={{ fontSize: 12.5, color: '#FFFDF7', fontWeight: 800 }}
+          onClick={() => onNavigate('admin')}
+        >
           دخول الإدارة
         </button>
-      </Sheet>
-    </div>
+      </div>
+    </OmbrePage>
   )
 }

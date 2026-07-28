@@ -222,19 +222,7 @@ textarea.input { resize: none; }
 }
 .fade-up { animation: fade-up 0.35s ease; }
 
-/* ── Top bar ───────────────────────────────────────────── */
-.topbar {
-  background: #2C4640;
-  padding: 10px 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.topbar__title  { font-size: 14px; font-weight: 900; display: block; line-height: 1.15; color: var(--deep-text); }
-.topbar__sub    { font-size: 10.5px; color: var(--deep-sub); font-weight: 800; }
+/* ── Sign-out chip (used in the chat header) ───────────── */
 .topbar__signout {
   background: rgba(255, 255, 255, 0.13);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -573,110 +561,74 @@ textarea.input { resize: none; }
   gap: 10px;
 }
 
-/* ── Cinematic hero + curved sheet ─────────────────────── */
+/* ── Seamless ombre page system ────────────────────────── */
 :root {
-  --deep:      #16241F;
-  --deep-2:    #2C4640;
-  --deep-line: #7FA894;
-  --deep-text: #F2F7F4;
-  --deep-sub:  #9DBBAE;
-  --sheet:     #F7F9F8;
+  --ink-on-ombre:      #1E2B1F;
+  --ink-on-ombre-sub:  #3F4A3B;
+  --cream:             #FFFDF7;
 }
 
-.hero {
+/* Full-bleed page: one continuous gradient, no seams. Pass a
+   --ombre custom property per page/pillar to vary the hue. */
+.ombre-page {
   position: relative;
-  background: linear-gradient(172deg, #B9A88C 0%, #7C8A7E 44%, #465862 100%);
-  padding: 22px 20px 0;
+  min-height: 100dvh;
   overflow: hidden;
+  background: var(--ombre, linear-gradient(180deg,#EFE7D4 0%,#C9C9A8 28%,#8FA383 52%,#4C7A50 76%,#1E3D21 100%));
 }
-.hero__glow {
+.ombre-page__ripple {
   position: absolute;
-  top: -70px;
-  inset-inline-start: -50px;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  background: #D8CBB2;
-  opacity: 0.3;
+  inset-inline: -4%;
+  top: 0;
+  width: 108%;
+  height: 340px;
   pointer-events: none;
 }
-/* One soft ripple line */
-.hero__ripple {
+/* The wave: a thin bright line riding on top of the gradient — never a
+   flat color block, so there is no hard edge, only the curve itself. */
+.ombre-page__wave {
   position: absolute;
-  inset-inline: -10%;
-  width: 120%;
+  left: 0;
+  width: 100%;
   height: 40px;
   pointer-events: none;
 }
-.hero__inner { position: relative; z-index: 1; }
-
-.hero__title {
-  color: #FCF8F0;
-  font-size: 25px;
-  font-weight: 800;
-  line-height: 1.5;
-}
-.hero__sub {
-  color: #EDE6D8;
-  font-size: 14px;
-  line-height: 1.9;
-  font-weight: 600;
-  margin-top: 10px;
-}
-.hero__eyebrow {
-  color: #EDE6D8;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+.ombre-page__inner {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 22px 20px calc(96px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
-.sheet { position: relative; margin-top: -34px; z-index: 2; }
-.sheet__curve { display: block; width: 100%; }
-.sheet__body { background: var(--sheet); padding: 4px 20px 26px; }
-
-.btn--deep {
-  background: #4C6350;
-  color: #FCF8F0;
-  box-shadow: 0 6px 18px rgba(70, 88, 98, 0.32);
-  margin-top: 10px;
-}
-.btn--deep:disabled {
-  background: #DAE4DB;
-  color: #A9BBAC;
-  box-shadow: none;
-  cursor: default;
-}
-.btn--soft {
-  background: #E7EDE9;
-  color: #3D5147;
-  border: none;
-  margin-top: 9px;
-}
+/* Text on the light (sand) part of the gradient */
+.ombre-title  { color: var(--ink-on-ombre); font-weight: 900; }
+.ombre-sub    { color: var(--ink-on-ombre-sub); font-weight: 600; }
+/* Text on the deep (green) part of the gradient */
+.ombre-title--light { color: var(--cream); font-weight: 800; }
+.ombre-sub--light   { color: #EAF2E5; font-weight: 600; }
 
 .day-chip {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 22px;
-  padding: 6px 13px;
-  color: #D6E7DE;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 13px;
+  padding: 7px 12px;
+  color: var(--ink-on-ombre);
   font-size: 12.5px;
-  font-weight: 700;
-}
-.day-chip__dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #7FE0A6;
+  font-weight: 800;
 }
 
 .ring-wrap { position: relative; width: 116px; height: 116px; margin: 0 auto; }
 .ring-wrap svg { transform: rotate(-90deg); }
-.ring-track { stroke: rgba(255, 255, 255, 0.14); }
+.ring-track { stroke: rgba(255, 255, 255, 0.28); }
 .ring-fill {
-  stroke: #9BD3AC;
+  stroke: var(--cream);
   transition: stroke-dashoffset 0.55s ease, stroke 0.3s ease;
 }
 .ring-fill--full { stroke: #F5D76E; }
@@ -689,65 +641,110 @@ textarea.input { resize: none; }
   justify-content: center;
 }
 
-/* ── Dark bottom nav (cinematic) ───────────────────────── */
-.bottomnav--dark {
-  background: rgba(58, 62, 66, 0.96);
-  backdrop-filter: blur(18px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 -6px 22px rgba(0, 0, 0, 0.28);
+/* Buttons that sit on the ombre background */
+.btn--ombre-solid {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ink-on-ombre);
+  margin-top: 10px;
 }
-.bottomnav--dark button {
-  color: var(--deep-sub);
+.btn--ombre-solid:disabled {
+  background: rgba(255, 255, 255, 0.35);
+  color: rgba(30, 43, 31, 0.4);
+  cursor: default;
 }
-.bottomnav--dark .bottomnav__icon {
-  opacity: 0.6;
-  filter: grayscale(0.4);
+.btn--ombre-ghost {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: var(--cream);
+  margin-top: 9px;
 }
-.bottomnav--dark button.is-active {
-  color: var(--deep-text);
+
+/* Slide-to-start control on the home page */
+.slide-track {
+  position: relative;
+  margin-top: 16px;
+  height: 56px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
 }
-.bottomnav--dark button.is-active .bottomnav__icon {
-  opacity: 1;
-  filter: none;
+.slide-track__fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 28px;
 }
-.bottomnav--dark button.is-center .bottomnav__icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #F2F7F4;
+.slide-track__label {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  opacity: 1;
-  filter: none;
-}
-.bottomnav--dark button.is-center.is-active::before { display: none; }
-
-/* ── Full-screen cinematic pages (home / check-in / achievements) ── */
-.fullscreen {
-  position: relative;
-  min-height: 100dvh;
-  overflow: hidden;
-}
-.fullscreen__ripple {
-  position: absolute;
-  inset-inline: -10%;
-  top: 30%;
-  width: 120%;
-  height: 220px;
+  color: var(--cream);
+  font-size: 14px;
+  font-weight: 800;
   pointer-events: none;
+  transition: color 0.2s ease;
 }
-.fullscreen__inner {
-  position: relative;
-  z-index: 1;
-  min-height: 100dvh;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 24px 22px calc(96px + env(safe-area-inset-bottom));
+.slide-track__knob {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--cream);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-on-ombre);
+  font-size: 19px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  cursor: grab;
+}
+
+/* ── Bottom nav — bold white on every page ─────────────── */
+.bottomnav--ombre {
+  background: transparent;
+  border-top: none;
+  box-shadow: none;
+}
+.bottomnav--ombre button {
+  color: var(--cream);
+}
+.bottomnav--ombre .bottomnav__icon {
+  opacity: 0.75;
+}
+.bottomnav--ombre button.is-active .bottomnav__icon {
+  opacity: 1;
+}
+.bottomnav--ombre button.is-center .bottomnav__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+}
+.bottomnav--ombre button.is-active.is-center .bottomnav__icon {
+  background: var(--cream);
+  color: var(--ink-on-ombre);
+}
+.bottomnav--ombre button.is-active {
+  color: var(--cream);
+}
+.bottomnav--ombre button.is-active::before {
+  display: none;
+}
+.bottomnav--ombre button.is-active .bottomnav__icon {
+  transform: none;
 }
 
 /* ── Toast + admin shortcut ────────────────────────────── */
@@ -775,8 +772,8 @@ textarea.input { resize: none; }
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(22, 36, 31, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.16);
   font-size: 18px;
   cursor: pointer;
   z-index: 150;
@@ -791,7 +788,6 @@ textarea.input { resize: none; }
   from { opacity: 0; transform: translateX(7%); }
   to   { opacity: 1; transform: translateX(0); }
 }
-/* RTL: "next" advances leftward, so the new page slides in from the right */
 .checkin-page--next { animation: wipe-in-next 0.34s cubic-bezier(0.4, 0, 0.2, 1); }
 .checkin-page--prev { animation: wipe-in-prev 0.34s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -801,19 +797,14 @@ textarea.input { resize: none; }
   60%  { transform: scale(1.08); }
   100% { opacity: 1; transform: scale(1); }
 }
-@keyframes celebrate-glow {
-  0%, 100% { box-shadow: 0 0 0 rgba(245, 215, 110, 0); }
-  50%      { box-shadow: 0 0 34px rgba(245, 215, 110, 0.55); }
-}
-.checkin-celebrate .fullscreen__inner { animation: fade-up 0.4s ease; }
+.checkin-celebrate .ombre-page__inner { animation: fade-up 0.4s ease; }
 .celebrate-ring {
   width: 132px;
   height: 132px;
   border-radius: 50%;
-  border: 3px solid #F5D76E;
+  border: 3px solid var(--cream);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: celebrate-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
-             celebrate-glow 1.8s ease-in-out infinite 0.5s;
+  animation: celebrate-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

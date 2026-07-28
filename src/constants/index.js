@@ -30,11 +30,17 @@ export const AVATAR_COLORS = [
  * The 5 pillars — each with TWO point options (+1 / +2).
  * `grad` sets that pillar's full-page gradient in the swipe view.
  */
+/** Default app ombre — sand fading into basil green — used on
+ *  welcome, auth, home, and achievements. */
+export const APP_OMBRE = 'linear-gradient(180deg,#EFE7D4 0%,#C9C9A8 28%,#8FA383 52%,#4C7A50 76%,#1E3D21 100%)'
+export const APP_WAVE = { d: 'M0,20 C90,-6 200,44 300,12', top: 46 }
+
 export const PILLARS = [
   {
     id: 'steps',
     name: 'الحركة',
-    grad: ['#AEB79A', '#7E9478', '#4C6350'],
+    ombre: 'linear-gradient(180deg,#EFE7D4 0%,#C9C9A8 28%,#8FA383 52%,#4C7A50 76%,#1E3D21 100%)',
+    wave: { d: 'M0,20 C90,-6 200,44 300,12', top: 64 },
     options: {
       one: '٣٠٠٠ خطوة أو ١٥ دقيقة مشي',
       two: '٨٠٠٠ خطوة أو أكثر · مشي ٣٥ دقيقة أو أكثر',
@@ -44,7 +50,8 @@ export const PILLARS = [
     id: 'water',
     name: 'الماء',
     note: 'الكوب ٣٣٠ مل',
-    grad: ['#9FB0B8', '#6E8794', '#3E5763'],
+    ombre: 'linear-gradient(180deg,#E6F0F1 0%,#B9D3D3 26%,#6FA3A0 52%,#3E7A6B 76%,#1B4536 100%)',
+    wave: { d: 'M0,10 C100,40 200,-8 300,22', top: 62 },
     options: {
       one: '٤-٥ أكواب',
       two: '٧ أكواب أو أكثر',
@@ -53,7 +60,8 @@ export const PILLARS = [
   {
     id: 'fitness',
     name: 'اللياقة',
-    grad: ['#B3B992', '#849072', '#505E44'],
+    ombre: 'linear-gradient(180deg,#F3E3DE 0%,#D9B7B3 26%,#B08289 52%,#77596E 76%,#2E3A2E 100%)',
+    wave: { d: 'M0,24 C80,-4 210,46 300,8', top: 66 },
     options: {
       one: 'تحرّكت ١٠ دقايق (مشي أو تمدد)',
       two: 'تمرين مقاومة ٢٠ دقيقة أو أكثر',
@@ -62,7 +70,8 @@ export const PILLARS = [
   {
     id: 'sleep',
     name: 'النوم',
-    grad: ['#A9A2B4', '#7C7A90', '#4A4A5E'],
+    ombre: 'linear-gradient(180deg,#E9E6F0 0%,#C3BFDB 26%,#8B85AE 52%,#524E78 76%,#1E2038 100%)',
+    wave: { d: 'M0,16 C110,-8 190,48 300,14', top: 60 },
     options: {
       one: 'نمت ٧ ساعات',
       two: 'نمت قبل الساعة ١٢',
@@ -72,7 +81,8 @@ export const PILLARS = [
     id: 'nutrition',
     name: 'التغذية',
     note: 'الأهداف: ١. لا مقلي ولا غازي · ٢. وقفت الأكل الساعة ٨ · ٣. خضرة مع بروتين',
-    grad: ['#B9A88C', '#7C8A7E', '#465862'],
+    ombre: 'linear-gradient(180deg,#F1EAC9 0%,#D3C888 26%,#9FA84F 52%,#5D7A3B 76%,#1E3D21 100%)',
+    wave: { d: 'M0,22 C95,-4 205,46 300,10', top: 68 },
     options: {
       one: 'حققت هدفين',
       two: 'حققت الثلاثة كلها',

@@ -1,144 +1,83 @@
-import { CHALLENGE_DAYS, DAILY_QUOTE, PILLARS } from '../constants'
+import OmbrePage from '../components/OmbrePage'
+import SlideToStart from '../components/SlideToStart'
+import { CHALLENGE_DAYS, DAILY_QUOTE, APP_OMBRE, APP_WAVE } from '../constants'
 import { arabicDigits, challengeDay } from '../lib/utils'
 
 export default function HomeTab({ member, checkedIn, onStartCheckIn, onSignOut }) {
   const day = challengeDay()
-  const doneCount = checkedIn ? PILLARS.length : 0
 
   return (
-    <div className="fullscreen" style={{ background: 'linear-gradient(172deg,#B9A88C 0%,#7C8A7E 44%,#465862 100%)' }}>
-      <svg className="fullscreen__ripple" viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M-20 150 q90 -28 180 -6 q100 24 200 -14" stroke="#F3ECE0" strokeWidth="1.4" fill="none" opacity="0.4" strokeLinecap="round" />
-      </svg>
-
-      <div className="fullscreen__inner">
-        {/* greeting */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <div style={{ color: '#EDE6D8', fontSize: 13 }}>أهلاً</div>
-            <div style={{ color: '#FCF8F0', fontSize: 23, fontWeight: 800, marginTop: 2 }}>
-              {member.name}
-            </div>
+    <OmbrePage ombre={APP_OMBRE} wave={APP_WAVE}>
+      {/* top row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <div className="day-chip" style={{ flexDirection: 'column', textAlign: 'center', lineHeight: 1.1 }}>
+            <span style={{ fontSize: 14 }}>{arabicDigits(member.points)}</span>
+            <span style={{ fontSize: 8.5, fontWeight: 700, opacity: 0.8 }}>نقطة</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div
-              style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.16)',
-                borderRadius: 16,
-                padding: '8px 14px',
-                textAlign: 'center',
-              }}
-            >
-              <div style={{ color: '#F5D76E', fontSize: 18, fontWeight: 800 }}>
-                {arabicDigits(member.points)}
-              </div>
-              <div style={{ color: '#EDE6D8', fontSize: 9.5 }}>نقطة</div>
-            </div>
-            <button
-              onClick={onSignOut}
-              style={{
-                background: 'rgba(255,255,255,0.13)',
-                border: '1px solid rgba(255,255,255,0.22)',
-                borderRadius: 13,
-                padding: '9px 12px',
-                color: '#FCF8F0',
-                fontSize: 12,
-                fontWeight: 800,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
-              خروج
-            </button>
+          <div className="day-chip" style={{ flexDirection: 'column', textAlign: 'center', lineHeight: 1.1 }}>
+            <span style={{ fontSize: 14 }}>{arabicDigits(day)}</span>
+            <span style={{ fontSize: 8.5, fontWeight: 700, opacity: 0.8 }}>من {arabicDigits(CHALLENGE_DAYS)}</span>
           </div>
-        </div>
-
-        {/* day + streak */}
-        <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-          <div style={{ flex: 1, background: 'rgba(255,255,255,0.08)', borderRadius: 15, padding: 14, textAlign: 'center' }}>
-            <div style={{ color: '#FCF8F0', fontSize: 20, fontWeight: 800 }}>{arabicDigits(day)}</div>
-            <div style={{ color: '#EDE6D8', fontSize: 10.5, marginTop: 2 }}>
-              اليوم من {arabicDigits(CHALLENGE_DAYS)}
-            </div>
-          </div>
-          <div style={{ flex: 1, background: 'rgba(255,255,255,0.08)', borderRadius: 15, padding: 14, textAlign: 'center' }}>
-            <div style={{ color: '#FCF8F0', fontSize: 20, fontWeight: 800 }}>{arabicDigits(member.streak)}</div>
-            <div style={{ color: '#EDE6D8', fontSize: 10.5, marginTop: 2 }}>أيام متتالية</div>
-          </div>
-        </div>
-
-        {/* main CTA */}
-        <div
-          style={{
-            marginTop: 22,
-            background: checkedIn ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.18)',
-            border: `1.5px solid ${checkedIn ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.45)'}`,
-            borderRadius: 24,
-            padding: '22px 20px',
-            textAlign: 'center',
-          }}
-        >
-          <div
+          <button
+            onClick={onSignOut}
             style={{
-              width: 68,
-              height: 68,
-              margin: '0 auto 14px',
-              borderRadius: '50%',
-              border: `2px solid ${checkedIn ? 'rgba(255,255,255,0.25)' : '#F3ECE0'}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: checkedIn ? '#EDE6D8' : '#FCF8F0',
-              fontSize: 20,
+              background: 'rgba(255,255,255,0.32)',
+              border: 'none',
+              borderRadius: 12,
+              padding: '0 12px',
+              color: 'var(--ink-on-ombre)',
+              fontSize: 11,
               fontWeight: 800,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
             }}
           >
-            {arabicDigits(doneCount)}/{arabicDigits(PILLARS.length)}
-          </div>
-
-          {checkedIn ? (
-            <>
-              <div style={{ color: '#FCF8F0', fontSize: 17, fontWeight: 800 }}>خلّصتِ اليوم 🌟</div>
-              <div style={{ color: '#EDE6D8', fontSize: 12.5, marginTop: 5, lineHeight: 1.7 }}>
-                تعالي بكرة للمتابعة الجديدة
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ color: '#FCF8F0', fontSize: 17, fontWeight: 800 }}>متابعتك اليومية</div>
-              <div style={{ color: '#EDE6D8', fontSize: 12.5, marginTop: 5, lineHeight: 1.7 }}>
-                سجّلي إنجازاتك الخمسة لليوم
-              </div>
-              <button
-                onClick={onStartCheckIn}
-                style={{
-                  width: '100%',
-                  marginTop: 16,
-                  background: '#F2F7F4',
-                  color: '#16241F',
-                  border: 'none',
-                  borderRadius: 15,
-                  padding: 14,
-                  fontSize: 15,
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-              >
-                ابدئي المتابعة ←
-              </button>
-            </>
-          )}
+            خروج
+          </button>
         </div>
+        <div style={{ textAlign: 'left' }}>
+          <div className="ombre-sub" style={{ fontSize: 11 }}>أهلاً</div>
+          <div className="ombre-title" style={{ fontSize: 19 }}>{member.name}</div>
+        </div>
+      </div>
 
-        {/* quote */}
-        <div style={{ marginTop: 16, background: 'rgba(255,255,255,0.06)', borderRadius: 15, padding: '13px 16px' }}>
-          <div style={{ color: '#FCF8F0', fontSize: 12.5, lineHeight: 1.85, textAlign: 'center', fontStyle: 'italic' }}>
-            {DAILY_QUOTE}
+      {/* title + intro */}
+      <div style={{ marginTop: 16, textAlign: 'center' }}>
+        <h1 className="ombre-title" style={{ fontSize: 24 }}>تحدي العافية</h1>
+        <p className="ombre-sub" style={{ fontSize: 12, marginTop: 5 }}>
+          ٢٨ يوم · ٥ عادات · مجتمع يشجّعك
+        </p>
+        <p className="ombre-sub" style={{ fontSize: 12, lineHeight: 2.1, marginTop: 8 }}>
+          اجمعي نقاط وافتحي أسرار من كوتش مشاعل
+        </p>
+      </div>
+
+      {/* action zone */}
+      <div style={{ marginTop: 'auto', paddingTop: 34, textAlign: 'center' }}>
+        {checkedIn ? (
+          <>
+            <div className="ombre-title--light" style={{ fontSize: 18 }}>خلّصتِ اليوم 🌟</div>
+            <div className="ombre-sub--light" style={{ fontSize: 12, marginTop: 5 }}>
+              تعالي بكرة للمتابعة الجديدة
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="ombre-title--light" style={{ fontSize: 18 }}>جاهزة لليوم؟</div>
+            <div className="ombre-sub--light" style={{ fontSize: 12, marginTop: 4 }}>
+              خمس خطوات بس، وتخلصين
+            </div>
+            <SlideToStart onComplete={onStartCheckIn} />
+          </>
+        )}
+
+        <div style={{ marginTop: 14, background: 'rgba(255,255,255,0.12)', borderRadius: 13, padding: '11px 13px' }}>
+          <div className="ombre-sub--light" style={{ fontSize: 11, lineHeight: 1.85, fontStyle: 'italic' }}>
+            "{DAILY_QUOTE}"
           </div>
         </div>
       </div>
-    </div>
+    </OmbrePage>
   )
 }

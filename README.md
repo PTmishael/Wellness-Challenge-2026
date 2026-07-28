@@ -22,6 +22,7 @@ site in production.
 | **Community chat** | WhatsApp-style bubbles with reply-to-message quoting, per-member notification bell (browser notifications, works across tabs of the same browser), pinned messages. Check-ins auto-post a multi-line summary |
 | **Admin panel** | Member roster with search, capacity meter, inactive-member flags, delete accounts, edit/pin/delete any chat message |
 | **Shared database** | Members and chat live in Supabase — sign in from any phone and your data follows you |
+| **Ombre design** | Every screen is a seamless sand-to-basil gradient with a soft wave line — each of the 5 pillars gets its own color mood during check-in |
 | **RTL + Arabic** | Full right-to-left layout, Tajawal typeface |
 
 ---

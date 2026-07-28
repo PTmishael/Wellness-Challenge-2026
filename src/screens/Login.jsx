@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Logo from '../components/Logo'
-import { Hero, Sheet } from '../components/Hero'
+import OmbrePage from '../components/OmbrePage'
+import { APP_OMBRE, APP_WAVE } from '../constants'
 import { fetchMemberByName, saveMember, getSession, saveSession } from '../lib/storage'
 import { today } from '../lib/utils'
 
@@ -28,7 +29,6 @@ export default function Login({ onSignedIn, onBack }) {
         return
       }
 
-      // Accounts created before passwords existed adopt the first one used.
       if (found.password) {
         if (found.password !== password) {
           setError('كلمة السر غلط، جربي مرة ثانية')
@@ -56,24 +56,33 @@ export default function Login({ onSignedIn, onBack }) {
   }
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--sheet)' }}>
-      <Hero>
-        <div style={{ paddingBottom: 62 }}>
-          <Logo size={54} variant="white" style={{ margin: '0 auto 16px' }} />
-          <p className="hero__eyebrow" style={{ textAlign: 'center' }}>دخول الحساب</p>
-          <h1 className="hero__title" style={{ fontSize: 22, textAlign: 'center', marginTop: 5 }}>
-            أهلاً بعودتك
-          </h1>
+    <OmbrePage ombre={APP_OMBRE} wave={APP_WAVE}>
+      <div style={{ textAlign: 'center' }}>
+        <div
+          style={{
+            width: 52,
+            height: 52,
+            margin: '0 auto 14px',
+            borderRadius: 17,
+            background: 'rgba(255,255,255,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Logo size={30} />
         </div>
-      </Hero>
+        <p className="ombre-sub" style={{ fontSize: 11, letterSpacing: '0.06em' }}>دخول الحساب</p>
+        <h1 className="ombre-title" style={{ fontSize: 21, marginTop: 4 }}>أهلاً بعودتك</h1>
+      </div>
 
-      <Sheet>
+      <div style={{ marginTop: 22 }}>
         <input
           className="input"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="اسمك في التطبيق…"
-          style={{ marginBottom: 10, fontSize: 16 }}
+          style={{ marginBottom: 10, fontSize: 16, background: 'rgba(255,255,255,0.9)' }}
           autoFocus
         />
         <input
@@ -83,15 +92,15 @@ export default function Login({ onSignedIn, onBack }) {
           onChange={(e) => setPassword(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder="كلمة السر"
-          style={{ fontSize: 16 }}
+          style={{ fontSize: 16, background: 'rgba(255,255,255,0.9)' }}
         />
         {error && <p className="error-text">{error}</p>}
 
-        <button className="btn btn--deep" style={{ fontSize: 17 }} onClick={handleSubmit} disabled={busy}>
+        <button className="btn btn--ombre-solid" style={{ fontSize: 16 }} onClick={handleSubmit} disabled={busy}>
           {busy ? 'لحظة…' : 'دخول'}
         </button>
-        <button className="btn btn--soft" onClick={onBack}>رجوع</button>
-      </Sheet>
-    </div>
+        <button className="btn btn--ombre-ghost" onClick={onBack}>رجوع</button>
+      </div>
+    </OmbrePage>
   )
 }

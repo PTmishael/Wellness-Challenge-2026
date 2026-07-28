@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { PILLARS, OPTION_POINTS, CHALLENGE_DAYS } from '../constants'
+import OmbrePage from '../components/OmbrePage'
+import { PILLARS, OPTION_POINTS, CHALLENGE_DAYS, APP_OMBRE } from '../constants'
 import { arabicDigits, challengeDay, funFactFor } from '../lib/utils'
 
 export default function CheckInFlow({ onComplete, onCancel }) {
   const [index, setIndex] = useState(0)
   const [picks, setPicks] = useState({}) // { pillarId: 'one' | 'two' }
-  const [dir, setDir] = useState('next') // wipe direction: 'next' | 'prev'
-  const [done, setDone] = useState(false) // celebration screen after submit
+  const [dir, setDir] = useState('next')
+  const [done, setDone] = useState(false)
 
   function goTo(target) {
     setDir(target > index ? 'next' : 'prev')
@@ -26,16 +27,12 @@ export default function CheckInFlow({ onComplete, onCancel }) {
       else next[pillar.id] = option
       return next
     })
-    // gentle auto-advance after picking
     if (!isLast) setTimeout(() => goTo(index + 1), 380)
   }
 
   function submit() {
     setDone(true)
-    const log = Object.fromEntries(
-      Object.entries(picks).map(([id, opt]) => [id, OPTION_POINTS[opt]])
-    )
-    // Let the celebration show for a moment before returning home.
+    const log = Object.fromEntries(Object.entries(picks).map(([id, opt]) => [id, OPTION_POINTS[opt]]))
     setTimeout(() => onComplete(log, totalPoints), 2400)
   }
 
@@ -44,178 +41,182 @@ export default function CheckInFlow({ onComplete, onCancel }) {
   // ── Celebration after submitting ──
   if (done) {
     return (
-      <div
-        className="fullscreen checkin-celebrate"
-        style={{ background: 'linear-gradient(172deg,#B3B992 0%,#849072 45%,#505E44 100%)' }}
-      >
-        <div className="fullscreen__inner" style={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+      <OmbrePage ombre={APP_OMBRE} className="checkin-celebrate">
+        <div style={{ margin: 'auto', textAlign: 'center' }}>
           <div className="celebrate-ring">
-            <div style={{ color: '#FCF8F0', fontSize: 40, fontWeight: 800 }}>
+            <div className="ombre-title--light" style={{ fontSize: 36 }}>
               +{arabicDigits(totalPoints)}
             </div>
           </div>
-          <h2 style={{ color: '#FCF8F0', fontSize: 23, fontWeight: 800, marginTop: 22 }}>
+          <h2 className="ombre-title--light" style={{ fontSize: 21, marginTop: 20 }}>
             أحسنتِ يا بطلة 🌿
           </h2>
-          <p style={{ color: '#F3ECE0', fontSize: 15, lineHeight: 1.9, marginTop: 10, maxWidth: 260 }}>
+          <p className="ombre-sub--light" style={{ fontSize: 14, lineHeight: 1.9, marginTop: 10, maxWidth: 260, marginInline: 'auto' }}>
             سجّلتِ إنجازات اليوم! روحي لصفحة <b>سواليف</b> وشوفي كيف سوّوا باقي البنات وشجّعوا بعض 💬
           </p>
         </div>
-      </div>
+      </OmbrePage>
     )
   }
 
   return (
-    <div className="fullscreen" style={{ background: `linear-gradient(172deg, ${pillar.grad[0]} 0%, ${pillar.grad[1]} 45%, ${pillar.grad[2]} 100%)` }}>
-      <svg className="fullscreen__ripple" viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M-20 150 q90 -28 180 -6 q100 24 200 -14" stroke="#F3ECE0" strokeWidth="1.6" fill="none" opacity="0.45" strokeLinecap="round" />
-      </svg>
+    <OmbrePage ombre={pillar.ombre} wave={pillar.wave} key={pillar.id} className={`checkin-page checkin-page--${dir}`}>
+      {/* top row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <button
+          onClick={onCancel}
+          style={{ background: 'none', border: 'none', color: '#FFFDF7', fontSize: 20, cursor: 'pointer', padding: 4 }}
+          aria-label="رجوع"
+        >
+          ✕
+        </button>
+        <span style={{ color: '#FFFDF7', fontSize: 12, fontWeight: 700 }}>
+          اليوم {arabicDigits(day)} من {arabicDigits(CHALLENGE_DAYS)}
+        </span>
+        <span style={{ color: '#FFFDF7', fontSize: 11.5, fontWeight: 700 }}>
+          {arabicDigits(doneCount)}/{arabicDigits(PILLARS.length)}
+        </span>
+      </div>
 
-      <div
-        key={pillar.id}
-        className={`fullscreen__inner checkin-page checkin-page--${dir}`}
-        style={{ display: 'flex', flexDirection: 'column' }}
-      >
-        {/* top row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button
-            onClick={onCancel}
-            style={{ background: 'none', border: 'none', color: '#F3ECE0', fontSize: 20, cursor: 'pointer', padding: 4 }}
-            aria-label="رجوع"
-          >
-            ✕
-          </button>
-          <span style={{ color: '#EDE6D8', fontSize: 12 }}>
-            اليوم {arabicDigits(day)} من {arabicDigits(CHALLENGE_DAYS)}
-          </span>
-          <span style={{ color: '#EDE6D8', fontSize: 11.5 }}>
-            {arabicDigits(doneCount)}/{arabicDigits(PILLARS.length)}
-          </span>
+      {/* circular badge */}
+      <div style={{ textAlign: 'center', marginTop: 22 }}>
+        <div
+          style={{
+            width: 134,
+            height: 134,
+            margin: '0 auto',
+            borderRadius: '50%',
+            background: selected ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.18)',
+            border: `2px solid ${selected ? '#FFFDF7' : 'rgba(255,255,255,0.5)'}`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <div style={{ color: '#FFFDF7', fontSize: 25, fontWeight: 800 }}>{pillar.name}</div>
+          {selected ? (
+            <div style={{ color: '#FFFDF7', fontSize: 12, marginTop: 4, fontWeight: 700 }}>
+              +{arabicDigits(OPTION_POINTS[selected])} {OPTION_POINTS[selected] === 1 ? 'نقطة' : 'نقاط'} ✓
+            </div>
+          ) : (
+            <div style={{ color: '#F3EFE2', fontSize: 11.5, marginTop: 4 }}>اختاري مستواك</div>
+          )}
         </div>
+        {pillar.note && (
+          <div style={{ color: '#FFFDF0', fontSize: 11, marginTop: 11, lineHeight: 1.75, padding: '0 6px' }}>
+            {pillar.note}
+          </div>
+        )}
+      </div>
 
-        {/* circular badge */}
-        <div style={{ textAlign: 'center', marginTop: 26 }}>
-          <div
+      {/* fun fact — right under the pillar */}
+      <div style={{ marginTop: 14, background: 'rgba(255,255,255,0.16)', borderRadius: 14, padding: '11px 14px' }}>
+        <div style={{ color: '#FFFDF0', fontSize: 10, fontWeight: 800, marginBottom: 4 }}>💡 معلومة اليوم</div>
+        <div style={{ color: '#FFFDF7', fontSize: 11.5, lineHeight: 1.75 }}>{funFactFor(pillar.id)}</div>
+      </div>
+
+      {/* two options */}
+      <div style={{ marginTop: 13, display: 'flex', flexDirection: 'column', gap: 9 }}>
+        <OptionButton label={pillar.options.one} points={1} active={selected === 'one'} onClick={() => choose('one')} />
+        <OptionButton label={pillar.options.two} points={2} active={selected === 'two'} onClick={() => choose('two')} />
+      </div>
+
+      {/* nav */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 'auto', paddingTop: 16 }}>
+        {index > 0 && (
+          <button
+            onClick={() => goTo(index - 1)}
             style={{
-              width: 138,
-              height: 138,
-              margin: '0 auto',
-              borderRadius: '50%',
-              background: selected ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.16)',
-              border: `2px solid ${selected ? '#FFFFFF' : 'rgba(255,255,255,0.5)'}`,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease',
+              background: 'rgba(255,255,255,0.14)',
+              border: 'none',
+              color: '#FFFDF7',
+              borderRadius: 13,
+              padding: '12px 16px',
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
             }}
           >
-            <div style={{ color: '#FFFFFF', fontSize: 27, fontWeight: 800 }}>{pillar.name}</div>
-            {selected ? (
-              <div style={{ color: '#FBF6EC', fontSize: 13, marginTop: 4, fontWeight: 700 }}>
-                +{arabicDigits(OPTION_POINTS[selected])} {OPTION_POINTS[selected] === 1 ? 'نقطة' : 'نقاط'} ✓
-              </div>
-            ) : (
-              <div style={{ color: '#F3ECE0', fontSize: 12, marginTop: 4 }}>اختاري مستواك</div>
-            )}
-          </div>
-          {pillar.note && (
-            <div style={{ color: '#EDE6D8', fontSize: 11.5, marginTop: 12, lineHeight: 1.75, padding: '0 6px' }}>
-              {pillar.note}
-            </div>
-          )}
-        </div>
-
-        {/* fun fact — right under the pillar */}
-        <div style={{ marginTop: 16, background: 'rgba(255,255,255,0.16)', borderRadius: 16, padding: '13px 16px' }}>
-          <div style={{ color: '#FBF6EC', fontSize: 10.5, fontWeight: 800, marginBottom: 5 }}>💡 معلومة اليوم</div>
-          <div style={{ color: '#FCF8F0', fontSize: 12.5, lineHeight: 1.8 }}>{funFactFor(pillar.id)}</div>
-        </div>
-
-        {/* two options */}
-        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 11 }}>
-          <OptionButton label={pillar.options.one} points={1} active={selected === 'one'} onClick={() => choose('one')} />
-          <OptionButton label={pillar.options.two} points={2} active={selected === 'two'} onClick={() => choose('two')} gold />
-        </div>
-
-        {/* nav */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 'auto' }}>
-          {index > 0 && (
-            <button
-              onClick={() => goTo(index - 1)}
-              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'var(--deep-text)', borderRadius: 14, padding: '12px 18px', fontSize: 14, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}
-            >
-              السابق
-            </button>
-          )}
-          {isLast ? (
-            <button
-              onClick={submit}
-              disabled={doneCount === 0}
-              style={{
-                flex: 1,
-                background: doneCount === 0 ? 'rgba(255,255,255,0.12)' : '#F2F7F4',
-                color: doneCount === 0 ? 'var(--deep-sub)' : '#16241F',
-                border: 'none',
-                borderRadius: 14,
-                padding: 14,
-                fontSize: 15,
-                fontWeight: 800,
-                cursor: doneCount === 0 ? 'default' : 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
-              احفظ إنجازات اليوم ✅ {totalPoints > 0 && `· +${arabicDigits(totalPoints)}`}
-            </button>
-          ) : (
-            <button
-              onClick={() => goTo(index + 1)}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'var(--deep-text)', borderRadius: 14, padding: 14, fontSize: 14, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}
-            >
-              التالي ←
-            </button>
-          )}
-        </div>
-
-        {/* dots */}
-        <div style={{ display: 'flex', gap: 7, justifyContent: 'center', marginTop: 14 }}>
-          {PILLARS.map((p, i) => (
-            <button
-              key={p.id}
-              onClick={() => goTo(i)}
-              aria-label={p.name}
-              style={{
-                width: i === index ? 22 : 8,
-                height: 8,
-                borderRadius: 20,
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                background: i === index ? '#9BD3AC' : picks[p.id] ? '#4E7862' : 'rgba(255,255,255,0.2)',
-                transition: 'all 0.25s ease',
-              }}
-            />
-          ))}
-        </div>
+            السابق
+          </button>
+        )}
+        {isLast ? (
+          <button
+            onClick={submit}
+            disabled={doneCount === 0}
+            style={{
+              flex: 1,
+              background: doneCount === 0 ? 'rgba(255,255,255,0.14)' : '#FFFDF7',
+              color: doneCount === 0 ? 'rgba(255,255,255,0.6)' : 'var(--ink-on-ombre)',
+              border: 'none',
+              borderRadius: 13,
+              padding: 13,
+              fontSize: 14,
+              fontWeight: 800,
+              cursor: doneCount === 0 ? 'default' : 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            احفظ إنجازات اليوم ✅ {totalPoints > 0 && `· +${arabicDigits(totalPoints)}`}
+          </button>
+        ) : (
+          <button
+            onClick={() => goTo(index + 1)}
+            style={{
+              flex: 1,
+              background: 'rgba(255,255,255,0.14)',
+              border: 'none',
+              color: '#FFFDF7',
+              borderRadius: 13,
+              padding: 13,
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            التالي ←
+          </button>
+        )}
       </div>
-    </div>
+
+      {/* dots */}
+      <div style={{ display: 'flex', gap: 7, justifyContent: 'center', marginTop: 13 }}>
+        {PILLARS.map((p, i) => (
+          <button
+            key={p.id}
+            onClick={() => goTo(i)}
+            aria-label={p.name}
+            style={{
+              width: i === index ? 22 : 8,
+              height: 8,
+              borderRadius: 20,
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              background: i === index ? '#FFFDF7' : picks[p.id] ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)',
+              transition: 'all 0.25s ease',
+            }}
+          />
+        ))}
+      </div>
+    </OmbrePage>
   )
 }
 
-function OptionButton({ label, points, active, onClick, gold = false }) {
-  const accent = gold ? '#F5D76E' : '#9BD3AC'
-  const tintBg = gold ? 'rgba(245,215,110,0.14)' : 'rgba(155,211,172,0.16)'
-  const badgeText = gold ? '#3A2E08' : '#14261B'
-
+function OptionButton({ label, points, active, onClick }) {
   return (
     <button
       onClick={onClick}
       style={{
         width: '100%',
-        border: `2px solid ${active ? accent : 'rgba(255,255,255,0.16)'}`,
-        background: active ? tintBg : 'rgba(255,255,255,0.05)',
-        borderRadius: 16,
-        padding: '14px 15px',
+        border: active ? 'none' : '1.5px solid rgba(255,255,255,0.3)',
+        background: active ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.13)',
+        borderRadius: 15,
+        padding: '13px 14px',
         cursor: 'pointer',
         fontFamily: 'inherit',
         textAlign: 'right',
@@ -226,14 +227,16 @@ function OptionButton({ label, points, active, onClick, gold = false }) {
         transition: 'all 0.18s ease',
       }}
     >
-      <span style={{ color: 'var(--deep-text)', fontSize: 13.5, fontWeight: 600, lineHeight: 1.5 }}>{label}</span>
+      <span style={{ color: active ? 'var(--ink-on-ombre)' : '#FFFDF7', fontSize: 13, fontWeight: active ? 700 : 600, lineHeight: 1.5 }}>
+        {label}
+      </span>
       <span
         style={{
-          background: active ? accent : 'rgba(255,255,255,0.12)',
-          color: active ? badgeText : '#CFE3D8',
-          fontSize: 12,
+          background: active ? 'var(--ink-on-ombre)' : 'rgba(255,255,255,0.22)',
+          color: '#FFFDF7',
+          fontSize: 11.5,
           fontWeight: 800,
-          padding: '4px 11px',
+          padding: '4px 10px',
           borderRadius: 12,
           whiteSpace: 'nowrap',
         }}

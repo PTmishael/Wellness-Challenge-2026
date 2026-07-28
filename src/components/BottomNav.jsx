@@ -1,8 +1,3 @@
-/**
- * Order in the DOM is right-to-left visually (RTL):
- * we render achievements, home, chat — which places
- * achievements on the LEFT, home CENTER, chat on the RIGHT.
- */
 const TABS = [
   { id: 'achievements', icon: '🏆', label: 'إنجازات' },
   { id: 'home', icon: '🏠', label: 'الرئيسية', center: true },
@@ -11,7 +6,7 @@ const TABS = [
 
 export default function BottomNav({ active, onChange }) {
   return (
-    <nav className="bottomnav bottomnav--dark">
+    <nav className="bottomnav bottomnav--ombre">
       {TABS.map((tab) => (
         <button
           key={tab.id}
