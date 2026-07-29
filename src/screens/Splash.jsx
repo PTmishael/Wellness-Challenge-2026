@@ -1,25 +1,40 @@
 import Logo from '../components/Logo'
-import { APP_OMBRE } from '../constants'
+import { SCENES } from '../constants'
 
 export default function Splash() {
   return (
     <div
       style={{
         minHeight: '100dvh',
-        background: APP_OMBRE,
+        position: 'relative',
+        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
         padding: 24,
+        background: '#E6EDE4',
       }}
     >
-      <Logo size={72} variant="white" style={{ marginBottom: 20, opacity: 0.95 }} />
-      <h1 style={{ color: '#FFFDF7', fontSize: 21, fontWeight: 800, marginBottom: 6 }}>
-        Wellness Challenge
-      </h1>
-      <p style={{ color: '#EAF2E5', fontSize: 13, fontWeight: 700 }}>كوتش مشاعل · Coach Mishael</p>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `url(${import.meta.env.BASE_URL}${SCENES.app.image})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      <div style={{ position: 'absolute', inset: 0, background: SCENES.app.wash }} />
+
+      <div style={{ position: 'relative' }}>
+        <Logo size={72} style={{ margin: '0 auto 20px' }} />
+        <h1 className="scene-title" style={{ fontSize: 21, marginBottom: 6 }}>
+          Wellness Challenge
+        </h1>
+        <p className="scene-sub" style={{ fontSize: 13 }}>كوتش مشاعل · Coach Mishael</p>
+      </div>
     </div>
   )
 }

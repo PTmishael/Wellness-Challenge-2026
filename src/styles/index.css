@@ -259,12 +259,20 @@ textarea.input { resize: none; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: flex-start;
+  gap: 5px;
   color: var(--ink-mute);
   font-size: 10.5px;
   font-weight: 800;
   transition: color 0.2s ease;
   position: relative;
+}
+/* Reserve one consistent icon-row height so all three labels sit on the same line */
+.bottomnav__icon {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .bottomnav__icon {
   font-size: 21px;
@@ -561,39 +569,34 @@ textarea.input { resize: none; }
   gap: 10px;
 }
 
-/* ── Seamless ombre page system ────────────────────────── */
+/* ── Scenic photo page system ──────────────────────────── */
 :root {
-  --ink-on-ombre:      #1E2B1F;
-  --ink-on-ombre-sub:  #3F4A3B;
-  --cream:             #FFFDF7;
+  /* Both scenes are light photographs → dark text reads best */
+  --ink-scene:      #1B3320;
+  --ink-scene-sub:  #2E4433;
+  --cream:          #FFFDF7;
+  --brand-deep:     #1E3D21;
 }
 
-/* Full-bleed page: one continuous gradient, no seams. Pass a
-   --ombre custom property per page/pillar to vary the hue. */
-.ombre-page {
+.scene-page {
   position: relative;
   min-height: 100dvh;
   overflow: hidden;
-  background: var(--ombre, linear-gradient(180deg,#EFE7D4 0%,#C9C9A8 28%,#8FA383 52%,#4C7A50 76%,#1E3D21 100%));
+  background: #E6EDE4;
 }
-.ombre-page__ripple {
+.scene-page__photo {
   position: absolute;
-  inset-inline: -4%;
-  top: 0;
-  width: 108%;
-  height: 340px;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.scene-page__wash {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
 }
-/* The wave: a thin bright line riding on top of the gradient — never a
-   flat color block, so there is no hard edge, only the curve itself. */
-.ombre-page__wave {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 40px;
-  pointer-events: none;
-}
-.ombre-page__inner {
+.scene-page__inner {
   position: relative;
   z-index: 1;
   min-height: 100dvh;
@@ -605,68 +608,66 @@ textarea.input { resize: none; }
   box-sizing: border-box;
 }
 
-/* Text on the light (sand) part of the gradient */
-.ombre-title  { color: var(--ink-on-ombre); font-weight: 900; }
-.ombre-sub    { color: var(--ink-on-ombre-sub); font-weight: 600; }
-/* Text on the deep (green) part of the gradient */
-.ombre-title--light { color: var(--cream); font-weight: 800; }
-.ombre-sub--light   { color: #EAF2E5; font-weight: 600; }
+/* Typography on the light scenes */
+.scene-title {
+  color: var(--ink-scene);
+  font-weight: 900;
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.55);
+}
+.scene-sub {
+  color: var(--ink-scene-sub);
+  font-weight: 700;
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.5);
+}
 
-.day-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(255, 255, 255, 0.5);
+/* Frosted chips and cards that float on the photo */
+.scene-chip {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
   border-radius: 13px;
   padding: 7px 12px;
-  color: var(--ink-on-ombre);
+  color: var(--ink-scene);
   font-size: 12.5px;
   font-weight: 800;
+  text-align: center;
+  line-height: 1.15;
+}
+.scene-card {
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(8px);
+  border-radius: 15px;
+  padding: 12px 14px;
 }
 
-.ring-wrap { position: relative; width: 116px; height: 116px; margin: 0 auto; }
-.ring-wrap svg { transform: rotate(-90deg); }
-.ring-track { stroke: rgba(255, 255, 255, 0.28); }
-.ring-fill {
-  stroke: var(--cream);
-  transition: stroke-dashoffset 0.55s ease, stroke 0.3s ease;
-}
-.ring-fill--full { stroke: #F5D76E; }
-.ring-center {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Buttons that sit on the ombre background */
-.btn--ombre-solid {
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--ink-on-ombre);
+/* Buttons on the scenes */
+.btn--scene-solid {
+  background: var(--brand-deep);
+  color: var(--cream);
+  box-shadow: 0 6px 18px rgba(30, 61, 33, 0.28);
   margin-top: 10px;
 }
-.btn--ombre-solid:disabled {
-  background: rgba(255, 255, 255, 0.35);
-  color: rgba(30, 43, 31, 0.4);
+.btn--scene-solid:disabled {
+  background: rgba(30, 61, 33, 0.28);
+  box-shadow: none;
   cursor: default;
 }
-.btn--ombre-ghost {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  color: var(--cream);
+.btn--scene-ghost {
+  background: rgba(255, 255, 255, 0.66);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(30, 61, 33, 0.2);
+  color: var(--ink-scene);
   margin-top: 9px;
 }
 
-/* Slide-to-start control on the home page */
+/* Slide-to-start */
 .slide-track {
   position: relative;
   margin-top: 16px;
   height: 56px;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(30, 61, 33, 0.24);
   overflow: hidden;
   touch-action: none;
   user-select: none;
@@ -675,7 +676,7 @@ textarea.input { resize: none; }
   position: absolute;
   inset: 0;
   width: 0;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(30, 61, 33, 0.85);
   border-radius: 28px;
 }
 .slide-track__label {
@@ -684,7 +685,7 @@ textarea.input { resize: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--cream);
+  color: var(--ink-scene);
   font-size: 14px;
   font-weight: 800;
   pointer-events: none;
@@ -697,55 +698,58 @@ textarea.input { resize: none; }
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: var(--cream);
+  background: var(--brand-deep);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink-on-ombre);
+  color: var(--cream);
   font-size: 19px;
   font-weight: 800;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
   cursor: grab;
 }
 
-/* ── Bottom nav — bold white on every page ─────────────── */
-.bottomnav--ombre {
+/* ── Bottom nav on the light scenes — dark, bold ───────── */
+.bottomnav--scene {
   background: transparent;
   border-top: none;
   box-shadow: none;
 }
-.bottomnav--ombre button {
-  color: var(--cream);
+.bottomnav--scene button {
+  color: var(--ink-scene);
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6);
 }
-.bottomnav--ombre .bottomnav__icon {
-  opacity: 0.75;
-}
-.bottomnav--ombre button.is-active .bottomnav__icon {
-  opacity: 1;
-}
-.bottomnav--ombre button.is-center .bottomnav__icon {
-  width: 42px;
-  height: 42px;
+.bottomnav--scene .bottomnav__icon { opacity: 0.85; }
+.bottomnav--scene button.is-active { color: var(--brand-deep); }
+.bottomnav--scene button.is-active .bottomnav__icon { opacity: 1; }
+.bottomnav--scene button.is-active::before { display: none; }
+.bottomnav--scene button.is-center .bottomnav__icon {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 1;
+  margin-top: -8px;
+  margin-bottom: -6px;
 }
-.bottomnav--ombre button.is-active.is-center .bottomnav__icon {
-  background: var(--cream);
-  color: var(--ink-on-ombre);
+.bottomnav--scene button.is-active.is-center .bottomnav__icon {
+  background: var(--brand-deep);
 }
-.bottomnav--ombre button.is-active {
-  color: var(--cream);
+
+/* On the light chat page, nav labels need dark text on a solid bar */
+.bottomnav--onlight {
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
 }
-.bottomnav--ombre button.is-active::before {
-  display: none;
-}
-.bottomnav--ombre button.is-active .bottomnav__icon {
-  transform: none;
-}
+.bottomnav--onlight button { color: #1E2B1F; text-shadow: none; }
+.bottomnav--onlight button.is-active { color: var(--brand); }
+.bottomnav--onlight button.is-center .bottomnav__icon { background: var(--brand-tint); }
+.bottomnav--onlight button.is-active.is-center .bottomnav__icon { background: var(--brand); }
 
 /* ── Toast + admin shortcut ────────────────────────────── */
 .toast {
@@ -753,8 +757,8 @@ textarea.input { resize: none; }
   bottom: calc(90px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
-  background: #2D4B41;
-  color: #F2F7F4;
+  background: var(--brand-deep);
+  color: var(--cream);
   font-size: 13px;
   font-weight: 700;
   padding: 12px 20px;
@@ -772,8 +776,9 @@ textarea.input { resize: none; }
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(30, 61, 33, 0.25);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
   font-size: 18px;
   cursor: pointer;
   z-index: 150;
@@ -788,8 +793,9 @@ textarea.input { resize: none; }
   from { opacity: 0; transform: translateX(7%); }
   to   { opacity: 1; transform: translateX(0); }
 }
-.checkin-page--next { animation: wipe-in-next 0.34s cubic-bezier(0.4, 0, 0.2, 1); }
-.checkin-page--prev { animation: wipe-in-prev 0.34s cubic-bezier(0.4, 0, 0.2, 1); }
+.checkin-page { position: relative; }
+.checkin-page--next .scene-page__inner { animation: wipe-in-next 0.34s cubic-bezier(0.4, 0, 0.2, 1); }
+.checkin-page--prev .scene-page__inner { animation: wipe-in-prev 0.34s cubic-bezier(0.4, 0, 0.2, 1); }
 
 /* ── Check-in celebration ──────────────────────────────── */
 @keyframes celebrate-pop {
@@ -797,14 +803,21 @@ textarea.input { resize: none; }
   60%  { transform: scale(1.08); }
   100% { opacity: 1; transform: scale(1); }
 }
-.checkin-celebrate .ombre-page__inner { animation: fade-up 0.4s ease; }
+@keyframes celebrate-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(30, 61, 33, 0); }
+  50%      { box-shadow: 0 0 30px 5px rgba(30, 61, 33, 0.35); }
+}
 .celebrate-ring {
-  width: 132px;
-  height: 132px;
+  width: 168px;
+  height: 168px;
   border-radius: 50%;
-  border: 3px solid var(--cream);
+  border: 3px solid var(--brand-deep);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: celebrate-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: celebrate-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+             celebrate-glow 2s ease-in-out infinite 0.5s;
 }

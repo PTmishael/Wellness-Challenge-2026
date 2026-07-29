@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Logo from '../components/Logo'
-import OmbrePage from '../components/OmbrePage'
-import { APP_OMBRE, APP_WAVE } from '../constants'
+import ScenePage from '../components/ScenePage'
+import { SCENES } from '../constants'
 import { fetchMemberByName, saveMember, getSession, saveSession } from '../lib/storage'
 import { today } from '../lib/utils'
 
@@ -56,7 +56,7 @@ export default function Login({ onSignedIn, onBack }) {
   }
 
   return (
-    <OmbrePage ombre={APP_OMBRE} wave={APP_WAVE}>
+    <ScenePage scene={SCENES.app}>
       <div style={{ textAlign: 'center' }}>
         <div
           style={{
@@ -64,7 +64,7 @@ export default function Login({ onSignedIn, onBack }) {
             height: 52,
             margin: '0 auto 14px',
             borderRadius: 17,
-            background: 'rgba(255,255,255,0.5)',
+            background: 'rgba(255,255,255,0.75)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -72,8 +72,8 @@ export default function Login({ onSignedIn, onBack }) {
         >
           <Logo size={30} />
         </div>
-        <p className="ombre-sub" style={{ fontSize: 11, letterSpacing: '0.06em' }}>دخول الحساب</p>
-        <h1 className="ombre-title" style={{ fontSize: 21, marginTop: 4 }}>أهلاً بعودتك</h1>
+        <p className="scene-sub" style={{ fontSize: 11, letterSpacing: '0.06em' }}>دخول الحساب</p>
+        <h1 className="scene-title" style={{ fontSize: 21, marginTop: 4 }}>أهلاً بعودتك</h1>
       </div>
 
       <div style={{ marginTop: 22 }}>
@@ -82,7 +82,7 @@ export default function Login({ onSignedIn, onBack }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="اسمك في التطبيق…"
-          style={{ marginBottom: 10, fontSize: 16, background: 'rgba(255,255,255,0.9)' }}
+          style={{ marginBottom: 10, fontSize: 16, background: 'rgba(255,255,255,0.92)' }}
           autoFocus
         />
         <input
@@ -92,15 +92,15 @@ export default function Login({ onSignedIn, onBack }) {
           onChange={(e) => setPassword(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder="كلمة السر"
-          style={{ fontSize: 16, background: 'rgba(255,255,255,0.9)' }}
+          style={{ fontSize: 16, background: 'rgba(255,255,255,0.92)' }}
         />
         {error && <p className="error-text">{error}</p>}
 
-        <button className="btn btn--ombre-solid" style={{ fontSize: 16 }} onClick={handleSubmit} disabled={busy}>
+        <button className="btn btn--scene-solid" style={{ fontSize: 16 }} onClick={handleSubmit} disabled={busy}>
           {busy ? 'لحظة…' : 'دخول'}
         </button>
-        <button className="btn btn--ombre-ghost" onClick={onBack}>رجوع</button>
+        <button className="btn btn--scene-ghost" onClick={onBack}>رجوع</button>
       </div>
-    </OmbrePage>
+    </ScenePage>
   )
 }

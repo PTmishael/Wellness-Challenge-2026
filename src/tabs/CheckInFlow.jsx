@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import OmbrePage from '../components/OmbrePage'
-import { PILLARS, OPTION_POINTS, CHALLENGE_DAYS, APP_OMBRE } from '../constants'
+import ScenePage from '../components/ScenePage'
+import { PILLARS, OPTION_POINTS, CHALLENGE_DAYS, SCENES } from '../constants'
 import { arabicDigits, challengeDay, funFactFor } from '../lib/utils'
 
 export default function CheckInFlow({ onComplete, onCancel }) {
@@ -41,39 +41,41 @@ export default function CheckInFlow({ onComplete, onCancel }) {
   // ── Celebration after submitting ──
   if (done) {
     return (
-      <OmbrePage ombre={APP_OMBRE} className="checkin-celebrate">
-        <div style={{ margin: 'auto', textAlign: 'center' }}>
+      <ScenePage scene={SCENES.pillar}>
+        <div style={{ margin: 'auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div className="celebrate-ring">
-            <div className="ombre-title--light" style={{ fontSize: 36 }}>
+            <div style={{ color: 'var(--brand-deep)', fontSize: 44, fontWeight: 800, lineHeight: 1 }}>
               +{arabicDigits(totalPoints)}
             </div>
+            <div style={{ color: 'var(--ink-scene-sub)', fontSize: 12, fontWeight: 700, marginTop: 4 }}>
+              نقطة اليوم
+            </div>
           </div>
-          <h2 className="ombre-title--light" style={{ fontSize: 21, marginTop: 20 }}>
-            أحسنتِ يا بطلة 🌿
-          </h2>
-          <p className="ombre-sub--light" style={{ fontSize: 14, lineHeight: 1.9, marginTop: 10, maxWidth: 260, marginInline: 'auto' }}>
+          <h2 className="scene-title" style={{ fontSize: 22, marginTop: 26 }}>أحسنتِ يا بطلة 🌿</h2>
+          <p className="scene-sub" style={{ fontSize: 14, lineHeight: 1.9, marginTop: 10, maxWidth: 270 }}>
             سجّلتِ إنجازات اليوم! روحي لصفحة <b>سواليف</b> وشوفي كيف سوّوا باقي البنات وشجّعوا بعض 💬
           </p>
         </div>
-      </OmbrePage>
+      </ScenePage>
     )
   }
 
   return (
-    <OmbrePage ombre={pillar.ombre} wave={pillar.wave} key={pillar.id} className={`checkin-page checkin-page--${dir}`}>
+    <ScenePage scene={SCENES.pillar} key={pillar.id} className={`checkin-page checkin-page--${dir}`}>
       {/* top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button
           onClick={onCancel}
-          style={{ background: 'none', border: 'none', color: '#FFFDF7', fontSize: 20, cursor: 'pointer', padding: 4 }}
+          className="scene-title"
+          style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', padding: 4 }}
           aria-label="رجوع"
         >
           ✕
         </button>
-        <span style={{ color: '#FFFDF7', fontSize: 12, fontWeight: 700 }}>
+        <span className="scene-sub" style={{ fontSize: 12.5, fontWeight: 800 }}>
           اليوم {arabicDigits(day)} من {arabicDigits(CHALLENGE_DAYS)}
         </span>
-        <span style={{ color: '#FFFDF7', fontSize: 11.5, fontWeight: 700 }}>
+        <span className="scene-sub" style={{ fontSize: 12, fontWeight: 800 }}>
           {arabicDigits(doneCount)}/{arabicDigits(PILLARS.length)}
         </span>
       </div>
@@ -82,12 +84,13 @@ export default function CheckInFlow({ onComplete, onCancel }) {
       <div style={{ textAlign: 'center', marginTop: 22 }}>
         <div
           style={{
-            width: 134,
-            height: 134,
+            width: 132,
+            height: 132,
             margin: '0 auto',
             borderRadius: '50%',
-            background: selected ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.18)',
-            border: `2px solid ${selected ? '#FFFDF7' : 'rgba(255,255,255,0.5)'}`,
+            background: selected ? 'rgba(30,61,33,0.85)' : 'rgba(255,255,255,0.6)',
+            backdropFilter: 'blur(6px)',
+            border: `2px solid ${selected ? 'var(--brand-deep)' : 'rgba(30,61,33,0.35)'}`,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -95,26 +98,32 @@ export default function CheckInFlow({ onComplete, onCancel }) {
             transition: 'all 0.3s ease',
           }}
         >
-          <div style={{ color: '#FFFDF7', fontSize: 25, fontWeight: 800 }}>{pillar.name}</div>
+          <div style={{ color: selected ? 'var(--cream)' : 'var(--ink-scene)', fontSize: 24, fontWeight: 800 }}>
+            {pillar.name}
+          </div>
           {selected ? (
-            <div style={{ color: '#FFFDF7', fontSize: 12, marginTop: 4, fontWeight: 700 }}>
+            <div style={{ color: '#D9E9DB', fontSize: 12, marginTop: 4, fontWeight: 700 }}>
               +{arabicDigits(OPTION_POINTS[selected])} {OPTION_POINTS[selected] === 1 ? 'نقطة' : 'نقاط'} ✓
             </div>
           ) : (
-            <div style={{ color: '#F3EFE2', fontSize: 11.5, marginTop: 4 }}>اختاري مستواك</div>
+            <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, marginTop: 4 }}>اختاري مستواك</div>
           )}
         </div>
         {pillar.note && (
-          <div style={{ color: '#FFFDF0', fontSize: 11, marginTop: 11, lineHeight: 1.75, padding: '0 6px' }}>
+          <div className="scene-sub" style={{ fontSize: 11, marginTop: 11, lineHeight: 1.75, padding: '0 6px' }}>
             {pillar.note}
           </div>
         )}
       </div>
 
       {/* fun fact — right under the pillar */}
-      <div style={{ marginTop: 14, background: 'rgba(255,255,255,0.16)', borderRadius: 14, padding: '11px 14px' }}>
-        <div style={{ color: '#FFFDF0', fontSize: 10, fontWeight: 800, marginBottom: 4 }}>💡 معلومة اليوم</div>
-        <div style={{ color: '#FFFDF7', fontSize: 11.5, lineHeight: 1.75 }}>{funFactFor(pillar.id)}</div>
+      <div className="scene-card" style={{ marginTop: 14 }}>
+        <div style={{ color: 'var(--brand-deep)', fontSize: 10, fontWeight: 800, marginBottom: 4 }}>
+          💡 معلومة اليوم
+        </div>
+        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, lineHeight: 1.75, fontWeight: 600 }}>
+          {funFactFor(pillar.id)}
+        </div>
       </div>
 
       {/* two options */}
@@ -128,16 +137,15 @@ export default function CheckInFlow({ onComplete, onCancel }) {
         {index > 0 && (
           <button
             onClick={() => goTo(index - 1)}
+            className="btn--scene-ghost"
             style={{
-              background: 'rgba(255,255,255,0.14)',
-              border: 'none',
-              color: '#FFFDF7',
-              borderRadius: 13,
-              padding: '12px 16px',
+              borderRadius: 14,
+              padding: '13px 18px',
               fontSize: 13,
               fontWeight: 800,
               cursor: 'pointer',
               fontFamily: 'inherit',
+              margin: 0,
             }}
           >
             السابق
@@ -149,15 +157,16 @@ export default function CheckInFlow({ onComplete, onCancel }) {
             disabled={doneCount === 0}
             style={{
               flex: 1,
-              background: doneCount === 0 ? 'rgba(255,255,255,0.14)' : '#FFFDF7',
-              color: doneCount === 0 ? 'rgba(255,255,255,0.6)' : 'var(--ink-on-ombre)',
+              background: doneCount === 0 ? 'rgba(30,61,33,0.25)' : 'var(--brand-deep)',
+              color: 'var(--cream)',
               border: 'none',
-              borderRadius: 13,
-              padding: 13,
-              fontSize: 14,
-              fontWeight: 800,
+              borderRadius: 14,
+              padding: 14,
+              fontSize: 14.5,
+              fontWeight: 900,
               cursor: doneCount === 0 ? 'default' : 'pointer',
               fontFamily: 'inherit',
+              boxShadow: doneCount === 0 ? 'none' : '0 6px 18px rgba(30,61,33,0.3)',
             }}
           >
             احفظ إنجازات اليوم ✅ {totalPoints > 0 && `· +${arabicDigits(totalPoints)}`}
@@ -167,15 +176,16 @@ export default function CheckInFlow({ onComplete, onCancel }) {
             onClick={() => goTo(index + 1)}
             style={{
               flex: 1,
-              background: 'rgba(255,255,255,0.14)',
+              background: 'var(--brand-deep)',
               border: 'none',
-              color: '#FFFDF7',
-              borderRadius: 13,
-              padding: 13,
-              fontSize: 13,
-              fontWeight: 800,
+              color: 'var(--cream)',
+              borderRadius: 14,
+              padding: 14,
+              fontSize: 14.5,
+              fontWeight: 900,
               cursor: 'pointer',
               fontFamily: 'inherit',
+              boxShadow: '0 6px 18px rgba(30,61,33,0.3)',
             }}
           >
             التالي ←
@@ -197,13 +207,14 @@ export default function CheckInFlow({ onComplete, onCancel }) {
               border: 'none',
               cursor: 'pointer',
               padding: 0,
-              background: i === index ? '#FFFDF7' : picks[p.id] ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)',
+              background:
+                i === index ? 'var(--brand-deep)' : picks[p.id] ? 'rgba(30,61,33,0.55)' : 'rgba(30,61,33,0.22)',
               transition: 'all 0.25s ease',
             }}
           />
         ))}
       </div>
-    </OmbrePage>
+    </ScenePage>
   )
 }
 
@@ -213,8 +224,9 @@ function OptionButton({ label, points, active, onClick }) {
       onClick={onClick}
       style={{
         width: '100%',
-        border: active ? 'none' : '1.5px solid rgba(255,255,255,0.3)',
-        background: active ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.13)',
+        border: active ? '2px solid var(--brand-deep)' : '1.5px solid rgba(30,61,33,0.22)',
+        background: active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.68)',
+        backdropFilter: 'blur(6px)',
         borderRadius: 15,
         padding: '13px 14px',
         cursor: 'pointer',
@@ -227,13 +239,13 @@ function OptionButton({ label, points, active, onClick }) {
         transition: 'all 0.18s ease',
       }}
     >
-      <span style={{ color: active ? 'var(--ink-on-ombre)' : '#FFFDF7', fontSize: 13, fontWeight: active ? 700 : 600, lineHeight: 1.5 }}>
+      <span style={{ color: 'var(--ink-scene)', fontSize: 13, fontWeight: active ? 800 : 600, lineHeight: 1.5 }}>
         {label}
       </span>
       <span
         style={{
-          background: active ? 'var(--ink-on-ombre)' : 'rgba(255,255,255,0.22)',
-          color: '#FFFDF7',
+          background: active ? 'var(--brand-deep)' : 'rgba(30,61,33,0.14)',
+          color: active ? 'var(--cream)' : 'var(--brand-deep)',
           fontSize: 11.5,
           fontWeight: 800,
           padding: '4px 10px',

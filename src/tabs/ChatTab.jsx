@@ -162,7 +162,7 @@ export default function ChatTab({
             >
               {!mine && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                  <Avatar skinIndex={msg.skinIndex} colorIndex={msg.colorIndex} size={26} />
+                  <Avatar name={msg.authorName} colorIndex={msg.colorIndex} size={26} />
                   <span style={{ fontSize: 12, fontWeight: 900, color: 'var(--ink-sub)' }}>
                     {msg.authorName}
                     {msg.isAdmin && ' 👑'}
@@ -322,7 +322,7 @@ export default function ChatTab({
       )}
 
       <div className="chat__composer">
-        <Avatar skinIndex={member.skinIndex} colorIndex={member.colorIndex} size={34} />
+        <Avatar name={member.name} colorIndex={member.colorIndex} size={34} />
         <textarea
           ref={inputRef}
           rows={1}

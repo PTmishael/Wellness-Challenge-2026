@@ -196,7 +196,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
         <MembersTab members={members} onDeleteMember={handleDeleteMember} />
       )}
 
-      <BottomNav active={tab} onChange={setTab} />
+      <BottomNav active={tab} onChange={setTab} dark={tab === 'chat'} />
 
       {isAdmin && (
         <button className="admin-fab" onClick={() => setTab('members')} title="لوحة الإدارة">

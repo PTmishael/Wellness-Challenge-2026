@@ -1,83 +1,74 @@
-import OmbrePage from '../components/OmbrePage'
+import ScenePage from '../components/ScenePage'
 import SlideToStart from '../components/SlideToStart'
-import { CHALLENGE_DAYS, DAILY_QUOTE, APP_OMBRE, APP_WAVE } from '../constants'
+import { CHALLENGE_DAYS, DAILY_QUOTE, SCENES } from '../constants'
 import { arabicDigits, challengeDay } from '../lib/utils'
 
 export default function HomeTab({ member, checkedIn, onStartCheckIn, onSignOut }) {
   const day = challengeDay()
 
   return (
-    <OmbrePage ombre={APP_OMBRE} wave={APP_WAVE}>
+    <ScenePage scene={SCENES.app}>
       {/* top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div style={{ display: 'flex', gap: 6 }}>
-          <div className="day-chip" style={{ flexDirection: 'column', textAlign: 'center', lineHeight: 1.1 }}>
-            <span style={{ fontSize: 14 }}>{arabicDigits(member.points)}</span>
-            <span style={{ fontSize: 8.5, fontWeight: 700, opacity: 0.8 }}>نقطة</span>
+          <div className="scene-chip">
+            <div style={{ fontSize: 14 }}>{arabicDigits(member.points)}</div>
+            <div style={{ fontSize: 8.5, fontWeight: 700, opacity: 0.75 }}>نقطة</div>
           </div>
-          <div className="day-chip" style={{ flexDirection: 'column', textAlign: 'center', lineHeight: 1.1 }}>
-            <span style={{ fontSize: 14 }}>{arabicDigits(day)}</span>
-            <span style={{ fontSize: 8.5, fontWeight: 700, opacity: 0.8 }}>من {arabicDigits(CHALLENGE_DAYS)}</span>
+          <div className="scene-chip">
+            <div style={{ fontSize: 14 }}>{arabicDigits(day)}</div>
+            <div style={{ fontSize: 8.5, fontWeight: 700, opacity: 0.75 }}>من {arabicDigits(CHALLENGE_DAYS)}</div>
           </div>
           <button
             onClick={onSignOut}
+            className="scene-chip"
             style={{
-              background: 'rgba(255,255,255,0.32)',
               border: 'none',
-              borderRadius: 12,
-              padding: '0 12px',
-              color: 'var(--ink-on-ombre)',
-              fontSize: 11,
-              fontWeight: 800,
               cursor: 'pointer',
               fontFamily: 'inherit',
+              fontSize: 11,
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
             خروج
           </button>
         </div>
         <div style={{ textAlign: 'left' }}>
-          <div className="ombre-sub" style={{ fontSize: 11 }}>أهلاً</div>
-          <div className="ombre-title" style={{ fontSize: 19 }}>{member.name}</div>
+          <div className="scene-sub" style={{ fontSize: 11 }}>أهلاً</div>
+          <div className="scene-title" style={{ fontSize: 19 }}>{member.name}</div>
         </div>
       </div>
 
-      {/* title + intro */}
-      <div style={{ marginTop: 16, textAlign: 'center' }}>
-        <h1 className="ombre-title" style={{ fontSize: 24 }}>تحدي العافية</h1>
-        <p className="ombre-sub" style={{ fontSize: 12, marginTop: 5 }}>
-          ٢٨ يوم · ٥ عادات · مجتمع يشجّعك
-        </p>
-        <p className="ombre-sub" style={{ fontSize: 12, lineHeight: 2.1, marginTop: 8 }}>
-          اجمعي نقاط وافتحي أسرار من كوتش مشاعل
-        </p>
-      </div>
-
-      {/* action zone */}
-      <div style={{ marginTop: 'auto', paddingTop: 34, textAlign: 'center' }}>
+      {/* the action, centred in the page */}
+      <div style={{ margin: 'auto 0', textAlign: 'center', width: '100%' }}>
         {checkedIn ? (
           <>
-            <div className="ombre-title--light" style={{ fontSize: 18 }}>خلّصتِ اليوم 🌟</div>
-            <div className="ombre-sub--light" style={{ fontSize: 12, marginTop: 5 }}>
+            <div className="scene-title" style={{ fontSize: 20 }}>خلّصتِ اليوم 🌟</div>
+            <div className="scene-sub" style={{ fontSize: 13, marginTop: 6 }}>
               تعالي بكرة للمتابعة الجديدة
             </div>
           </>
         ) : (
           <>
-            <div className="ombre-title--light" style={{ fontSize: 18 }}>جاهزة لليوم؟</div>
-            <div className="ombre-sub--light" style={{ fontSize: 12, marginTop: 4 }}>
+            <div className="scene-title" style={{ fontSize: 21 }}>جاهزة لليوم؟</div>
+            <div className="scene-sub" style={{ fontSize: 13, marginTop: 6 }}>
               خمس خطوات بس، وتخلصين
             </div>
             <SlideToStart onComplete={onStartCheckIn} />
           </>
         )}
+      </div>
 
-        <div style={{ marginTop: 14, background: 'rgba(255,255,255,0.12)', borderRadius: 13, padding: '11px 13px' }}>
-          <div className="ombre-sub--light" style={{ fontSize: 11, lineHeight: 1.85, fontStyle: 'italic' }}>
-            "{DAILY_QUOTE}"
-          </div>
+      {/* quote sits at the foot */}
+      <div className="scene-card" style={{ marginTop: 'auto' }}>
+        <div
+          className="scene-sub"
+          style={{ fontSize: 11.5, lineHeight: 1.85, fontStyle: 'italic', textAlign: 'center', textShadow: 'none' }}
+        >
+          "{DAILY_QUOTE}"
         </div>
       </div>
-    </OmbrePage>
+    </ScenePage>
   )
 }

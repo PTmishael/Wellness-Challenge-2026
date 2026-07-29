@@ -1,8 +1,9 @@
-import { avatarColor, avatarSkin } from '../lib/utils'
+import { avatarColor } from '../lib/utils'
 
-/** Emoji avatar on a soft coloured disc. */
-export default function Avatar({ skinIndex = 0, colorIndex = 0, size = 44, style = {} }) {
+/** A clean initial-based avatar on a soft coloured disc (no emoji). */
+export default function Avatar({ name = '', colorIndex = 0, size = 44, style = {} }) {
   const { bg, accent } = avatarColor(colorIndex)
+  const initial = (name.trim()[0] || '؟').toUpperCase()
 
   return (
     <div
@@ -11,12 +12,14 @@ export default function Avatar({ skinIndex = 0, colorIndex = 0, size = 44, style
         width: size,
         height: size,
         background: bg,
-        border: `2.5px solid ${accent}`,
-        fontSize: Math.round(size * 0.44),
+        border: `2px solid ${accent}`,
+        color: accent,
+        fontSize: Math.round(size * 0.42),
+        fontWeight: 800,
         ...style,
       }}
     >
-      {avatarSkin(skinIndex)}
+      {initial}
     </div>
   )
 }

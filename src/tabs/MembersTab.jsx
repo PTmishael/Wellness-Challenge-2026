@@ -162,7 +162,7 @@ export default function MembersTab({ members, onDeleteMember }) {
                 {rankBadge(m, i)}
               </div>
 
-              <Avatar skinIndex={m.skinIndex} colorIndex={m.colorIndex} size={42} />
+              <Avatar name={m.name} colorIndex={m.colorIndex} size={42} />
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>

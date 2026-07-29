@@ -30,17 +30,33 @@ export const AVATAR_COLORS = [
  * The 5 pillars — each with TWO point options (+1 / +2).
  * `grad` sets that pillar's full-page gradient in the swipe view.
  */
-/** Default app ombre — sand fading into basil green — used on
- *  welcome, auth, home, and achievements. */
-export const APP_OMBRE = 'linear-gradient(180deg,#EFE7D4 0%,#C9C9A8 28%,#8FA383 52%,#4C7A50 76%,#1E3D21 100%)'
-export const APP_WAVE = { d: 'M0,20 C90,-6 200,44 300,12', top: 46 }
+/**
+ * Scenic backdrops.
+ *
+ * Both images are LIGHT, so the UI on top uses dark green text with
+ * frosted-white cards. `wash` is layered over the photo to soften and
+ * brighten it and to tie it to the brand green.
+ */
+export const SCENES = {
+  /** Winding path through green hills — welcome, auth, home, achievements. */
+  app: {
+    image: 'journey.webp',
+    wash:
+      'linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.16) 34%, rgba(92,148,99,0.10) 62%, rgba(255,255,255,0.30) 100%)',
+  },
+  /** Calm mountains over still water — the 5 pillar check-in pages. */
+  pillar: {
+    image: 'mountains.jpg',
+    wash:
+      'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 40%, rgba(92,148,99,0.08) 70%, rgba(255,255,255,0.26) 100%)',
+  },
+}
+
 
 export const PILLARS = [
   {
     id: 'steps',
     name: 'الحركة',
-    ombre: 'linear-gradient(180deg,#EFE7D4 0%,#C9C9A8 28%,#8FA383 52%,#4C7A50 76%,#1E3D21 100%)',
-    wave: { d: 'M0,20 C90,-6 200,44 300,12', top: 64 },
     options: {
       one: '٣٠٠٠ خطوة أو ١٥ دقيقة مشي',
       two: '٨٠٠٠ خطوة أو أكثر · مشي ٣٥ دقيقة أو أكثر',
@@ -50,8 +66,6 @@ export const PILLARS = [
     id: 'water',
     name: 'الماء',
     note: 'الكوب ٣٣٠ مل',
-    ombre: 'linear-gradient(180deg,#E6F0F1 0%,#B9D3D3 26%,#6FA3A0 52%,#3E7A6B 76%,#1B4536 100%)',
-    wave: { d: 'M0,10 C100,40 200,-8 300,22', top: 62 },
     options: {
       one: '٤-٥ أكواب',
       two: '٧ أكواب أو أكثر',
@@ -60,8 +74,6 @@ export const PILLARS = [
   {
     id: 'fitness',
     name: 'اللياقة',
-    ombre: 'linear-gradient(180deg,#F3E3DE 0%,#D9B7B3 26%,#B08289 52%,#77596E 76%,#2E3A2E 100%)',
-    wave: { d: 'M0,24 C80,-4 210,46 300,8', top: 66 },
     options: {
       one: 'تحرّكت ١٠ دقايق (مشي أو تمدد)',
       two: 'تمرين مقاومة ٢٠ دقيقة أو أكثر',
@@ -70,8 +82,6 @@ export const PILLARS = [
   {
     id: 'sleep',
     name: 'النوم',
-    ombre: 'linear-gradient(180deg,#E9E6F0 0%,#C3BFDB 26%,#8B85AE 52%,#524E78 76%,#1E2038 100%)',
-    wave: { d: 'M0,16 C110,-8 190,48 300,14', top: 60 },
     options: {
       one: 'نمت ٧ ساعات',
       two: 'نمت قبل الساعة ١٢',
@@ -81,8 +91,6 @@ export const PILLARS = [
     id: 'nutrition',
     name: 'التغذية',
     note: 'الأهداف: ١. لا مقلي ولا غازي · ٢. وقفت الأكل الساعة ٨ · ٣. خضرة مع بروتين',
-    ombre: 'linear-gradient(180deg,#F1EAC9 0%,#D3C888 26%,#9FA84F 52%,#5D7A3B 76%,#1E3D21 100%)',
-    wave: { d: 'M0,22 C95,-4 205,46 300,10', top: 68 },
     options: {
       one: 'حققت هدفين',
       two: 'حققت الثلاثة كلها',

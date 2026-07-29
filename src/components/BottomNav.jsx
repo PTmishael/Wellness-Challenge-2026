@@ -4,9 +4,9 @@ const TABS = [
   { id: 'chat', icon: '💬', label: 'سواليف' },
 ]
 
-export default function BottomNav({ active, onChange }) {
+export default function BottomNav({ active, onChange, dark = false }) {
   return (
-    <nav className="bottomnav bottomnav--ombre">
+    <nav className={`bottomnav bottomnav--scene${dark ? ' bottomnav--onlight' : ''}`}>
       {TABS.map((tab) => (
         <button
           key={tab.id}

@@ -55,7 +55,7 @@ export default function SlideToStart({ label = 'اسحبي للبدء', doneLabe
       <div className="slide-track__fill" style={{ width: done ? '100%' : offset + 51 }} />
       <div
         className="slide-track__label"
-        style={{ opacity: done ? 1 : 1 - progress * 0.7, color: done ? 'var(--ink-on-ombre)' : undefined }}
+        style={{ opacity: done ? 1 : 1 - progress * 0.7, color: done ? 'var(--cream)' : undefined }}
       >
         {done ? doneLabel : label}
       </div>
