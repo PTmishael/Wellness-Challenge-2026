@@ -9,6 +9,16 @@ import { fetchMemberById, getSession, clearSession, isConfigured } from './lib/s
 import { today } from './lib/utils'
 
 const MIN_SPLASH_MS = 800
+/** Never let a slow network trap the user on the splash screen. */
+const BOOT_TIMEOUT_MS = 8000
+
+/** Resolve to null if a promise takes too long, instead of hanging forever. */
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve(null), ms)),
+  ])
+}
 
 export default function App() {
   const [screen, setScreen] = useState('splash')
@@ -21,29 +31,39 @@ export default function App() {
     let cancelled = false
     const startedAt = Date.now()
 
-    async function boot() {
-      const saved = getSession()
-
-      if (saved?.userId && isConfigured) {
-        const found = await fetchMemberById(saved.userId)
-        if (!cancelled && found) {
-          const sameDay = saved.date === today()
-          setMember(found)
-          setIsAdmin(Boolean(found.isAdmin))
-          setSession({
-            todayLog: sameDay ? saved.todayLog ?? {} : {},
-            checkedIn: sameDay ? Boolean(saved.checkedIn) : false,
-          })
-          setScreen('home')
-          return
-        }
-      }
-
-      // Let the splash breathe for a moment even on a fast connection.
+    function goToWelcome() {
       const wait = Math.max(0, MIN_SPLASH_MS - (Date.now() - startedAt))
       setTimeout(() => {
         if (!cancelled) setScreen('welcome')
       }, wait)
+    }
+
+    async function boot() {
+      try {
+        const saved = getSession()
+
+        if (saved?.userId && isConfigured) {
+          // If the database is slow or unreachable, fall through to the
+          // welcome screen rather than leaving a blank page.
+          const found = await withTimeout(fetchMemberById(saved.userId), BOOT_TIMEOUT_MS)
+
+          if (!cancelled && found) {
+            const sameDay = saved.date === today()
+            setMember(found)
+            setIsAdmin(Boolean(found.isAdmin))
+            setSession({
+              todayLog: sameDay ? saved.todayLog ?? {} : {},
+              checkedIn: sameDay ? Boolean(saved.checkedIn) : false,
+            })
+            setScreen('home')
+            return
+          }
+        }
+      } catch (error) {
+        console.error('Boot failed, showing welcome screen:', error)
+      }
+
+      goToWelcome()
     }
 
     boot()

@@ -34,6 +34,15 @@ export default function Splash() {
           Wellness Challenge
         </h1>
         <p className="scene-sub" style={{ fontSize: 13 }}>كوتش مشاعل · Coach Mishael</p>
+
+        <div className="splash-dots" aria-label="جاري التحميل">
+          <span />
+          <span />
+          <span />
+        </div>
+        <p className="scene-sub" style={{ fontSize: 11.5, marginTop: 14, opacity: 0.85 }}>
+          جاري التحميل… أول فتحة تاخذ شوي
+        </p>
       </div>
     </div>
   )
