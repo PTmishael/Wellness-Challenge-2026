@@ -42,13 +42,13 @@ export const SCENES = {
   app: {
     image: 'journey.webp',
     wash:
-      'linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.16) 34%, rgba(92,148,99,0.10) 62%, rgba(255,255,255,0.30) 100%)',
+      'linear-gradient(180deg, rgba(255,255,255,0.64) 0%, rgba(255,255,255,0.56) 40%, rgba(255,255,255,0.62) 100%)',
   },
   /** Calm mountains over still water — the 5 pillar check-in pages. */
   pillar: {
     image: 'mountains.jpg',
     wash:
-      'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 40%, rgba(92,148,99,0.08) 70%, rgba(255,255,255,0.26) 100%)',
+      'linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.54) 40%, rgba(255,255,255,0.60) 100%)',
   },
 }
 
@@ -324,6 +324,89 @@ export const UNLOCKS = [
         body:
           '✔️ قومي ووقفي كل ساعة.\n✔️ امشي بعد وجبة وحدة.\n✔️ كُلي وجبة بدون جوال.\n✔️ اطلعي بره ١٠ دقايق.\n✔️ تمدّدي وأنتِ تنتظرين قهوتك.\n✔️ ركني السيارة أبعد.\n✔️ اشربي ماء قبل القهوة.\n✔️ بدّلي مشروب سكري بواحد صحي.\n✔️ نامي قبل بنص ساعة.\n✔️ اطبخي وجبة بنفسك.',
       },
+    ],
+  },
+]
+
+/**
+ * ── Brain games: Arabic crosswords ──────────────────────────
+ *
+ * Each puzzle is a "comb": one vertical answer running down a fixed
+ * column, with a horizontal answer on every row crossing it. Every
+ * across answer has the vertical word's letter at index `seedCol`,
+ * so the grid is always valid.
+ *
+ * Answers are single letters per cell, written right-to-left — index 0
+ * of each answer is the RIGHTMOST cell.
+ *
+ * Themes lean on Saudi places, landmarks and everyday life, plus
+ * general knowledge — deliberately not all fitness.
+ */
+export const CROSSWORDS = [
+  {
+    id: 'riyadh',
+    seedCol: 2,
+    vertical: 'الرياض',
+    verticalClue: 'العاصمة 🇸🇦',
+    rows: [
+      { answer: 'سماء', clue: 'فيها النجوم والقمر' },
+      { answer: 'جبل', clue: 'مرتفع من الأرض' },
+      { answer: 'بحر', clue: 'الأحمر أو العربي' },
+      { answer: 'شاي', clue: 'مشروب ساخن يقدّم مع النعناع' },
+      { answer: 'كتاب', clue: 'خير جليس في الزمان' },
+      { answer: 'بيض', clue: 'أشهر بروتين للفطور' },
+    ],
+  },
+  {
+    id: 'alula',
+    seedCol: 2,
+    vertical: 'العلا',
+    verticalClue: 'محافظة أثرية شمال غرب المملكة',
+    rows: [
+      { answer: 'كتاب', clue: 'يُقرأ ويُهدى' },
+      { answer: 'عسل', clue: 'حلو طبيعي من النحل' },
+      { answer: 'ربع', clue: 'ال___ الخالي — أكبر صحراء رملية' },
+      { answer: 'جمل', clue: 'سفينة الصحراء' },
+      { answer: 'مساء', clue: 'عكس صباح' },
+    ],
+  },
+  {
+    id: 'neom',
+    seedCol: 2,
+    vertical: 'نيوم',
+    verticalClue: 'مشروع مستقبلي على البحر الأحمر',
+    rows: [
+      { answer: 'لبن', clue: 'يشرب مع التمر' },
+      { answer: 'شاي', clue: 'يقدّم في الاستكانة' },
+      { answer: 'حلو', clue: 'طعم التمر' },
+      { answer: 'علم', clue: 'راية الدولة' },
+    ],
+  },
+  {
+    id: 'qiddiya',
+    seedCol: 2,
+    vertical: 'القدية',
+    verticalClue: 'وجهة الترفيه والرياضة قرب الرياض',
+    rows: [
+      { answer: 'غزال', clue: 'حيوان رشيق سريع' },
+      { answer: 'عمل', clue: 'وظيفة أو شغل' },
+      { answer: 'برق', clue: 'يسبق الرعد' },
+      { answer: 'وعد', clue: 'التزام بالكلمة' },
+      { answer: 'بني', clue: 'لون التمر والقهوة' },
+      { answer: 'قوة', clue: 'عكس ضعف' },
+    ],
+  },
+  {
+    id: 'ramadan',
+    seedCol: 2,
+    vertical: 'رمضان',
+    verticalClue: 'شهر الصيام',
+    rows: [
+      { answer: 'قمر', clue: 'يُرى في الليل ويحدّد الشهر' },
+      { answer: 'علم', clue: 'نور وتعلّم' },
+      { answer: 'حوض', clue: 'مكان الماء' },
+      { answer: 'حصان', clue: 'يركبه الفارس' },
+      { answer: 'غصن', clue: 'فرع الشجرة' },
     ],
   },
 ]

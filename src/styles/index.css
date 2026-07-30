@@ -252,7 +252,7 @@ textarea.input { resize: none; }
 }
 .bottomnav button {
   flex: 1;
-  padding: 9px 4px 8px;
+  padding: 9px 2px 8px;
   background: none;
   border: none;
   cursor: pointer;
@@ -582,7 +582,8 @@ textarea.input { resize: none; }
   position: relative;
   min-height: 100dvh;
   overflow: hidden;
-  background: #E6EDE4;
+  /* White underneath so the wash lightens the photo instead of greying it */
+  background: #FFFFFF;
 }
 .scene-page__photo {
   position: absolute;
@@ -723,21 +724,13 @@ textarea.input { resize: none; }
 .bottomnav--scene button.is-active { color: var(--brand-deep); }
 .bottomnav--scene button.is-active .bottomnav__icon { opacity: 1; }
 .bottomnav--scene button.is-active::before { display: none; }
-.bottomnav--scene button.is-center .bottomnav__icon {
-  width: 44px;
-  height: 44px;
+.bottomnav--scene button.is-active .bottomnav__icon {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 10px rgba(30, 61, 33, 0.16);
   opacity: 1;
-  margin-top: -8px;
-  margin-bottom: -6px;
-}
-.bottomnav--scene button.is-active.is-center .bottomnav__icon {
-  background: var(--brand-deep);
 }
 
 /* On the light chat page, nav labels need dark text on a solid bar */
@@ -748,8 +741,10 @@ textarea.input { resize: none; }
 }
 .bottomnav--onlight button { color: #1E2B1F; text-shadow: none; }
 .bottomnav--onlight button.is-active { color: var(--brand); }
-.bottomnav--onlight button.is-center .bottomnav__icon { background: var(--brand-tint); }
-.bottomnav--onlight button.is-active.is-center .bottomnav__icon { background: var(--brand); }
+.bottomnav--onlight button.is-active .bottomnav__icon {
+  background: var(--brand-tint);
+  box-shadow: none;
+}
 
 /* ── Toast + admin shortcut ────────────────────────────── */
 .toast {
@@ -842,3 +837,56 @@ textarea.input { resize: none; }
 }
 .splash-dots span:nth-child(2) { animation-delay: 0.16s; }
 .splash-dots span:nth-child(3) { animation-delay: 0.32s; }
+
+/* ── Crossword (brain games) ───────────────────────────── */
+.xw {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+.xw__row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.xw__num {
+  width: 14px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #7D8C80;
+  flex-shrink: 0;
+}
+.xw__cell {
+  width: 46px;
+  height: 46px;
+  text-align: center;
+  font-size: 19px;
+  font-weight: 800;
+  font-family: inherit;
+  color: var(--ink-scene);
+  border: 2px solid rgba(30, 61, 33, 0.22);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 11px;
+  box-sizing: border-box;
+  padding: 0;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.xw__cell:focus {
+  outline: none;
+  border-color: var(--brand-deep);
+  background: #FFFFFF;
+}
+/* The column holding the vertical answer */
+.xw__cell.is-seed {
+  border-color: var(--brand-deep);
+  background: rgba(30, 61, 33, 0.09);
+}
+.xw__cell.is-right { border-color: #2E7D4F; background: rgba(46, 125, 79, 0.12); }
+.xw__cell.is-wrong { border-color: #C2544B; background: rgba(194, 84, 75, 0.1); }
+.xw__gap { width: 46px; height: 46px; }
+
+@media (max-width: 360px) {
+  .xw__cell, .xw__gap { width: 40px; height: 40px; font-size: 17px; }
+}

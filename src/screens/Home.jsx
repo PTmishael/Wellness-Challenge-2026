@@ -4,6 +4,7 @@ import HomeTab from '../tabs/HomeTab'
 import CheckInFlow from '../tabs/CheckInFlow'
 import ChatTab from '../tabs/ChatTab'
 import AchievementsTab from '../tabs/AchievementsTab'
+import BrainGamesTab from '../tabs/BrainGamesTab'
 import MembersTab from '../tabs/MembersTab'
 import { PILLARS } from '../constants'
 import {
@@ -191,6 +192,8 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       )}
 
       {tab === 'achievements' && <AchievementsTab member={member} isAdmin={isAdmin} />}
+
+      {tab === 'games' && <BrainGamesTab />}
 
       {tab === 'members' && isAdmin && (
         <MembersTab members={members} onDeleteMember={handleDeleteMember} />
