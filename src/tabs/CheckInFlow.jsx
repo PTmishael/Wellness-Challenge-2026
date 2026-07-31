@@ -4,18 +4,22 @@ import { PILLARS, OPTION_POINTS, CHALLENGE_DAYS, SCENES } from '../constants'
 import { arabicDigits, challengeDay, funFactFor } from '../lib/utils'
 
 export default function CheckInFlow({ onComplete, onCancel }) {
-  const [index, setIndex] = useState(0)
+  // Two steps per pillar: 0 = score, 1 = its information page.
+  const STEPS = PILLARS.length * 2
+  const [step, setStep] = useState(0)
   const [picks, setPicks] = useState({}) // { pillarId: 'one' | 'two' }
   const [dir, setDir] = useState('next')
   const [done, setDone] = useState(false)
 
   function goTo(target) {
-    setDir(target > index ? 'next' : 'prev')
-    setIndex(Math.max(0, Math.min(target, PILLARS.length - 1)))
+    setDir(target > step ? 'next' : 'prev')
+    setStep(Math.max(0, Math.min(target, STEPS - 1)))
   }
 
+  const index = Math.floor(step / 2)
+  const onInfoPage = step % 2 === 1
   const pillar = PILLARS[index]
-  const isLast = index === PILLARS.length - 1
+  const isLast = step === STEPS - 1
   const day = challengeDay()
   const doneCount = Object.keys(picks).length
   const totalPoints = Object.values(picks).reduce((s, opt) => s + OPTION_POINTS[opt], 0)
@@ -27,7 +31,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
       else next[pillar.id] = option
       return next
     })
-    if (!isLast) setTimeout(() => goTo(index + 1), 380)
+    if (!isLast) setTimeout(() => goTo(step + 1), 380)
   }
 
   function submit() {
@@ -61,7 +65,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
   }
 
   return (
-    <ScenePage scene={SCENES.pillar} key={pillar.id} className={`checkin-page checkin-page--${dir}`}>
+    <ScenePage scene={SCENES.pillar} key={step} className={`checkin-page checkin-page--${dir}`}>
       {/* top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button
@@ -80,63 +84,143 @@ export default function CheckInFlow({ onComplete, onCancel }) {
         </span>
       </div>
 
-      {/* circular badge */}
-      <div style={{ textAlign: 'center', marginTop: 22 }}>
-        <div
-          style={{
-            width: 132,
-            height: 132,
-            margin: '0 auto',
-            borderRadius: '50%',
-            background: selected ? 'rgba(30,61,33,0.85)' : 'rgba(255,255,255,0.6)',
-            backdropFilter: 'blur(6px)',
-            border: `2px solid ${selected ? 'var(--brand-deep)' : 'rgba(30,61,33,0.35)'}`,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease',
-          }}
-        >
-          <div style={{ color: selected ? 'var(--cream)' : 'var(--ink-scene)', fontSize: 24, fontWeight: 800 }}>
-            {pillar.name}
+      {onInfoPage ? (
+        /* ── The pillar's information, on its own page ── */
+        <div style={{ margin: 'auto 0' }}>
+          <div style={{ textAlign: 'center' }}>
+            <span
+              style={{
+                display: 'inline-block',
+                background: 'rgba(30,61,33,0.1)',
+                color: 'var(--brand-deep)',
+                fontSize: 11,
+                fontWeight: 800,
+                padding: '6px 14px',
+                borderRadius: 20,
+              }}
+            >
+              💡 معلومة {pillar.name}
+            </span>
           </div>
-          {selected ? (
-            <div style={{ color: '#D9E9DB', fontSize: 12, marginTop: 4, fontWeight: 700 }}>
-              +{arabicDigits(OPTION_POINTS[selected])} {OPTION_POINTS[selected] === 1 ? 'نقطة' : 'نقاط'} ✓
+
+          <div className="scene-card" style={{ marginTop: 14, padding: '20px 18px' }}>
+            <div
+              style={{
+                color: 'var(--ink-scene)',
+                fontSize: 14.5,
+                lineHeight: 2.1,
+                fontWeight: 600,
+                textAlign: 'center',
+              }}
+            >
+              {funFactFor(pillar.id)}
             </div>
-          ) : (
-            <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, marginTop: 4 }}>اختاري مستواك</div>
-          )}
-        </div>
-        {pillar.note && (
-          <div className="scene-sub" style={{ fontSize: 11, marginTop: 11, lineHeight: 1.75, padding: '0 6px' }}>
-            {pillar.note}
           </div>
-        )}
-      </div>
 
-      {/* fun fact — right under the pillar */}
-      <div className="scene-card" style={{ marginTop: 14 }}>
-        <div style={{ color: 'var(--brand-deep)', fontSize: 10, fontWeight: 800, marginBottom: 4 }}>
-          💡 معلومة اليوم
+          <div style={{ textAlign: 'center', color: 'var(--ink-scene-sub)', fontSize: 10.5, marginTop: 12 }}>
+            معلومة جديدة كل يوم 🌿
+          </div>
         </div>
-        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, lineHeight: 1.75, fontWeight: 600 }}>
-          {funFactFor(pillar.id)}
-        </div>
-      </div>
+      ) : (
+        <>
+          {/* circular badge */}
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <div
+              style={{
+                width: pillar.goals ? 104 : 132,
+                height: pillar.goals ? 104 : 132,
+                margin: '0 auto',
+                borderRadius: '50%',
+                background: selected ? 'rgba(30,61,33,0.85)' : 'rgba(255,255,255,0.75)',
+                border: `2px solid ${selected ? 'var(--brand-deep)' : 'rgba(30,61,33,0.35)'}`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <div
+                style={{
+                  color: selected ? 'var(--cream)' : 'var(--ink-scene)',
+                  fontSize: pillar.goals ? 20 : 24,
+                  fontWeight: 800,
+                }}
+              >
+                {pillar.name}
+              </div>
+              {selected ? (
+                <div style={{ color: '#D9E9DB', fontSize: 11.5, marginTop: 4, fontWeight: 700 }}>
+                  +{arabicDigits(OPTION_POINTS[selected])} {OPTION_POINTS[selected] === 1 ? 'نقطة' : 'نقاط'} ✓
+                </div>
+              ) : (
+                !pillar.goals && (
+                  <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, marginTop: 4 }}>اختاري مستواك</div>
+                )
+              )}
+            </div>
+          </div>
 
-      {/* two options */}
-      <div style={{ marginTop: 13, display: 'flex', flexDirection: 'column', gap: 9 }}>
-        <OptionButton label={pillar.options.one} points={1} active={selected === 'one'} onClick={() => choose('one')} />
-        <OptionButton label={pillar.options.two} points={2} active={selected === 'two'} onClick={() => choose('two')} />
-      </div>
+          {/* nutrition goals, spelled out clearly */}
+          {pillar.goals && (
+            <div className="scene-card" style={{ marginTop: 14 }}>
+              <div
+                style={{
+                  color: 'var(--brand-deep)',
+                  fontSize: 10,
+                  fontWeight: 900,
+                  textAlign: 'center',
+                  marginBottom: 9,
+                }}
+              >
+                أهداف اليوم الثلاثة
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {pillar.goals.map((goal, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
+                    <span
+                      style={{
+                        width: 21,
+                        height: 21,
+                        borderRadius: '50%',
+                        background: 'rgba(30,61,33,0.1)',
+                        color: 'var(--brand-deep)',
+                        fontSize: 10,
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {arabicDigits(i + 1)}
+                    </span>
+                    <span style={{ color: 'var(--ink-scene)', fontSize: 12, fontWeight: 700 }}>{goal}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {pillar.note && !pillar.goals && (
+            <div className="scene-sub" style={{ fontSize: 11, marginTop: 11, lineHeight: 1.75, textAlign: 'center' }}>
+              {pillar.note}
+            </div>
+          )}
+
+          {/* two options */}
+          <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>
+            <OptionButton label={pillar.options.one} points={1} active={selected === 'one'} onClick={() => choose('one')} />
+            <OptionButton label={pillar.options.two} points={2} active={selected === 'two'} onClick={() => choose('two')} />
+          </div>
+        </>
+      )}
 
       {/* nav */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 'auto', paddingTop: 16 }}>
-        {index > 0 && (
+        {step > 0 && (
           <button
-            onClick={() => goTo(index - 1)}
+            onClick={() => goTo(step - 1)}
             className="btn--scene-ghost"
             style={{
               borderRadius: 14,
@@ -173,7 +257,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
           </button>
         ) : (
           <button
-            onClick={() => goTo(index + 1)}
+            onClick={() => goTo(step + 1)}
             style={{
               flex: 1,
               background: 'var(--brand-deep)',
@@ -188,7 +272,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
               boxShadow: '0 6px 18px rgba(30,61,33,0.3)',
             }}
           >
-            التالي ←
+            {onInfoPage && index < PILLARS.length - 1 ? `${PILLARS[index + 1].name} ←` : 'التالي ←'}
           </button>
         )}
       </div>
@@ -198,7 +282,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
         {PILLARS.map((p, i) => (
           <button
             key={p.id}
-            onClick={() => goTo(i)}
+            onClick={() => goTo(i * 2)}
             aria-label={p.name}
             style={{
               width: i === index ? 22 : 8,

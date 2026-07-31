@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import ScenePage from '../components/ScenePage'
+import ArticleFigure from '../components/ArticleFigure'
+import PlankChallenge from '../components/PlankChallenge'
 import { UNLOCKS, SCENES } from '../constants'
 import { arabicDigits, unlockedIds } from '../lib/utils'
-
 
 export default function AchievementsTab({ member, isAdmin = false }) {
   const [openId, setOpenId] = useState(null)
@@ -17,6 +18,7 @@ export default function AchievementsTab({ member, isAdmin = false }) {
   const span = Math.max(nextThreshold - prevThreshold, 1)
   const progress = nextLock ? Math.min(((points - prevThreshold) / span) * 100, 100) : 100
 
+  /* ── Reading one article ── */
   if (article) {
     return (
       <ScenePage scene={SCENES.app}>
@@ -24,13 +26,33 @@ export default function AchievementsTab({ member, isAdmin = false }) {
         <h2 className="scene-title" style={{ fontSize: 19, marginTop: 16, lineHeight: 1.5 }}>
           {article.q}
         </h2>
-        <div className="scene-card" style={{ marginTop: 16 }}><div style={{ color: 'var(--ink-scene-sub)', fontSize: 14, lineHeight: 2, whiteSpace: 'pre-wrap', fontWeight: 600 }}>
-          {article.body || article.placeholder}
-        </div></div>
+
+        {article.video && <VideoButton href={article.video} label={article.videoLabel} />}
+
+        {article.figure && (
+          <div style={{ marginTop: 14 }}>
+            <ArticleFigure id={article.figure} />
+          </div>
+        )}
+
+        <div className="scene-card" style={{ marginTop: article.figure ? 0 : 14 }}>
+          <div
+            style={{
+              color: 'var(--ink-scene-sub)',
+              fontSize: 14,
+              lineHeight: 2,
+              whiteSpace: 'pre-wrap',
+              fontWeight: 600,
+            }}
+          >
+            {article.body || article.placeholder}
+          </div>
+        </div>
       </ScenePage>
     )
   }
 
+  /* ── Browsing one library ── */
   if (openId) {
     const lib = UNLOCKS.find((u) => u.id === openId)
     return (
@@ -39,7 +61,17 @@ export default function AchievementsTab({ member, isAdmin = false }) {
         <h2 className="scene-title" style={{ fontSize: 20, marginTop: 16 }}>{lib.title}</h2>
         <p className="scene-sub" style={{ fontSize: 12, marginTop: 4, lineHeight: 1.7 }}>{lib.subtitle}</p>
 
-        <div style={{ marginTop: 17, display: 'flex', flexDirection: 'column', gap: 9 }}>
+        {/* library-level video sits at the very top */}
+        {lib.video && <VideoButton href={lib.video} label={lib.videoLabel} />}
+
+        {/* the plank challenge lives inside its unlock */}
+        {lib.challenge === 'plank' && (
+          <div style={{ marginTop: 16 }}>
+            <PlankChallenge member={member} />
+          </div>
+        )}
+
+        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 9 }}>
           {lib.articles.map((a, i) => (
             <button
               key={i}
@@ -58,7 +90,9 @@ export default function AchievementsTab({ member, isAdmin = false }) {
                 gap: 10,
               }}
             >
-              <span style={{ color: 'var(--ink-scene)', fontSize: 13, fontWeight: 600, lineHeight: 1.6 }}>{a.q}</span>
+              <span style={{ color: 'var(--ink-scene)', fontSize: 13, fontWeight: 600, lineHeight: 1.6 }}>
+                {a.q}
+              </span>
               <span style={{ color: 'var(--brand-deep)', fontSize: 15 }}>←</span>
             </button>
           ))}
@@ -67,6 +101,7 @@ export default function AchievementsTab({ member, isAdmin = false }) {
     )
   }
 
+  /* ── The unlock list, with a teaser under each ── */
   return (
     <ScenePage scene={SCENES.app}>
       <div style={{ textAlign: 'center' }}>
@@ -104,7 +139,14 @@ export default function AchievementsTab({ member, isAdmin = false }) {
             )}
           </div>
           <div style={{ height: 8, background: 'rgba(30,61,33,0.14)', borderRadius: 20, overflow: 'hidden' }}>
-            <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg,#5C9463,#1E3D21)', borderRadius: 20 }} />
+            <div
+              style={{
+                width: `${progress}%`,
+                height: '100%',
+                background: 'linear-gradient(90deg,#5C9463,#1E3D21)',
+                borderRadius: 20,
+              }}
+            />
           </div>
         </div>
       )}
@@ -112,52 +154,99 @@ export default function AchievementsTab({ member, isAdmin = false }) {
       <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
         {UNLOCKS.map((u) => {
           const open = unlocked.has(u.id)
+          const teaser = u.articles.slice(0, 2)
+
           return (
             <button
               key={u.id}
               onClick={() => open && setOpenId(u.id)}
               disabled={!open}
               style={{
-                background: open ? 'rgba(255,255,255,0.82)' : 'rgba(255,255,255,0.45)',
+                background: open ? 'rgba(255,255,255,0.82)' : 'rgba(255,255,255,0.5)',
                 border: `1.5px solid ${open ? 'rgba(30,61,33,0.3)' : 'rgba(30,61,33,0.12)'}`,
                 borderRadius: 15,
                 padding: 13,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
                 cursor: open ? 'pointer' : 'default',
-                opacity: open ? 1 : 0.65,
+                opacity: open ? 1 : 0.75,
                 fontFamily: 'inherit',
                 textAlign: 'right',
+                display: 'block',
+                width: '100%',
               }}
             >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 11,
+                    flexShrink: 0,
+                    background: open ? 'rgba(30,61,33,0.12)' : 'rgba(30,61,33,0.06)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 17,
+                  }}
+                >
+                  {open ? '🔓' : '🔒'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: 'var(--ink-scene)', fontSize: 13.5, fontWeight: 800 }}>{u.title}</div>
+                  <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, marginTop: 2 }}>
+                    {open ? 'مفتوحة — اضغطي للقراءة' : `تفتح عند ${arabicDigits(u.threshold)} نقطة`}
+                  </div>
+                </div>
+                <span style={{ color: open ? 'var(--brand-deep)' : 'rgba(30,61,33,0.35)', fontSize: 16 }}>←</span>
+              </div>
+
+              {/* teaser — a glimpse of what's inside */}
               <div
                 style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 12,
-                  flexShrink: 0,
-                  background: open ? 'rgba(30,61,33,0.12)' : 'rgba(30,61,33,0.06)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 19,
+                  marginTop: 9,
+                  paddingTop: 9,
+                  borderTop: '1px dashed rgba(30,61,33,0.18)',
+                  color: 'var(--ink-scene-sub)',
+                  fontSize: 10.5,
+                  lineHeight: 1.9,
+                  fontWeight: 600,
                 }}
               >
-                {open ? '🔓' : '🔒'}
+                {teaser.map((a, i) => (
+                  <div key={i}>• {a.q}</div>
+                ))}
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: 'var(--ink-scene)', fontSize: 13.5, fontWeight: 800 }}>{u.title}</div>
-                <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, marginTop: 2, lineHeight: 1.5 }}>
-                  {open ? 'مفتوحة — اضغطي للقراءة' : `تفتح عند ${arabicDigits(u.threshold)} نقطة`}
-                </div>
-              </div>
-              {open && <span style={{ color: 'var(--brand-deep)', fontSize: 15 }}>←</span>}
             </button>
           )
         })}
       </div>
     </ScenePage>
+  )
+}
+
+/** Opens YouTube in a new tab — embedding is blocked on many videos. */
+function VideoButton({ href, label }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        marginTop: 14,
+        background: 'var(--brand-deep)',
+        color: 'var(--cream)',
+        borderRadius: 14,
+        padding: 13,
+        fontSize: 13.5,
+        fontWeight: 800,
+        textDecoration: 'none',
+      }}
+    >
+      ▶︎ {label ?? 'شاهدي الفيديو'}
+    </a>
   )
 }
 
@@ -171,4 +260,5 @@ const backBtn = {
   fontWeight: 800,
   cursor: 'pointer',
   fontFamily: 'inherit',
+  alignSelf: 'flex-start',
 }

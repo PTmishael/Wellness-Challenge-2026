@@ -227,3 +227,52 @@ export async function deleteMessage(id) {
   }
   return true
 }
+
+/* ── Plank challenge leaderboard ─────────────────────────── */
+
+function plankFromRow(row) {
+  return {
+    id: row.id,
+    memberId: row.member_id,
+    name: row.name,
+    seconds: row.seconds ?? 0,
+    createdAt: row.created_at ? new Date(row.created_at).getTime() : Date.now(),
+  }
+}
+
+/** Best time per member, longest first. */
+export async function fetchPlankBoard(limit = 50) {
+  if (!isConfigured) return []
+  const { data, error } = await supabase
+    .from('plank_scores')
+    .select('*')
+    .order('seconds', { ascending: false })
+    .limit(limit)
+  if (error) {
+    console.error('fetchPlankBoard failed:', error.message)
+    return []
+  }
+
+  // Keep only each member's personal best.
+  const best = new Map()
+  for (const row of data.map(plankFromRow)) {
+    const current = best.get(row.memberId)
+    if (!current || row.seconds > current.seconds) best.set(row.memberId, row)
+  }
+  return [...best.values()].sort((a, b) => b.seconds - a.seconds)
+}
+
+/** Record an attempt. Returns the saved row, or null on failure. */
+export async function savePlankScore({ memberId, name, seconds }) {
+  if (!isConfigured) return null
+  const { data, error } = await supabase
+    .from('plank_scores')
+    .insert({ id: `plank_${Date.now()}`, member_id: memberId, name, seconds })
+    .select()
+    .single()
+  if (error) {
+    console.error('savePlankScore failed:', error.message)
+    return null
+  }
+  return plankFromRow(data)
+}

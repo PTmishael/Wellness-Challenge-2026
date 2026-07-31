@@ -280,6 +280,17 @@ create table messages (
   created_at timestamptz default now()
 );
 
+create table plank_scores (
+  id text primary key,
+  member_id text,
+  name text,
+  seconds int default 0,
+  created_at timestamptz default now()
+);
+
+alter table plank_scores enable row level security;
+create policy "open" on plank_scores for all using (true) with check (true);
+
 alter table members enable row level security;
 alter table messages enable row level security;
 create policy "open" on members for all using (true) with check (true);
