@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Logo from '../components/Logo'
 import Avatar from '../components/Avatar'
 import { timeAgo } from '../lib/utils'
+import { uploadChatPhoto } from '../lib/storage'
 import { read, write } from '../lib/storage'
 
 const notifyKey = (memberId) => `wellness_challenge:notify:${memberId}`
@@ -18,6 +19,11 @@ export default function ChatTab({
   onSignOut,
 }) {
   const [draft, setDraft] = useState('')
+  const [photo, setPhoto] = useState(null)      // { file, preview }
+  const [uploading, setUploading] = useState(false)
+  const [photoError, setPhotoError] = useState('')
+  const [lightbox, setLightbox] = useState(null) // enlarged image url
+  const fileRef = useRef(null)
   const [editingId, setEditingId] = useState(null)
   const [editDraft, setEditDraft] = useState('')
   const [replyTarget, setReplyTarget] = useState(null) // { id, name, snippet }
@@ -69,12 +75,41 @@ export default function ChatTab({
     inputRef.current?.focus()
   }
 
-  function handleSend() {
+  function pickPhoto(file) {
+    setPhotoError('')
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setPhotoError('اختاري صورة')
+      return
+    }
+    setPhoto({ file, preview: URL.createObjectURL(file) })
+  }
+
+  function clearPhoto() {
+    if (photo?.preview) URL.revokeObjectURL(photo.preview)
+    setPhoto(null)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  async function handleSend() {
     const text = draft.trim()
-    if (!text) return
-    onSend(text, replyTarget)
+    if (!text && !photo) return
+
+    let imageUrl = null
+    if (photo) {
+      setUploading(true)
+      imageUrl = await uploadChatPhoto(photo.file, member.id)
+      setUploading(false)
+      if (!imageUrl) {
+        setPhotoError('تعذّر رفع الصورة، حاولي مرة ثانية')
+        return
+      }
+    }
+
+    onSend(text, replyTarget, imageUrl)
     setDraft('')
     setReplyTarget(null)
+    clearPhoto()
   }
 
   function startEdit(message) {
@@ -247,9 +282,21 @@ export default function ChatTab({
                     </div>
                   )}
 
-                  <div className="bubble__text" style={{ whiteSpace: 'pre-wrap' }}>
-                    {msg.text}
-                  </div>
+                  {msg.imageUrl && (
+                    <button
+                      className="bubble__photo"
+                      onClick={() => setLightbox(msg.imageUrl)}
+                      aria-label="تكبير الصورة"
+                    >
+                      <img src={msg.imageUrl} alt="" loading="lazy" />
+                    </button>
+                  )}
+
+                  {msg.text && (
+                    <div className="bubble__text" style={{ whiteSpace: 'pre-wrap' }}>
+                      {msg.text}
+                    </div>
+                  )}
 
                   <Reactions
                     reactions={msg.reactions}
@@ -328,8 +375,33 @@ export default function ChatTab({
         </div>
       )}
 
+      {photo && (
+        <div className="chat__photo-preview">
+          <img src={photo.preview} alt="" />
+          <button onClick={clearPhoto} aria-label="إزالة الصورة">✕</button>
+          <span>{uploading ? 'جاري الرفع…' : 'جاهزة للإرسال'}</span>
+        </div>
+      )}
+      {photoError && <div className="chat__photo-error">{photoError}</div>}
+
       <div className="chat__composer">
         <Avatar name={member.name} colorIndex={member.colorIndex} size={34} />
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => pickPhoto(e.target.files?.[0])}
+        />
+        <button
+          className="chat__photo-btn"
+          onClick={() => fileRef.current?.click()}
+          aria-label="إرفاق صورة"
+          disabled={uploading}
+        >
+          📷
+        </button>
         <textarea
           ref={inputRef}
           rows={1}
@@ -343,10 +415,17 @@ export default function ChatTab({
           }}
           placeholder="اكتبي رسالة…"
         />
-        <button className="chat__send" onClick={handleSend} disabled={!draft.trim()} aria-label="إرسال">
-          ➤
+        <button className="chat__send" onClick={handleSend} disabled={(!draft.trim() && !photo) || uploading} aria-label="إرسال">
+          {uploading ? '…' : '➤'}
         </button>
       </div>
+
+      {lightbox && (
+        <div className="lightbox" onClick={() => setLightbox(null)} role="dialog" aria-label="عرض الصورة">
+          <img src={lightbox} alt="" />
+          <button className="lightbox__close" aria-label="إغلاق">✕</button>
+        </div>
+      )}
     </div>
   )
 }

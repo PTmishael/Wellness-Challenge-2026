@@ -956,3 +956,106 @@ textarea.input { resize: none; }
   /* No hover on touch devices — keep the picker visible but soft */
   .reactions__pick { opacity: 0.65; }
 }
+
+/* ── Chat photos ───────────────────────────────────────── */
+.bubble__photo {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: zoom-in;
+  margin-bottom: 6px;
+}
+.bubble__photo img {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.chat__photo-btn {
+  background: none;
+  border: none;
+  font-size: 19px;
+  cursor: pointer;
+  padding: 4px 6px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.chat__photo-btn:disabled { opacity: 0.4; cursor: default; }
+
+.chat__photo-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--brand-tint);
+  border-top: 1px solid var(--border);
+}
+.chat__photo-preview img {
+  width: 46px;
+  height: 46px;
+  object-fit: cover;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+.chat__photo-preview span {
+  flex: 1;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-sub);
+}
+.chat__photo-preview button {
+  background: rgba(0, 0, 0, 0.08);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ink-sub);
+  flex-shrink: 0;
+}
+.chat__photo-error {
+  padding: 7px 14px;
+  background: #FDECEA;
+  color: #B3261E;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Tap a photo to see it full size */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: zoom-out;
+  animation: fade-up 0.2s ease;
+}
+.lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+}
+.lightbox__close {
+  position: absolute;
+  top: calc(14px + env(safe-area-inset-top));
+  inset-inline-end: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  cursor: pointer;
+}

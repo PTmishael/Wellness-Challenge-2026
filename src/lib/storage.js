@@ -113,6 +113,7 @@ function messageFromRow(row) {
     replyTo: row.reply_to ?? null,
     pinned: Boolean(row.pinned),
     reactions: row.reactions ?? {},
+    imageUrl: row.image_url ?? null,
     createdAt: row.created_at ? new Date(row.created_at).getTime() : Date.now(),
   }
 }
@@ -130,6 +131,7 @@ function messageToRow(message) {
     reply_to: message.replyTo ?? null,
     pinned: Boolean(message.pinned),
     reactions: message.reactions ?? {},
+    image_url: message.imageUrl ?? null,
   }
 }
 
@@ -308,4 +310,75 @@ export async function toggleReaction(messageId, emoji, memberId, current = {}) {
 
   const ok = await patchMessage(messageId, { reactions: next })
   return ok ? next : current
+}
+
+/* ── Photo uploads ───────────────────────────────────────── */
+
+/** Bucket must exist in Supabase Storage and be marked public. */
+const PHOTO_BUCKET = 'chat-photos'
+
+/**
+ * Shrink a photo in the browser before uploading.
+ *
+ * Phone photos are 3-5MB each, which would fill the free storage tier in
+ * weeks and crawl on mobile data. Resizing to ~1200px puts them near
+ * 300KB with no visible loss in a chat bubble.
+ */
+export function compressImage(file, maxSize = 1200, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('تعذّرت قراءة الصورة'))
+    reader.onload = () => {
+      const img = new Image()
+      img.onerror = () => reject(new Error('تعذّر فتح الصورة'))
+      img.onload = () => {
+        const scale = Math.min(1, maxSize / Math.max(img.width, img.height))
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+        canvas.toBlob(
+          (blob) => (blob ? resolve(blob) : reject(new Error('تعذّر ضغط الصورة'))),
+          'image/jpeg',
+          quality
+        )
+      }
+      img.src = reader.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+/**
+ * Upload a chat photo and return its public URL.
+ *
+ * ⚠️ The bucket is public: anyone holding the URL can open the image, and
+ * that stays true after the message is deleted from the chat. Deleting a
+ * message hides it from the group; it does not unpublish the file.
+ */
+export async function uploadChatPhoto(file, memberId) {
+  if (!isConfigured) return null
+
+  try {
+    const blob = await compressImage(file)
+    const path = `${memberId}/${Date.now()}.jpg`
+
+    const { error } = await supabase.storage
+      .from(PHOTO_BUCKET)
+      .upload(path, blob, { contentType: 'image/jpeg', upsert: false })
+
+    if (error) {
+      noteError('uploadChatPhoto', error)
+      return null
+    }
+
+    const { data } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path)
+    return data?.publicUrl ?? null
+  } catch (error) {
+    noteError('uploadChatPhoto', error)
+    return null
+  }
 }

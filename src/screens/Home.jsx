@@ -145,7 +145,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
   }
 
   /* ── Chat ─────────────────────────────────────────────── */
-  async function handleSendMessage(text, replyTo = null) {
+  async function handleSendMessage(text, replyTo = null, imageUrl = null) {
     const messageCount = (member.messageCount ?? 0) + 1
     const updated = await persistMember({ ...member, messageCount })
     await addMessage({
@@ -159,6 +159,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       text,
       replyTo: replyTo ? { name: replyTo.name, snippet: replyTo.snippet } : null,
       pinned: false,
+      imageUrl,
     })
     await refreshChat()
   }

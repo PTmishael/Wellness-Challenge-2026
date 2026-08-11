@@ -293,6 +293,8 @@ create policy "open" on plank_scores for all using (true) with check (true);
 
 alter table messages add column if not exists reactions jsonb default '{}'::jsonb;
 
+alter table messages add column if not exists image_url text;
+
 alter table members enable row level security;
 alter table messages enable row level security;
 create policy "open" on members for all using (true) with check (true);
