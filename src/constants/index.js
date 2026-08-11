@@ -82,6 +82,7 @@ export const PILLARS = [
   {
     id: 'sleep',
     name: 'النوم',
+    note: 'سجّلي نوم الليلة الماضية',
     options: {
       one: 'نمت ٧ ساعات',
       two: 'نمت قبل الساعة ١٢',

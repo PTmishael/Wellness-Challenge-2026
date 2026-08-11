@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Logo from '../components/Logo'
 import ScenePage from '../components/ScenePage'
 import { ADMIN_USERNAME, ADMIN_PASSWORD, SCENES } from '../constants'
-import { fetchMemberById, saveMember, saveSession } from '../lib/storage'
+import { fetchMemberById, saveMember, saveSession, getLastError } from '../lib/storage'
 import { createMember, today } from '../lib/utils'
 
 export default function AdminLogin({ onSignedIn, onBack }) {
@@ -30,7 +30,12 @@ export default function AdminLogin({ onSignedIn, onBack }) {
       }
 
       if (!admin) {
-        setError('تعذّر الاتصال بقاعدة البيانات')
+        const reason = getLastError()
+        setError(
+          reason
+            ? `تعذّر الاتصال بقاعدة البيانات — ${reason}`
+            : 'تعذّر الاتصال بقاعدة البيانات. تأكدي أن مشروع Supabase شغّال (مو متوقف).'
+        )
         return
       }
 

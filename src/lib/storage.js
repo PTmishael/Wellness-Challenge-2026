@@ -13,6 +13,18 @@ export { isConfigured }
 
 const SESSION_KEY = 'wellness_challenge:session'
 
+/**
+ * The most recent database error message, if any.
+ * Screens read this so they can show a real reason instead of a
+ * generic "couldn't connect" when something fails.
+ */
+let lastError = null
+export const getLastError = () => lastError
+const noteError = (where, error) => {
+  lastError = `${where}: ${error.message}`
+  console.error(lastError)
+}
+
 /* ── Device-local helpers (session + small prefs) ────────── */
 
 export function read(key, fallback = null) {
@@ -100,6 +112,7 @@ function messageFromRow(row) {
     text: row.text ?? '',
     replyTo: row.reply_to ?? null,
     pinned: Boolean(row.pinned),
+    reactions: row.reactions ?? {},
     createdAt: row.created_at ? new Date(row.created_at).getTime() : Date.now(),
   }
 }
@@ -116,6 +129,7 @@ function messageToRow(message) {
     text: message.text ?? '',
     reply_to: message.replyTo ?? null,
     pinned: Boolean(message.pinned),
+    reactions: message.reactions ?? {},
   }
 }
 
@@ -126,7 +140,7 @@ export async function fetchMembers() {
   if (!isConfigured) return {}
   const { data, error } = await supabase.from('members').select('*')
   if (error) {
-    console.error('fetchMembers failed:', error.message)
+    noteError('fetchMembers', error)
     return {}
   }
   return Object.fromEntries(data.map((row) => [row.id, memberFromRow(row)]))
@@ -136,7 +150,7 @@ export async function fetchMemberById(id) {
   if (!isConfigured || !id) return null
   const { data, error } = await supabase.from('members').select('*').eq('id', id).maybeSingle()
   if (error) {
-    console.error('fetchMemberById failed:', error.message)
+    noteError('fetchMemberById', error)
     return null
   }
   return data ? memberFromRow(data) : null
@@ -146,7 +160,7 @@ export async function fetchMemberByName(name) {
   if (!isConfigured || !name) return null
   const { data, error } = await supabase.from('members').select('*').eq('name', name).maybeSingle()
   if (error) {
-    console.error('fetchMemberByName failed:', error.message)
+    noteError('fetchMemberByName', error)
     return null
   }
   return data ? memberFromRow(data) : null
@@ -161,7 +175,7 @@ export async function saveMember(member) {
     .select()
     .single()
   if (error) {
-    console.error('saveMember failed:', error.message)
+    noteError('saveMember', error)
     return null
   }
   return memberFromRow(data)
@@ -171,7 +185,7 @@ export async function deleteMember(id) {
   if (!isConfigured) return false
   const { error } = await supabase.from('members').delete().eq('id', id)
   if (error) {
-    console.error('deleteMember failed:', error.message)
+    noteError('deleteMember', error)
     return false
   }
   return true
@@ -188,7 +202,7 @@ export async function fetchMessages(limit = 200) {
     .order('created_at', { ascending: false })
     .limit(limit)
   if (error) {
-    console.error('fetchMessages failed:', error.message)
+    noteError('fetchMessages', error)
     return []
   }
   const messages = data.map(messageFromRow)
@@ -199,7 +213,7 @@ export async function addMessage(message) {
   if (!isConfigured) return null
   const { data, error } = await supabase.from('messages').insert(messageToRow(message)).select().single()
   if (error) {
-    console.error('addMessage failed:', error.message)
+    noteError('addMessage', error)
     return null
   }
   return messageFromRow(data)
@@ -210,9 +224,10 @@ export async function patchMessage(id, patch) {
   const row = {}
   if ('text' in patch) row.text = patch.text
   if ('pinned' in patch) row.pinned = patch.pinned
+  if ('reactions' in patch) row.reactions = patch.reactions
   const { error } = await supabase.from('messages').update(row).eq('id', id)
   if (error) {
-    console.error('patchMessage failed:', error.message)
+    noteError('patchMessage', error)
     return false
   }
   return true
@@ -222,7 +237,7 @@ export async function deleteMessage(id) {
   if (!isConfigured) return false
   const { error } = await supabase.from('messages').delete().eq('id', id)
   if (error) {
-    console.error('deleteMessage failed:', error.message)
+    noteError('deleteMessage', error)
     return false
   }
   return true
@@ -249,7 +264,7 @@ export async function fetchPlankBoard(limit = 50) {
     .order('seconds', { ascending: false })
     .limit(limit)
   if (error) {
-    console.error('fetchPlankBoard failed:', error.message)
+    noteError('fetchPlankBoard', error)
     return []
   }
 
@@ -271,8 +286,26 @@ export async function savePlankScore({ memberId, name, seconds }) {
     .select()
     .single()
   if (error) {
-    console.error('savePlankScore failed:', error.message)
+    noteError('savePlankScore', error)
     return null
   }
   return plankFromRow(data)
+}
+
+/**
+ * Add or remove one member's reaction to a message.
+ * Reactions are stored as { "❤️": [memberId, …], … }.
+ */
+export async function toggleReaction(messageId, emoji, memberId, current = {}) {
+  const next = { ...current }
+  const who = new Set(next[emoji] ?? [])
+
+  if (who.has(memberId)) who.delete(memberId)
+  else who.add(memberId)
+
+  if (who.size === 0) delete next[emoji]
+  else next[emoji] = [...who]
+
+  const ok = await patchMessage(messageId, { reactions: next })
+  return ok ? next : current
 }

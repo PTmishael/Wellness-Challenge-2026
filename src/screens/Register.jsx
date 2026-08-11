@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Logo from '../components/Logo'
 import ScenePage from '../components/ScenePage'
 import { SKINS, MAX_MEMBERS, SCENES } from '../constants'
-import { fetchMembers, saveMember, saveSession } from '../lib/storage'
+import { fetchMembers, saveMember, saveSession, getLastError } from '../lib/storage'
 import { createMember } from '../lib/utils'
 
 export default function Register({ onSignedIn, onBack }) {
@@ -45,7 +45,8 @@ export default function Register({ onSignedIn, onBack }) {
 
       const saved = await saveMember(draft)
       if (!saved) {
-        setError('تعذّر الحفظ، تأكدي من الاتصال وحاولي مرة ثانية')
+        const reason = getLastError()
+        setError(reason ? `تعذّر الحفظ — ${reason}` : 'تعذّر الحفظ، تأكدي من الاتصال وحاولي مرة ثانية')
         return
       }
 

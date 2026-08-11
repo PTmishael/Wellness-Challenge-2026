@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Logo from '../components/Logo'
 import ScenePage from '../components/ScenePage'
 import { SCENES } from '../constants'
-import { fetchMemberByName, saveMember, getSession, saveSession } from '../lib/storage'
+import { fetchMemberByName, saveMember, getSession, saveSession, getLastError } from '../lib/storage'
 import { today } from '../lib/utils'
 
 export default function Login({ onSignedIn, onBack }) {
@@ -25,7 +25,13 @@ export default function Login({ onSignedIn, onBack }) {
       const found = await fetchMemberByName(trimmed)
 
       if (!found || found.isAdmin) {
-        setError('الاسم غير موجود — سجّلي أولاً كعضوة جديدة')
+        // A database failure looks the same as "no such member" — tell them apart.
+        const reason = getLastError()
+        setError(
+          reason
+            ? `تعذّر الاتصال بقاعدة البيانات — ${reason}`
+            : 'الاسم غير موجود — سجّلي أولاً كعضوة جديدة'
+        )
         return
       }
 

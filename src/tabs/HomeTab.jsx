@@ -1,5 +1,6 @@
 import ScenePage from '../components/ScenePage'
 import SlideToStart from '../components/SlideToStart'
+import DailyReminder from '../components/DailyReminder'
 import { CHALLENGE_DAYS, DAILY_QUOTE, SCENES } from '../constants'
 import { arabicDigits, challengeDay } from '../lib/utils'
 
@@ -60,8 +61,12 @@ export default function HomeTab({ member, checkedIn, onStartCheckIn, onSignOut }
         )}
       </div>
 
+      <div style={{ marginTop: 'auto' }}>
+        <DailyReminder memberId={member.id} checkedIn={checkedIn} />
+      </div>
+
       {/* quote sits at the foot */}
-      <div className="scene-card" style={{ marginTop: 'auto' }}>
+      <div className="scene-card" style={{ marginTop: 12 }}>
         <div
           className="scene-sub"
           style={{ fontSize: 11.5, lineHeight: 1.85, fontStyle: 'italic', textAlign: 'center', textShadow: 'none' }}

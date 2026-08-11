@@ -14,6 +14,7 @@ export default function ChatTab({
   onEdit,
   onTogglePin,
   onDelete,
+  onReact,
   onSignOut,
 }) {
   const [draft, setDraft] = useState('')
@@ -250,6 +251,12 @@ export default function ChatTab({
                     {msg.text}
                   </div>
 
+                  <Reactions
+                    reactions={msg.reactions}
+                    memberId={member.id}
+                    onReact={(emoji) => onReact(msg.id, emoji, msg.reactions ?? {})}
+                  />
+
                   <div className="bubble__meta">
                     <span>{timeAgo(msg.createdAt)}</span>
                     <button className="icon-btn" onClick={() => startReply(msg)} title="رد">
@@ -340,6 +347,41 @@ export default function ChatTab({
           ➤
         </button>
       </div>
+    </div>
+  )
+}
+
+/** Available reactions — kept short so the row stays tidy. */
+const REACTIONS = ['❤️', '😂', '👏', '🔥']
+
+function Reactions({ reactions = {}, memberId, onReact }) {
+  const active = Object.entries(reactions).filter(([, who]) => (who ?? []).length > 0)
+
+  return (
+    <div className="reactions">
+      {/* counts for reactions people have already given */}
+      {active.map(([emoji, who]) => {
+        const mine = who.includes(memberId)
+        return (
+          <button
+            key={emoji}
+            className={`reaction${mine ? ' is-mine' : ''}`}
+            onClick={() => onReact(emoji)}
+            title={mine ? 'شيلي تفاعلك' : 'تفاعلي'}
+          >
+            {emoji} {who.length}
+          </button>
+        )
+      })}
+
+      {/* the picker — only shows options not already on this message */}
+      <span className="reactions__pick">
+        {REACTIONS.filter((e) => !reactions[e]?.length).map((emoji) => (
+          <button key={emoji} className="reaction reaction--add" onClick={() => onReact(emoji)}>
+            {emoji}
+          </button>
+        ))}
+      </span>
     </div>
   )
 }
