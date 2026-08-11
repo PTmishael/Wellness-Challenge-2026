@@ -35,8 +35,9 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
   const lastSeenId = useRef(null)
 
   // Messages newer than this (and not her own) count as unread.
+  // Held in a ref so polling doesn't restart every time it changes.
   const seenKey = `wellness_challenge:lastRead:${member.id}`
-  const [lastReadAt, setLastReadAt] = useState(() => read(seenKey, 0))
+  const lastReadAt = useRef(read(seenKey, 0))
   const [unread, setUnread] = useState(0)
   const [toast, setToast] = useState(null)
 
@@ -55,7 +56,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
 
       // Count what arrived from other members since she last opened سواليف.
       const unseen = messages.filter(
-        (m) => m.authorId !== member.id && (m.createdAt ?? 0) > lastReadAt
+        (m) => m.authorId !== member.id && (m.createdAt ?? 0) > lastReadAt.current
       ).length
       setUnread(unseen)
 
@@ -70,7 +71,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       }
       lastSeenId.current = newest.id
     },
-    [member.id, lastReadAt]
+    [member.id]
   )
 
   useEffect(() => {
@@ -91,7 +92,7 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
   useEffect(() => {
     if (tab !== 'chat') return
     const now = Date.now()
-    setLastReadAt(now)
+    lastReadAt.current = now
     setUnread(0)
     write(seenKey, now)
   }, [tab, chat.length, seenKey])
