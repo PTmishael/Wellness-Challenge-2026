@@ -3,6 +3,7 @@ import Logo from '../components/Logo'
 import Avatar from '../components/Avatar'
 import { timeAgo } from '../lib/utils'
 import { uploadChatPhoto } from '../lib/storage'
+import { notifyPermission, requestNotifyPermission, showNotification } from '../lib/notify'
 import { read, write } from '../lib/storage'
 
 const notifyKey = (memberId) => `wellness_challenge:notify:${memberId}`
@@ -47,22 +48,28 @@ export default function ChatTab({
       return
     }
 
-    if (typeof Notification === 'undefined') {
-      setNotifyHint('التنبيهات غير مدعومة في هذا المتصفح')
+    let permission = notifyPermission()
+    if (permission === 'default') {
+      permission = await requestNotifyPermission()
+    }
+
+    if (permission !== 'granted') {
+      setNotifyHint(
+        permission === 'unsupported'
+          ? 'التنبيهات غير مدعومة في هذا المتصفح'
+          : 'اسمحي بالتنبيهات من إعدادات المتصفح أولاً'
+      )
       return
     }
 
-    let permission = Notification.permission
-    if (permission === 'default') {
-      permission = await Notification.requestPermission()
+    // Confirm the device can really show one before turning the bell on.
+    if (!showNotification('تحدي العافية 🌿', { body: 'تم تفعيل تنبيهات سواليف ✅' })) {
+      setNotifyHint('التنبيهات غير مدعومة في هذا الجهاز')
+      return
     }
 
-    if (permission === 'granted') {
-      write(notifyKey(member.id), 'on')
-      setNotifyOn(true)
-    } else {
-      setNotifyHint('اسمحي بالتنبيهات من إعدادات المتصفح أولاً')
-    }
+    write(notifyKey(member.id), 'on')
+    setNotifyOn(true)
   }
 
   // ── Reply helpers ───────────────────────────────────────

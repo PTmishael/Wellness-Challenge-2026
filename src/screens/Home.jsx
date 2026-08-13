@@ -21,6 +21,7 @@ import {
   write,
 } from '../lib/storage'
 import { today, unlockedIds } from '../lib/utils'
+import { showNotification } from '../lib/notify'
 
 const CHAT_POLL_MS = 8000
 
@@ -65,8 +66,10 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
       if (notify && lastSeenId.current && newest.id !== lastSeenId.current) {
         const mine = newest.authorId === member.id
         const enabled = read(`wellness_challenge:notify:${member.id}`, 'off') === 'on'
-        if (!mine && enabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-          new Notification(newest.authorName ?? 'رسالة جديدة', { body: String(newest.text ?? '').slice(0, 90) })
+        if (!mine && enabled) {
+          showNotification(newest.authorName ?? 'رسالة جديدة', {
+            body: String(newest.text ?? '').slice(0, 90),
+          })
         }
       }
       lastSeenId.current = newest.id

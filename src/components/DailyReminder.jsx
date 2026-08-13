@@ -1,25 +1,21 @@
 import { useEffect, useState } from 'react'
 import { read, write } from '../lib/storage'
+import { notifyPermission, requestNotifyPermission, showNotification } from '../lib/notify'
 
 /**
  * A daily nudge to check in.
  *
  * Honest limits: this is a browser notification, not a real push. It only
- * fires while the app is open in a tab (or running in the background on
- * some devices). If she closes the app entirely, nothing arrives — a true
- * push notification needs a service worker plus a push service.
- *
- * It still helps the common case: the app left open on a phone all day.
+ * works while the app is open, and Chrome on Android blocks it entirely
+ * (it requires a service worker). When the device can't show one, the card
+ * says so instead of pretending a reminder is set.
  */
 const HOUR_KEY = 'wellness_challenge:reminderHour'
 const FIRED_KEY = 'wellness_challenge:reminderFiredOn'
-const DEFAULT_HOUR = 21 // 9pm — late enough that the day is nearly done
 
 export default function DailyReminder({ memberId, checkedIn }) {
   const [hour, setHour] = useState(() => read(`${HOUR_KEY}:${memberId}`, null))
-  const [permission, setPermission] = useState(
-    typeof Notification !== 'undefined' ? Notification.permission : 'unsupported'
-  )
+  const [permission, setPermission] = useState(() => notifyPermission())
 
   // Check once a minute whether it's time to nudge.
   useEffect(() => {
@@ -27,14 +23,24 @@ export default function DailyReminder({ memberId, checkedIn }) {
 
     function maybeFire() {
       if (checkedIn) return
+
       const now = new Date()
       const today = now.toLocaleDateString('en-CA')
       if (read(`${FIRED_KEY}:${memberId}`, '') === today) return
       if (now.getHours() !== hour) return
 
-      new Notification('تحدي العافية 🌿', {
+      const shown = showNotification('تحدي العافية 🌿', {
         body: 'ما سجّلتِ إنجازات اليوم — دقيقة وتخلصين 💚',
       })
+
+      // This device can't show them after all — stop and say so.
+      if (!shown) {
+        setPermission('unsupported')
+        setHour(null)
+        write(`${HOUR_KEY}:${memberId}`, null)
+        return
+      }
+
       write(`${FIRED_KEY}:${memberId}`, today)
     }
 
@@ -44,13 +50,19 @@ export default function DailyReminder({ memberId, checkedIn }) {
   }, [hour, permission, checkedIn, memberId])
 
   async function enable(selectedHour) {
-    if (typeof Notification === 'undefined') return
-    const result = await Notification.requestPermission()
+    const result = await requestNotifyPermission()
     setPermission(result)
-    if (result === 'granted') {
-      setHour(selectedHour)
-      write(`${HOUR_KEY}:${memberId}`, selectedHour)
+    if (result !== 'granted') return
+
+    // Prove the device can actually show one before promising a reminder.
+    const shown = showNotification('تحدي العافية 🌿', { body: 'تم تفعيل التذكير اليومي ✅' })
+    if (!shown) {
+      setPermission('unsupported')
+      return
     }
+
+    setHour(selectedHour)
+    write(`${HOUR_KEY}:${memberId}`, selectedHour)
   }
 
   function disable() {
@@ -58,20 +70,28 @@ export default function DailyReminder({ memberId, checkedIn }) {
     write(`${HOUR_KEY}:${memberId}`, null)
   }
 
-  if (permission === 'unsupported') return null
+  // Phones that can't do this get an honest note instead of a dead button.
+  if (permission === 'unsupported' || permission === 'denied') {
+    return (
+      <div className="scene-card" style={{ marginTop: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+          <span style={{ fontSize: 15 }}>⏰</span>
+          <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+            جوالك ما يدعم التذكير من المتصفح — حطّي منبّه في جوالك الساعة ٩ مساءً 🌿
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="scene-card" style={{ marginTop: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
         <span style={{ fontSize: 15 }}>🔔</span>
         <div style={{ flex: 1 }}>
-          <div style={{ color: 'var(--ink-scene)', fontSize: 12.5, fontWeight: 800 }}>
-            تذكير يومي
-          </div>
+          <div style={{ color: 'var(--ink-scene)', fontSize: 12.5, fontWeight: 800 }}>تذكير يومي</div>
           <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, fontWeight: 600, marginTop: 1 }}>
-            {hour !== null
-              ? `مفعّل الساعة ${hour > 12 ? hour - 12 : hour} ${hour >= 12 ? 'مساءً' : 'صباحًا'}`
-              : 'يذكّرك تسجّلين إنجازك'}
+            {hour !== null ? `مفعّل الساعة ${hour - 12} مساءً` : 'يذكّرك تسجّلين إنجازك'}
           </div>
         </div>
         {hour !== null && (
