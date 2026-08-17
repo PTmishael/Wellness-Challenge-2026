@@ -942,20 +942,7 @@ textarea.input { resize: none; }
   border-color: var(--brand);
   color: var(--brand-dark);
 }
-/* The picker sits quietly until the bubble is touched or hovered */
-.reactions__pick { display: flex; gap: 3px; opacity: 0.4; transition: opacity 0.18s ease; }
-.bubble:hover .reactions__pick,
-.reactions__pick:focus-within { opacity: 1; }
-.reaction--add {
-  background: transparent;
-  border-color: transparent;
-  padding: 2px 4px;
-  font-size: 13px;
-}
-@media (hover: none) {
-  /* No hover on touch devices — keep the picker visible but soft */
-  .reactions__pick { opacity: 0.65; }
-}
+
 
 /* ── Chat photos ───────────────────────────────────────── */
 .bubble__photo {
@@ -1021,12 +1008,14 @@ textarea.input { resize: none; }
   flex-shrink: 0;
 }
 .chat__photo-error {
-  padding: 7px 14px;
+  padding: 8px 14px;
   background: #FDECEA;
   color: #B3261E;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   text-align: center;
+  line-height: 1.6;
+  word-break: break-word;
 }
 
 /* Tap a photo to see it full size */
@@ -1058,4 +1047,83 @@ textarea.input { resize: none; }
   background: rgba(255, 255, 255, 0.9);
   font-size: 15px;
   cursor: pointer;
+}
+
+/* ── Chat composer grows with the message (WhatsApp style) ─ */
+.chat__composer textarea {
+  resize: none;
+  overflow-y: auto;
+  min-height: 40px;
+  max-height: 140px;   /* about 6 lines, then it scrolls */
+  line-height: 1.6;
+}
+
+/* ── Reactions: collapsed picker + who reacted ─────────── */
+.reactions__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.reaction-wrap {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(55, 105, 61, 0.09);
+  border: 1px solid rgba(55, 105, 61, 0.18);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.reaction-wrap .reaction {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 2px 4px 2px 8px;
+}
+.reaction-wrap .reaction.is-mine {
+  background: rgba(55, 105, 61, 0.22);
+  color: var(--brand-dark);
+}
+.reaction__who-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  color: var(--ink-mute);
+  padding: 2px 7px 2px 3px;
+  line-height: 1;
+}
+.reaction--toggle {
+  background: rgba(55, 105, 61, 0.07);
+  border-style: dashed;
+  font-size: 12px;
+  padding: 2px 9px;
+}
+.reaction--toggle.is-open {
+  background: rgba(55, 105, 61, 0.18);
+  border-style: solid;
+}
+.reactions__picker {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: fit-content;
+  animation: fade-up 0.16s ease;
+}
+.reactions__picker .reaction--add {
+  background: transparent;
+  border-color: transparent;
+  font-size: 17px;
+  padding: 2px 6px;
+}
+.reactions__who {
+  margin-top: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-mute);
+  line-height: 1.7;
+  animation: fade-up 0.16s ease;
 }

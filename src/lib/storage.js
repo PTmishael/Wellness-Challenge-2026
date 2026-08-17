@@ -298,16 +298,31 @@ export async function savePlankScore({ memberId, name, seconds }) {
  * Add or remove one member's reaction to a message.
  * Reactions are stored as { "❤️": [memberId, …], … }.
  */
-export async function toggleReaction(messageId, emoji, memberId, current = {}) {
+export function reactionEntries(list = []) {
+  // Older messages stored plain member ids; newer ones store { id, name }.
+  return list.map((entry) =>
+    typeof entry === 'string' ? { id: entry, name: 'عضوة' } : entry
+  )
+}
+
+/** Add or remove one member's reaction, keeping her name for display. */
+export function applyReaction(current = {}, emoji, member) {
   const next = { ...current }
-  const who = new Set(next[emoji] ?? [])
+  const who = reactionEntries(next[emoji])
+  const mine = who.some((entry) => entry.id === member.id)
 
-  if (who.has(memberId)) who.delete(memberId)
-  else who.add(memberId)
+  const updated = mine
+    ? who.filter((entry) => entry.id !== member.id)
+    : [...who, { id: member.id, name: member.name }]
 
-  if (who.size === 0) delete next[emoji]
-  else next[emoji] = [...who]
+  if (updated.length === 0) delete next[emoji]
+  else next[emoji] = updated
 
+  return next
+}
+
+export async function toggleReaction(messageId, emoji, member, current = {}) {
+  const next = applyReaction(current, emoji, member)
   const ok = await patchMessage(messageId, { reactions: next })
   return ok ? next : current
 }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Logo from '../components/Logo'
 import Avatar from '../components/Avatar'
 import { timeAgo } from '../lib/utils'
-import { uploadChatPhoto } from '../lib/storage'
+import { uploadChatPhoto, getLastError, reactionEntries } from '../lib/storage'
 import { notifyPermission, requestNotifyPermission, showNotification } from '../lib/notify'
 import { read, write } from '../lib/storage'
 
@@ -108,13 +108,16 @@ export default function ChatTab({
       imageUrl = await uploadChatPhoto(photo.file, member.id)
       setUploading(false)
       if (!imageUrl) {
-        setPhotoError('تعذّر رفع الصورة، حاولي مرة ثانية')
+        // Show the real reason — usually a missing storage policy or bucket.
+        const reason = getLastError()
+        setPhotoError(reason ? `تعذّر رفع الصورة — ${reason}` : 'تعذّر رفع الصورة، حاولي مرة ثانية')
         return
       }
     }
 
     onSend(text, replyTarget, imageUrl)
     setDraft('')
+    if (inputRef.current) inputRef.current.style.height = 'auto'
     setReplyTarget(null)
     clearPhoto()
   }
@@ -413,7 +416,13 @@ export default function ChatTab({
           ref={inputRef}
           rows={1}
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            setDraft(e.target.value)
+            // Grow with the text, up to the CSS max-height.
+            const el = e.target
+            el.style.height = 'auto'
+            el.style.height = `${el.scrollHeight}px`
+          }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()
@@ -441,33 +450,72 @@ export default function ChatTab({
 const REACTIONS = ['❤️', '😂', '👏', '🔥']
 
 function Reactions({ reactions = {}, memberId, onReact }) {
-  const active = Object.entries(reactions).filter(([, who]) => (who ?? []).length > 0)
+  const [picking, setPicking] = useState(false)
+  const [showing, setShowing] = useState(null) // which emoji's names are open
+
+  const active = Object.entries(reactions)
+    .map(([emoji, list]) => [emoji, reactionEntries(list)])
+    .filter(([, who]) => who.length > 0)
+
+  function react(emoji) {
+    onReact(emoji)
+    setPicking(false)
+  }
 
   return (
     <div className="reactions">
-      {/* counts for reactions people have already given */}
-      {active.map(([emoji, who]) => {
-        const mine = who.includes(memberId)
-        return (
-          <button
-            key={emoji}
-            className={`reaction${mine ? ' is-mine' : ''}`}
-            onClick={() => onReact(emoji)}
-            title={mine ? 'شيلي تفاعلك' : 'تفاعلي'}
-          >
-            {emoji} {who.length}
-          </button>
-        )
-      })}
+      <div className="reactions__row">
+        {active.map(([emoji, who]) => {
+          const mine = who.some((entry) => entry.id === memberId)
+          return (
+            <span key={emoji} className="reaction-wrap">
+              <button
+                className={`reaction${mine ? ' is-mine' : ''}`}
+                onClick={() => react(emoji)}
+                title={mine ? 'شيلي تفاعلك' : 'تفاعلي'}
+              >
+                {emoji} {who.length}
+              </button>
+              {/* tap the count to see who reacted */}
+              <button
+                className="reaction__who-btn"
+                onClick={() => setShowing(showing === emoji ? null : emoji)}
+                aria-label="مين تفاعل"
+              >
+                ⌄
+              </button>
+            </span>
+          )
+        })}
 
-      {/* the picker — only shows options not already on this message */}
-      <span className="reactions__pick">
-        {REACTIONS.filter((e) => !reactions[e]?.length).map((emoji) => (
-          <button key={emoji} className="reaction reaction--add" onClick={() => onReact(emoji)}>
-            {emoji}
-          </button>
-        ))}
-      </span>
+        {/* one button hides the whole picker */}
+        <button
+          className={`reaction reaction--toggle${picking ? ' is-open' : ''}`}
+          onClick={() => setPicking(!picking)}
+          aria-label="أضيفي تفاعل"
+        >
+          {picking ? '✕' : '🙂＋'}
+        </button>
+      </div>
+
+      {picking && (
+        <div className="reactions__picker">
+          {REACTIONS.map((emoji) => (
+            <button key={emoji} className="reaction reaction--add" onClick={() => react(emoji)}>
+              {emoji}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {showing && (
+        <div className="reactions__who">
+          {showing}{' '}
+          {reactionEntries(reactions[showing])
+            .map((entry) => entry.name)
+            .join('، ')}
+        </div>
+      )}
     </div>
   )
 }

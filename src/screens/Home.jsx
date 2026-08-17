@@ -16,6 +16,7 @@ import {
   patchMessage,
   deleteMessage,
   toggleReaction,
+  applyReaction,
   saveSession,
   read,
   write,
@@ -180,16 +181,10 @@ export default function Home({ member: initialMember, isAdmin, initialSession, o
     await refreshChat()
   }
   async function handleReact(id, emoji, current) {
-    // Update on screen straight away, then persist.
-    const optimistic = { ...current }
-    const who = new Set(optimistic[emoji] ?? [])
-    if (who.has(member.id)) who.delete(member.id)
-    else who.add(member.id)
-    if (who.size === 0) delete optimistic[emoji]
-    else optimistic[emoji] = [...who]
-
+    // Show it straight away, then persist.
+    const optimistic = applyReaction(current, emoji, member)
     setChat((prev) => prev.map((m) => (m.id === id ? { ...m, reactions: optimistic } : m)))
-    await toggleReaction(id, emoji, member.id, current)
+    await toggleReaction(id, emoji, member, current)
     await refreshChat()
   }
 

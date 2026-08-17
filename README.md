@@ -295,6 +295,16 @@ alter table messages add column if not exists reactions jsonb default '{}'::json
 
 alter table messages add column if not exists image_url text;
 
+-- Storage policies. Marking a bucket "public" only allows reading;
+-- uploading still needs an explicit insert policy.
+create policy "upload chat photos"
+on storage.objects for insert
+with check (bucket_id = 'chat-photos');
+
+create policy "read chat photos"
+on storage.objects for select
+using (bucket_id = 'chat-photos');
+
 alter table members enable row level security;
 alter table messages enable row level security;
 create policy "open" on members for all using (true) with check (true);
