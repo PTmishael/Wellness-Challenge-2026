@@ -109,7 +109,7 @@ export default function Register({ onSignedIn, onBack }) {
           placeholder="قوليلي شئ مميز عنك…"
           style={{ fontSize: 15, lineHeight: 1.7, background: 'rgba(255,255,255,0.92)' }}
         />
-        <p style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, fontWeight: 600, marginTop: 6, textAlign: 'left' }}>
+        <p style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, fontWeight: 400, marginTop: 6, textAlign: 'left' }}>
           {bio.length}/160 · اختياري
         </p>
 

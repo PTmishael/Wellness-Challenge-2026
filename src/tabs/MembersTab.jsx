@@ -73,11 +73,11 @@ export default function MembersTab({ members, onDeleteMember }) {
       {/* ── Capacity ─────────────────────────────────── */}
       <div className="card" style={{ padding: '15px 17px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 9 }}>
-          <span style={{ fontSize: 13, fontWeight: 900 }}>سعة التسجيل</span>
+          <span style={{ fontSize: 13, fontWeight: 800 }}>سعة التسجيل</span>
           <span
             style={{
               fontSize: 13,
-              fontWeight: 900,
+              fontWeight: 800,
               color: isFull ? 'var(--danger)' : 'var(--brand)',
             }}
           >
@@ -155,7 +155,7 @@ export default function MembersTab({ members, onDeleteMember }) {
                   textAlign: 'center',
                   color: 'var(--ink-mute)',
                   fontSize: 15,
-                  fontWeight: 900,
+                  fontWeight: 800,
                   flexShrink: 0,
                 }}
               >
@@ -166,7 +166,7 @@ export default function MembersTab({ members, onDeleteMember }) {
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 14, fontWeight: 900 }}>{m.name}</span>
+                  <span style={{ fontSize: 14, fontWeight: 800 }}>{m.name}</span>
                   {m.isAdmin && <span className="pill pill--solid">أدمن</span>}
                   {isInactive && <span className="pill pill--amber">😴 غير نشطة</span>}
                 </div>
@@ -175,7 +175,7 @@ export default function MembersTab({ members, onDeleteMember }) {
                     style={{
                       color: 'var(--ink-mute)',
                       fontSize: 11.5,
-                      fontWeight: 600,
+                      fontWeight: 400,
                       marginTop: 4,
                       lineHeight: 1.6,
                     }}

@@ -139,7 +139,7 @@ export default function ChatTab({
       <div className="chat__header">
         <Logo size={38} />
         <div>
-          <div style={{ fontSize: 14, fontWeight: 900 }}>شات التحدي</div>
+          <div style={{ fontSize: 14, fontWeight: 800 }}>شات التحدي</div>
           <div style={{ color: 'var(--ink-mute)', fontSize: 11, fontWeight: 700 }}>
             {messages.length} رسالة
           </div>
@@ -209,7 +209,7 @@ export default function ChatTab({
               {!mine && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                   <Avatar name={msg.authorName} colorIndex={msg.colorIndex} size={26} />
-                  <span style={{ fontSize: 12, fontWeight: 900, color: 'var(--ink-sub)' }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--ink-sub)' }}>
                     {msg.authorName}
                     {msg.isAdmin && ' 👑'}
                   </span>
@@ -352,14 +352,14 @@ export default function ChatTab({
       {replyTarget && (
         <div className="reply-bar">
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--brand-dark)' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--brand-dark)' }}>
               ردّ على {replyTarget.name}
             </div>
             <div
               style={{
                 fontSize: 12,
                 color: 'var(--ink-mute)',
-                fontWeight: 600,
+                fontWeight: 400,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',

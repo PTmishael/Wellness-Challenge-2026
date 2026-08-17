@@ -47,7 +47,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+  font-family: 'Almarai', system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -175,7 +175,7 @@ body {
   padding: 13px 15px;
   color: var(--ink);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 400;
   outline: none;
   text-align: right;
   display: block;
@@ -185,7 +185,7 @@ body {
   border-color: var(--brand);
   box-shadow: 0 0 0 4px rgba(55, 105, 61, 0.14);
 }
-.input::placeholder { color: var(--ink-mute); font-weight: 500; }
+.input::placeholder { color: var(--ink-mute); font-weight: 400; }
 textarea.input { resize: none; }
 
 .error-text {
@@ -396,7 +396,7 @@ textarea.input { resize: none; }
   outline: none;
   resize: none;
   text-align: right;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--ink);
 }
 .chat__send {
@@ -439,7 +439,7 @@ textarea.input { resize: none; }
 }
 .bubble__text {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.65;
   word-break: break-word;
   color: var(--ink);
@@ -516,7 +516,7 @@ textarea.input { resize: none; }
   color: var(--ink-mute);
   text-align: center;
   margin-top: 14px;
-  font-weight: 600;
+  font-weight: 400;
 }
 .empty-state {
   text-align: center;
@@ -532,7 +532,7 @@ textarea.input { resize: none; }
   text-align: center;
   border: 2px solid;
 }
-.stat__value { font-size: 21px; font-weight: 900; }
+.stat__value { font-size: 21px; font-weight: 800; }
 .stat__label { color: var(--ink-mute); font-size: 10px; font-weight: 800; margin-top: 2px; }
 
 /* ── WhatsApp-style reply quote ────────────────────────── */
@@ -548,12 +548,12 @@ textarea.input { resize: none; }
 }
 .bubble__quote-name {
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--brand-dark);
 }
 .bubble__quote-text {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--ink-sub);
   white-space: nowrap;
   overflow: hidden;
@@ -612,7 +612,7 @@ textarea.input { resize: none; }
 /* Typography on the light scenes */
 .scene-title {
   color: var(--ink-scene);
-  font-weight: 900;
+  font-weight: 800;
   text-shadow: 0 1px 12px rgba(255, 255, 255, 0.55);
 }
 .scene-sub {

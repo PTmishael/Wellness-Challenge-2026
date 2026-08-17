@@ -42,7 +42,7 @@ export default function AchievementsTab({ member, isAdmin = false }) {
               fontSize: 14,
               lineHeight: 2,
               whiteSpace: 'pre-wrap',
-              fontWeight: 600,
+              fontWeight: 400,
             }}
           >
             {article.body || article.placeholder}
@@ -90,7 +90,7 @@ export default function AchievementsTab({ member, isAdmin = false }) {
                 gap: 10,
               }}
             >
-              <span style={{ color: 'var(--ink-scene)', fontSize: 13, fontWeight: 600, lineHeight: 1.6 }}>
+              <span style={{ color: 'var(--ink-scene)', fontSize: 13, fontWeight: 400, lineHeight: 1.6 }}>
                 {a.q}
               </span>
               <span style={{ color: 'var(--brand-deep)', fontSize: 15 }}>←</span>
@@ -208,7 +208,7 @@ export default function AchievementsTab({ member, isAdmin = false }) {
                   color: 'var(--ink-scene-sub)',
                   fontSize: 10.5,
                   lineHeight: 1.9,
-                  fontWeight: 600,
+                  fontWeight: 400,
                 }}
               >
                 {teaser.map((a, i) => (

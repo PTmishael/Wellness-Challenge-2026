@@ -19,8 +19,8 @@ export default function ConfirmDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ fontSize: 40, marginBottom: 12 }}>{icon}</div>
-        <h3 style={{ fontSize: 17, fontWeight: 900, marginBottom: 8 }}>{title}</h3>
-        <p style={{ color: 'var(--ink-sub)', fontSize: 13, marginBottom: 20, fontWeight: 600 }}>
+        <h3 style={{ fontSize: 17, fontWeight: 800, marginBottom: 8 }}>{title}</h3>
+        <p style={{ color: 'var(--ink-sub)', fontSize: 13, marginBottom: 20, fontWeight: 400 }}>
           {message}
         </p>
         <div style={{ display: 'flex', gap: 10 }}>

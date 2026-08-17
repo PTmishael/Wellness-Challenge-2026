@@ -107,7 +107,7 @@ export default function BrainGamesTab() {
 
       {/* clues */}
       <div className="scene-card" style={{ marginTop: 10 }}>
-        <div style={{ color: 'var(--brand-deep)', fontSize: 10.5, fontWeight: 900, marginBottom: 6 }}>
+        <div style={{ color: 'var(--brand-deep)', fontSize: 10.5, fontWeight: 800, marginBottom: 6 }}>
           أفقي ←
         </div>
         <ol style={{ margin: 0, paddingInlineStart: 18 }}>
@@ -118,7 +118,7 @@ export default function BrainGamesTab() {
                 color: 'var(--ink-scene-sub)',
                 fontSize: 11.5,
                 lineHeight: 1.95,
-                fontWeight: 600,
+                fontWeight: 400,
               }}
             >
               {row.clue}
@@ -126,10 +126,10 @@ export default function BrainGamesTab() {
           ))}
         </ol>
 
-        <div style={{ color: 'var(--brand-deep)', fontSize: 10.5, fontWeight: 900, margin: '10px 0 4px' }}>
+        <div style={{ color: 'var(--brand-deep)', fontSize: 10.5, fontWeight: 800, margin: '10px 0 4px' }}>
           رأسي ↓
         </div>
-        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, lineHeight: 1.9, fontWeight: 600 }}>
+        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, lineHeight: 1.9, fontWeight: 400 }}>
           العمود الملوّن — {puzzle.verticalClue}
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function BrainGamesTab() {
             borderRadius: 14,
             padding: 13,
             fontSize: 14,
-            fontWeight: 900,
+            fontWeight: 800,
             cursor: 'pointer',
             fontFamily: 'inherit',
           }}

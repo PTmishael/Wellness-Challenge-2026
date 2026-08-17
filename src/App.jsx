@@ -93,7 +93,7 @@ export default function App() {
       <div className="app-shell">
         <div className="screen-center">
           <div style={{ fontSize: 40, marginBottom: 14 }}>🔌</div>
-          <h1 style={{ fontSize: 19, fontWeight: 900, marginBottom: 10 }}>
+          <h1 style={{ fontSize: 19, fontWeight: 800, marginBottom: 10 }}>
             التطبيق غير متصل بقاعدة البيانات
           </h1>
           <p style={{ color: 'var(--ink-sub)', fontSize: 14, lineHeight: 1.9, maxWidth: 320 }}>

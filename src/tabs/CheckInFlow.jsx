@@ -109,7 +109,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
                 color: 'var(--ink-scene)',
                 fontSize: 14.5,
                 lineHeight: 2.1,
-                fontWeight: 600,
+                fontWeight: 400,
                 textAlign: 'center',
               }}
             >
@@ -168,7 +168,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
                 style={{
                   color: 'var(--brand-deep)',
                   fontSize: 10,
-                  fontWeight: 900,
+                  fontWeight: 800,
                   textAlign: 'center',
                   marginBottom: 9,
                 }}
@@ -247,7 +247,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
               borderRadius: 14,
               padding: 14,
               fontSize: 14.5,
-              fontWeight: 900,
+              fontWeight: 800,
               cursor: doneCount === 0 ? 'default' : 'pointer',
               fontFamily: 'inherit',
               boxShadow: doneCount === 0 ? 'none' : '0 6px 18px rgba(30,61,33,0.3)',
@@ -266,7 +266,7 @@ export default function CheckInFlow({ onComplete, onCancel }) {
               borderRadius: 14,
               padding: 14,
               fontSize: 14.5,
-              fontWeight: 900,
+              fontWeight: 800,
               cursor: 'pointer',
               fontFamily: 'inherit',
               boxShadow: '0 6px 18px rgba(30,61,33,0.3)',

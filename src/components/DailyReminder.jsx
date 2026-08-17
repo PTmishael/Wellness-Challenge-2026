@@ -76,7 +76,7 @@ export default function DailyReminder({ memberId, checkedIn }) {
       <div className="scene-card" style={{ marginTop: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
           <span style={{ fontSize: 15 }}>⏰</span>
-          <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+          <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11, fontWeight: 400, lineHeight: 1.7 }}>
             جوالك ما يدعم التذكير من المتصفح — حطّي منبّه في جوالك الساعة ٩ مساءً 🌿
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function DailyReminder({ memberId, checkedIn }) {
         <span style={{ fontSize: 15 }}>🔔</span>
         <div style={{ flex: 1 }}>
           <div style={{ color: 'var(--ink-scene)', fontSize: 12.5, fontWeight: 800 }}>تذكير يومي</div>
-          <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, fontWeight: 600, marginTop: 1 }}>
+          <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, fontWeight: 400, marginTop: 1 }}>
             {hour !== null ? `مفعّل الساعة ${hour - 12} مساءً` : 'يذكّرك تسجّلين إنجازك'}
           </div>
         </div>

@@ -26,7 +26,7 @@ export default class ErrorBoundary extends Component {
       <div className="app-shell">
         <div className="screen-center" style={{ padding: 24, textAlign: 'center' }}>
           <div style={{ fontSize: 38, marginBottom: 12 }}>🌿</div>
-          <h1 style={{ fontSize: 18, fontWeight: 900, marginBottom: 8 }}>
+          <h1 style={{ fontSize: 18, fontWeight: 800, marginBottom: 8 }}>
             صار خلل بسيط
           </h1>
           <p style={{ color: 'var(--ink-sub)', fontSize: 13.5, lineHeight: 1.9, maxWidth: 320 }}>

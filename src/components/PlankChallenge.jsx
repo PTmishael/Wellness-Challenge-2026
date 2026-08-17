@@ -63,7 +63,7 @@ export default function PlankChallenge({ member }) {
     <div>
       {/* timer */}
       <div className="scene-card" style={{ textAlign: 'center', padding: '20px 16px' }}>
-        <div style={{ color: 'var(--ink-scene)', fontSize: 44, fontWeight: 900, lineHeight: 1 }}>
+        <div style={{ color: 'var(--ink-scene)', fontSize: 44, fontWeight: 800, lineHeight: 1 }}>
           {formatTime(elapsed)}
         </div>
         <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, fontWeight: 700, marginTop: 6 }}>
@@ -110,10 +110,10 @@ export default function PlankChallenge({ member }) {
 
       {/* form note */}
       <div className="scene-card" style={{ marginTop: 12 }}>
-        <div style={{ color: 'var(--brand-deep)', fontSize: 10.5, fontWeight: 900, marginBottom: 5 }}>
+        <div style={{ color: 'var(--brand-deep)', fontSize: 10.5, fontWeight: 800, marginBottom: 5 }}>
           الشكل الصحيح أهم من الوقت
         </div>
-        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, lineHeight: 1.85, fontWeight: 600 }}>
+        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, lineHeight: 1.85, fontWeight: 400 }}>
           ظهرك مستقيم، بطنك مشدود، ورقبتك امتداد لظهرك. أول ما ينزل ظهرك أو يرتفع مؤخرتك — وقّفي.
           دقيقة بشكل صحيح أفضل من دقيقتين بظهر منحني.
           {'\n'}استشيري الطبيبة إذا عندك إصابة في الظهر أو الكتف، أو إذا كنتِ حامل.
@@ -122,7 +122,7 @@ export default function PlankChallenge({ member }) {
 
       {/* leaderboard */}
       <div style={{ marginTop: 16 }}>
-        <div style={{ color: 'var(--brand-deep)', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+        <div style={{ color: 'var(--brand-deep)', fontSize: 11, fontWeight: 800, marginBottom: 8 }}>
           لوحة البطلات 🏆
         </div>
         {board.length === 0 ? (
