@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import Avatar from '../components/Avatar'
 import ConfirmDialog from '../components/ConfirmDialog'
 import { MAX_MEMBERS } from '../constants'
-import { unlockedIds } from '../lib/utils'
+import { unlockedIds, arabicDigits } from '../lib/utils'
+import { pillarComparison, checkedInToday, encouragementFor } from '../lib/tracking'
 
 const STAT_STYLES = [
   { bg: '#E8F0E9', border: '#BBCFBD', text: '#1E3D21' },
@@ -143,12 +144,10 @@ export default function MembersTab({ members, onDeleteMember }) {
                 border: `2px solid ${borderColor}`,
                 padding: 14,
                 marginBottom: 9,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 11,
                 boxShadow: '0 2px 10px rgba(20,31,22,.05)',
               }}
             >
+             <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
               <div
                 style={{
                   width: 26,
@@ -169,6 +168,13 @@ export default function MembersTab({ members, onDeleteMember }) {
                   <span style={{ fontSize: 14, fontWeight: 800 }}>{m.name}</span>
                   {m.isAdmin && <span className="pill pill--solid">أدمن</span>}
                   {isInactive && <span className="pill pill--amber">😴 غير نشطة</span>}
+                  {!m.isAdmin && !isInactive && (
+                    checkedInToday(m) ? (
+                      <span className="pill pill--green">سجّلت اليوم ✓</span>
+                    ) : (
+                      <span className="pill pill--amber">تحتاج تشجيع</span>
+                    )
+                  )}
                 </div>
                 {m.bio && (
                   <p
@@ -226,6 +232,9 @@ export default function MembersTab({ members, onDeleteMember }) {
                   </button>
                 )}
               </div>
+             </div>
+
+              {!m.isAdmin && <MemberTracker member={m} />}
             </div>
           )
         })
@@ -242,6 +251,92 @@ export default function MembersTab({ members, onDeleteMember }) {
         }}
         onCancel={() => setPendingDelete(null)}
       />
+    </div>
+  )
+}
+
+/**
+ * Yesterday vs today for each pillar, plus a ready-made note.
+ * Gives the coach something specific to say, not just a total.
+ */
+function MemberTracker({ member }) {
+  const rows = pillarComparison(member)
+  const note = encouragementFor(member)
+  const [copied, setCopied] = useState(false)
+
+  async function copyNote() {
+    try {
+      await navigator.clipboard.writeText(note)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  const cell = { width: 42, textAlign: 'center', fontSize: 13, fontWeight: 800 }
+
+  return (
+    <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px dashed var(--border)' }}>
+      <div style={{ display: 'flex', color: 'var(--ink-mute)', fontSize: 9.5, fontWeight: 800, paddingBottom: 5 }}>
+        <span style={{ flex: 1 }} />
+        <span style={{ width: 42, textAlign: 'center' }}>أمس</span>
+        <span style={{ width: 42, textAlign: 'center' }}>اليوم</span>
+      </div>
+
+      {rows.map((row, i) => (
+        <div
+          key={row.id}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '6px 0',
+            borderBottom: i < rows.length - 1 ? '1px solid rgba(20,31,22,.05)' : 'none',
+          }}
+        >
+          <span style={{ flex: 1, fontSize: 12.5, fontWeight: 400 }}>{row.name}</span>
+          <span style={{ ...cell, color: 'var(--ink-mute)' }}>
+            {row.before === null ? '—' : arabicDigits(row.before)}
+          </span>
+          <span
+            style={{
+              ...cell,
+              color:
+                row.now === null
+                  ? '#C9CFC8'
+                  : row.trend === 'up'
+                    ? '#2E7D4F'
+                    : row.trend === 'down'
+                      ? 'var(--danger)'
+                      : 'var(--ink)',
+            }}
+          >
+            {row.now === null ? '—' : arabicDigits(row.now)}
+            {row.trend === 'up' && ' ↑'}
+            {row.trend === 'down' && ' ↓'}
+          </span>
+        </div>
+      ))}
+
+      <button
+        onClick={copyNote}
+        style={{
+          width: '100%',
+          marginTop: 11,
+          background: 'var(--brand-tint)',
+          border: '1px solid var(--border)',
+          borderRadius: 11,
+          padding: '10px 12px',
+          textAlign: 'right',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+        }}
+      >
+        <div style={{ color: 'var(--brand-dark)', fontSize: 9.5, fontWeight: 800, marginBottom: 3 }}>
+          {copied ? '✅ اننسخت' : '✍️ اضغطي للنسخ'}
+        </div>
+        <div style={{ color: 'var(--ink)', fontSize: 11.5, lineHeight: 1.8, fontWeight: 400 }}>{note}</div>
+      </button>
     </div>
   )
 }

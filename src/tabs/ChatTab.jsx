@@ -292,15 +292,7 @@ export default function ChatTab({
                     </div>
                   )}
 
-                  {msg.imageUrl && (
-                    <button
-                      className="bubble__photo"
-                      onClick={() => setLightbox(msg.imageUrl)}
-                      aria-label="تكبير الصورة"
-                    >
-                      <img src={msg.imageUrl} alt="" loading="lazy" />
-                    </button>
-                  )}
+                  {msg.imageUrl && <ChatPhoto url={msg.imageUrl} onOpen={setLightbox} />}
 
                   {msg.text && (
                     <div className="bubble__text" style={{ whiteSpace: 'pre-wrap' }}>
@@ -517,5 +509,28 @@ function Reactions({ reactions = {}, memberId, onReact }) {
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * A photo in a bubble. If the file can't load — expired link, blocked
+ * network, missing storage policy — say so and offer to open it directly,
+ * rather than leaving a silent blank space.
+ */
+function ChatPhoto({ url, onOpen }) {
+  const [failed, setFailed] = useState(false)
+
+  if (failed) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="bubble__photo-failed">
+        🖼️ تعذّر تحميل الصورة — اضغطي لفتحها
+      </a>
+    )
+  }
+
+  return (
+    <button className="bubble__photo" onClick={() => onOpen(url)} aria-label="تكبير الصورة">
+      <img src={url} alt="" loading="lazy" onError={() => setFailed(true)} />
+    </button>
   )
 }
