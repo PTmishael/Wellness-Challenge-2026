@@ -311,11 +311,16 @@ export default function ChatTab({
                     <button className="icon-btn" onClick={() => startReply(msg)} title="رد">
                       ↩️
                     </button>
+                    {/* Anyone can fix her own message; admin can edit any.
+                        Auto-posted check-in summaries stay untouched. */}
+                    {(mine || isAdmin) && !String(msg.id).startsWith('checkin_') && (
+                      <button className="icon-btn" onClick={() => startEdit(msg)} title="تعديل">
+                        ✏️
+                      </button>
+                    )}
+
                     {isAdmin && (
                       <span style={{ display: 'flex', gap: 4 }}>
-                        <button className="icon-btn" onClick={() => startEdit(msg)} title="تعديل">
-                          ✏️
-                        </button>
                         <button
                           className="icon-btn"
                           onClick={() => onTogglePin(msg.id)}
