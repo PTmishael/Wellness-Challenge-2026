@@ -52,7 +52,8 @@ export function funFactFor(pillarId) {
 
 /** Which unlocks a member has reached, by total points. */
 export function unlockedIds(points) {
-  return UNLOCKS.filter((u) => points >= u.threshold).map((u) => u.id)
+  // `alwaysOpen` libraries ignore the point threshold entirely.
+  return UNLOCKS.filter((u) => u.alwaysOpen || points >= u.threshold).map((u) => u.id)
 }
 
 export function avatarColor(index = 0) {

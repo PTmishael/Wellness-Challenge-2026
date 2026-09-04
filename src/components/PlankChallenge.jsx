@@ -61,6 +61,19 @@ export default function PlankChallenge({ member }) {
 
   return (
     <div>
+      {/* which exercise this challenge actually is */}
+      <div className="scene-card" style={{ textAlign: 'center', padding: '14px 16px', marginBottom: 12 }}>
+        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, fontWeight: 800 }}>
+          تمرين التحدي
+        </div>
+        <div style={{ color: 'var(--brand-deep)', fontSize: 24, fontWeight: 800, marginTop: 4 }}>
+          بلانك · <span style={{ direction: 'ltr', display: 'inline-block' }}>Plank</span>
+        </div>
+        <div style={{ color: 'var(--ink-scene-sub)', fontSize: 11.5, fontWeight: 400, marginTop: 5, lineHeight: 1.7 }}>
+          ثبّتي جسمك على المرفقين وأصابع القدم، وشوفي كم تقدرين تصمدين
+        </div>
+      </div>
+
       {/* timer */}
       <div className="scene-card" style={{ textAlign: 'center', padding: '20px 16px' }}>
         <div style={{ color: 'var(--ink-scene)', fontSize: 44, fontWeight: 800, lineHeight: 1 }}>

@@ -12,7 +12,7 @@ export default function AchievementsTab({ member, isAdmin = false }) {
   const points = member.points
   const unlocked = new Set(isAdmin ? UNLOCKS.map((u) => u.id) : unlockedIds(points))
 
-  const nextLock = UNLOCKS.find((u) => !unlocked.has(u.id))
+  const nextLock = UNLOCKS.find((u) => !u.alwaysOpen && !unlocked.has(u.id))
   const prevThreshold = [...UNLOCKS].reverse().find((u) => unlocked.has(u.id))?.threshold ?? 0
   const nextThreshold = nextLock?.threshold ?? points
   const span = Math.max(nextThreshold - prevThreshold, 1)
@@ -193,7 +193,11 @@ export default function AchievementsTab({ member, isAdmin = false }) {
                 <div style={{ flex: 1 }}>
                   <div style={{ color: 'var(--ink-scene)', fontSize: 13.5, fontWeight: 800 }}>{u.title}</div>
                   <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, marginTop: 2 }}>
-                    {open ? 'مفتوحة — اضغطي للقراءة' : `تفتح عند ${arabicDigits(u.threshold)} نقطة`}
+                    {u.alwaysOpen
+                      ? 'مفتوح للجميع — اضغطي للتحدي'
+                      : open
+                        ? 'مفتوحة — اضغطي للقراءة'
+                        : `تفتح عند ${arabicDigits(u.threshold)} نقطة`}
                   </div>
                 </div>
                 <span style={{ color: open ? 'var(--brand-deep)' : 'rgba(30,61,33,0.35)', fontSize: 16 }}>←</span>
