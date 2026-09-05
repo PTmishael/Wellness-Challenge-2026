@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { fetchPlankBoard, savePlankScore } from '../lib/storage'
+import { fetchPlankBoard, savePlankScore, deletePlankScores } from '../lib/storage'
 import { arabicDigits } from '../lib/utils'
 
 /** Reachable tiers — the goal is a clear level, not an open race. */
@@ -25,6 +25,7 @@ export default function PlankChallenge({ member }) {
   const [board, setBoard] = useState([])
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [confirming, setConfirming] = useState(false)
   const timer = useRef(null)
 
   useEffect(() => {
@@ -48,6 +49,15 @@ export default function PlankChallenge({ member }) {
       setBoard(await fetchPlankBoard())
     }
     setSaving(false)
+  }
+
+  async function removeMyScore() {
+    const ok = await deletePlankScores(member.id)
+    setConfirming(false)
+    if (ok) {
+      setSaved(false)
+      setBoard(await fetchPlankBoard())
+    }
   }
 
   function reset() {
@@ -133,6 +143,25 @@ export default function PlankChallenge({ member }) {
         </div>
       </div>
 
+      {confirming && (
+        <div className="scene-card" style={{ marginTop: 12, border: '1.5px solid rgba(194,84,75,.35)' }}>
+          <div style={{ color: 'var(--ink-scene)', fontSize: 12.5, fontWeight: 800, textAlign: 'center' }}>
+            تبين تحذفين نتيجتك من اللوحة؟
+          </div>
+          <div style={{ color: 'var(--ink-scene-sub)', fontSize: 10.5, textAlign: 'center', marginTop: 4 }}>
+            تقدرين تسجّلين وقت جديد بعدين
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginTop: 11 }}>
+            <button onClick={removeMyScore} style={{ ...primaryBtn, background: '#B3261E' }}>
+              احذفي
+            </button>
+            <button onClick={() => setConfirming(false)} style={ghostBtn}>
+              رجوع
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* leaderboard */}
       <div style={{ marginTop: 16 }}>
         <div style={{ color: 'var(--brand-deep)', fontSize: 11, fontWeight: 800, marginBottom: 8 }}>
@@ -171,6 +200,22 @@ export default function PlankChallenge({ member }) {
                   <span style={{ color: 'var(--brand-deep)', fontSize: 12.5, fontWeight: 800 }}>
                     {formatTime(row.seconds)}
                   </span>
+                  {isMe && (
+                    <button
+                      onClick={() => setConfirming(true)}
+                      title="احذفي نتيجتك"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: 13,
+                        padding: '0 2px',
+                        opacity: 0.7,
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  )}
                 </div>
               )
             })}

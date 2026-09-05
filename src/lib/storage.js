@@ -279,6 +279,17 @@ export async function fetchPlankBoard(limit = 50) {
   return [...best.values()].sort((a, b) => b.seconds - a.seconds)
 }
 
+/** Remove every attempt by one member — she disappears from the board. */
+export async function deletePlankScores(memberId) {
+  if (!isConfigured) return false
+  const { error } = await supabase.from('plank_scores').delete().eq('member_id', memberId)
+  if (error) {
+    noteError('deletePlankScores', error)
+    return false
+  }
+  return true
+}
+
 /** Record an attempt. Returns the saved row, or null on failure. */
 export async function savePlankScore({ memberId, name, seconds }) {
   if (!isConfigured) return null
